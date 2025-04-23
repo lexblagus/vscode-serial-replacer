@@ -1,17 +1,20 @@
 {
-  "name": "hello-world-react-vite",
-  "displayName": "hello-world-react-vite",
-  "description": "A hello world sample extension to demonstrate using React + Vite with the Webview UI Toolkit for VS Code.",
+  "name": "serial-replacer",
+  "displayName": "Serial Replacer",
+  "description": "Visual Studio extension for consecutive find-and-replace in a single or multiple files",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.75.0"
   },
+  "categories": [
+    "Other"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "hello-world.showHelloWorld",
-        "title": "Hello World (React + Vite): Show"
+        "command": "serial-replacer.showPanel",
+        "title": "Serial Replacer: Show Panel"
       }
     ]
   },

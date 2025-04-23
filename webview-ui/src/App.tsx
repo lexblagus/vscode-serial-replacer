@@ -19,9 +19,9 @@ function App() {
     <main>
       {import.meta.env.DEV ? <vscode-dev-toolbar></vscode-dev-toolbar> : null}
       
-      <h1>Hello World!</h1>
+      <h1>Serial Replacer</h1>
 
-      <VscodeButton onClick={handleHowdyClick}>VscodeButton</VscodeButton>
+      <VscodeButton onClick={handleHowdyClick}>hello</VscodeButton>
 
       <VscodeCollapsible title="Step 1">
         <p>Suspendisse potenti. Maecenas eu egestas metus. Nulla eget placerat mi, et efficitur augue.</p>

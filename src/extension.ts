@@ -1,12 +1,12 @@
 import { commands, ExtensionContext } from "vscode";
-import { HelloWorldPanel } from "./panels/HelloWorldPanel";
+import { SerialReplacerPanel } from "./panels/SerialReplacerPanel";
 
 export function activate(context: ExtensionContext) {
-  // Create the show hello world command
-  const showHelloWorldCommand = commands.registerCommand("hello-world.showHelloWorld", () => {
-    HelloWorldPanel.render(context.extensionUri);
+  // Create the 'show serial replacer panel' command
+  const showPanelCommand = commands.registerCommand("serial-replacer.showPanel", () => {
+    SerialReplacerPanel.render(context.extensionUri);
   });
 
   // Add command to the extension context
-  context.subscriptions.push(showHelloWorldCommand);
+  context.subscriptions.push(showPanelCommand);
 }

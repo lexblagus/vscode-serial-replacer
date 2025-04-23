@@ -13,6 +13,19 @@
 			},
 			"group": {
 				"kind": "build",
+				"isDefault": false
+			}
+		},
+		{
+			"type": "npm",
+			"script": "build:webview",
+			"problemMatcher": ["$tsc"],
+			"isBackground": false,
+			"presentation": {
+				"reveal": "never"
+			},
+			"group": {
+				"kind": "build",
 				"isDefault": true
 			}
 		}
