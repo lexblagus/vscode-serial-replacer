@@ -2,6 +2,13 @@
 
 This is the README for your extension "serial-replacer". After writing up a brief description, we recommend including the following sections.
 
+## Rodmap for Alpha
+
+- HTML for UI
+  - Icons
+  - …
+- Logic (…)
+
 ## Features
 
 Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.

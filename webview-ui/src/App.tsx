@@ -1,7 +1,7 @@
 import { vscode } from "./utilities/vscode";
 import "./App.css";
 import "@vscode-elements/elements/dist/vscode-button/index.js";
-import { VscodeButton, VscodeCollapsible } from "@vscode-elements/react-elements";
+import { VscodeButton, VscodeCollapsible, VscodeIcon } from "@vscode-elements/react-elements";
 
 if (import.meta.env.DEV) {
   await import("@vscode-elements/webview-playground");
@@ -26,6 +26,8 @@ function App() {
       <VscodeCollapsible title="Step 1">
         <p>Suspendisse potenti. Maecenas eu egestas metus. Nulla eget placerat mi, et efficitur augue.</p>
       </VscodeCollapsible>
+
+      Icon: <VscodeIcon name="account" action-icon></VscodeIcon> / <span className="codicon codicon-account"></span>
     </main>
   );
 }
