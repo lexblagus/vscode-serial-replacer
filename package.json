@@ -11,6 +11,25 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "views": {
+      "serialReplacerEditorView": [
+        {
+          "id": "serialReplacer.editorView",
+          "name": "Editor",
+          "type": "webview",
+          "icon": "$(replace-all)"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "serialReplacerEditorView",
+          "title": "Serial Replacer",
+          "icon": "$(replace-all)"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "serial-replacer.showPanel",
