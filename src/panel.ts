@@ -105,7 +105,6 @@ export class SerialReplacerPanel {
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
     // The CSS file from the React build output
     const stylesUri = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "index.css"]);
-    // const stylesUriCodicon = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "codicon.css"]);
     // The JS file from the React build output
     const scriptUri = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "index.js"]);
 
@@ -128,11 +127,9 @@ export class SerialReplacerPanel {
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <meta http-equiv="Content-Security-Policy" content="${cspContent}">
           <link rel="stylesheet" type="text/css" href="${stylesUri}">
-          ${/* <link href="${stylesUriCodicon}" rel="stylesheet" id="vscode-codicon-stylesheet" /> */ ''}
           <title>${displayName}</title>
         </head>
         <body>
-        src/panels/SerialReplacerPanel.ts
         <div id="root"></div>
           <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
         </body>

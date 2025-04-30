@@ -37,6 +37,9 @@
       }
     ]
   },
+  "files": [
+    "webview-ui/build"
+  ],
   "scripts": {
     "install:all": "npm install && cd webview-ui && npm install",
     "start:webview": "cd webview-ui && npm run start",

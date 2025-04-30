@@ -27,10 +27,10 @@ function App() {
 
       <p>
         Account icon:{' '}
-        <VscodeIcon name="account" action-icon></VscodeIcon>
+        <VscodeIcon name="account"></VscodeIcon>
         <br />
         Account  span class:{' '}
-        <span className="codicon codicon-account"></span>
+        <span className="codicon2 codicon2-account"></span>
       </p>
     </main>
   );

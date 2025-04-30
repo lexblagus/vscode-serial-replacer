@@ -47,12 +47,6 @@ export class SerialReplacerSidebarProvider implements WebviewViewProvider {
 
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
     const stylesUri = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "index.css"]);
-    /* const stylesUriCodicon = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "codicon.css"]);
-    const stylesUriCodiconTtf = getUri(webview, extensionUri, [
-      "media",
-      "codicon",
-      "codicon.ttf",
-    ]); */
     const scriptUri = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "index.js"]);
 
     const nonce = getNonce();
@@ -62,8 +56,20 @@ export class SerialReplacerSidebarProvider implements WebviewViewProvider {
       `script-src 'nonce-${nonce}'`,
     ].join("; ");
 
+    // const fontUri = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "codicon.ttf"]);
+    // const fontUri = getUri(webview, extensionUri, ["media", "codicon.ttf"]);
+
     // const displayName: string = packageJson.displayName;
     const displayName: string = 'Serial Replacer Sidebar';
+
+    /*
+    displayName = Serial Replacer Sidebar
+    __filename = /Users/blagus/Gallery/Work/Etc/hello-world-react-vite/hello-world/out/sidebar.js
+    stylesUri = https://file%2B.vscode-resource.vscode-cdn.net/Users/blagus/Gallery/Work/Etc/hello-world-react-vite/hello-world/webview-ui/build/assets/index.css
+    extensionUri = file:///Users/blagus/Gallery/Work/Etc/hello-world-react-vite/hello-world
+    getUri(webview, extensionUri, []) = https://file%2B.vscode-resource.vscode-cdn.net/Users/blagus/Gallery/Work/Etc/hello-world-react-vite/hello-world
+    stylesUri = https://file%2B.vscode-resource.vscode-cdn.net/Users/blagus/Gallery/Work/Etc/hello-world-react-vite/hello-world/webview-ui/build/assets/index.css
+    */
 
     // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
     return /*html*/ `
@@ -75,24 +81,53 @@ export class SerialReplacerSidebarProvider implements WebviewViewProvider {
           <meta http-equiv="Content-Security-Policy" content="${cspContent}">
           <link rel="stylesheet" type="text/css" href="${stylesUri}">
           ${/*
+            <link rel="stylesheet" type="text/css" href="${stylesUriCodicon}" id="vscode-codicon-stylesheet">
             <link href="${stylesUriCodicon}" rel="stylesheet" id="vscode-codicon-stylesheet" />
-          */ ''}
-
-          ${/*
             <style>
               @font-face {
-                font-family: 'Codicon';
-                src: url('${stylesUriCodiconTtf}');
+                font-family: 'codicon';
+                font-display: block;
+                src: url('${fontUri}') format("truetype");
+              }
+
+              .codicon[class*=codicon-] {
+                font: 16px/1 codicon;
+                display: inline-block;
+                text-decoration: none;
+                text-rendering: auto;
+                text-align: center;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                user-select: none;
+                -webkit-user-select: none;
+                -ms-user-select: none
+              }
+
+              .codicon-account:before {
+                content: "\eb99"
               }
             </style>
-          */''}
-
+            */ ''}
           <title>${displayName}</title>
         </head>
         <body>
-          path = src/sidebars/SerialReplacerSidebar.ts
-          <br />
-          stylesUri = ${stylesUri}
+          <!--
+          <p>
+            <code>
+              displayName = ${displayName}
+              <br />
+              __filename = ${__filename}
+              <br />
+              stylesUri = ${stylesUri}
+              <br />
+              extensionUri = ${extensionUri}
+              <br />
+              getUri(webview, extensionUri, []) = ${getUri(webview, extensionUri, [])}
+              <br />
+              stylesUri = ${stylesUri}
+            </code>
+          </p>
+          -->
           <div id="root"></div>
           <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
         </body>
