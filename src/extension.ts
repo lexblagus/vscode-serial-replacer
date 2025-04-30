@@ -1,7 +1,6 @@
-import * as vscode from "vscode";
-import { commands, ExtensionContext } from "vscode";
-import { SerialReplacerPanel } from "./panels/SerialReplacerPanel";
-import { SerialReplacerSidebarProvider } from "./sidebars/SerialReplacerSidebar";
+import { window, commands, ExtensionContext } from "vscode";
+import { SerialReplacerPanel } from "./panel";
+import { SerialReplacerSidebarProvider } from "./sidebar";
 
 export function activate(context: ExtensionContext) {
   // Create the 'show serial replacer panel' command
@@ -16,7 +15,7 @@ export function activate(context: ExtensionContext) {
   const provider = new SerialReplacerSidebarProvider(context.extensionUri);
 
   context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(
+    window.registerWebviewViewProvider(
       SerialReplacerSidebarProvider.viewType,
       provider
     )

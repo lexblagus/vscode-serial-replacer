@@ -11,15 +11,13 @@ function App() {
   function handleHowdyClick() {
     vscode.postMessage({
       command: "hello",
-      text: "Hey there partner! 🤠",
+      text: "Hey there!",
     });
   }
 
   return (
     <main>
       {import.meta.env.DEV ? <vscode-dev-toolbar></vscode-dev-toolbar> : null}
-      
-      <h1>Serial Replacer</h1>
 
       <VscodeButton onClick={handleHowdyClick}>hello</VscodeButton>
 
@@ -27,7 +25,13 @@ function App() {
         <p>Suspendisse potenti. Maecenas eu egestas metus. Nulla eget placerat mi, et efficitur augue.</p>
       </VscodeCollapsible>
 
-      Icon: <VscodeIcon name="account" action-icon></VscodeIcon> / <span className="codicon codicon-account"></span>
+      <p>
+        Account icon:{' '}
+        <VscodeIcon name="account" action-icon></VscodeIcon>
+        <br />
+        Account  span class:{' '}
+        <span className="codicon codicon-account"></span>
+      </p>
     </main>
   );
 }

@@ -7,9 +7,9 @@ import {
   Webview,
   window,
 } from "vscode";
-import { getUri } from "../utilities/getUri";
-import { getNonce } from "../utilities/getNonce";
-import packageJson from "../../package.json";
+import { getUri } from "./utilities/getUri";
+import { getNonce } from "./utilities/getNonce";
+// import packageJson from "../../package.json";
 
 export class SerialReplacerSidebarProvider implements WebviewViewProvider {
   public static readonly viewType = "serialReplacer.editorView";
@@ -47,6 +47,12 @@ export class SerialReplacerSidebarProvider implements WebviewViewProvider {
 
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
     const stylesUri = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "index.css"]);
+    /* const stylesUriCodicon = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "codicon.css"]);
+    const stylesUriCodiconTtf = getUri(webview, extensionUri, [
+      "media",
+      "codicon",
+      "codicon.ttf",
+    ]); */
     const scriptUri = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "index.js"]);
 
     const nonce = getNonce();
@@ -56,7 +62,8 @@ export class SerialReplacerSidebarProvider implements WebviewViewProvider {
       `script-src 'nonce-${nonce}'`,
     ].join("; ");
 
-    const displayName: string = packageJson.displayName;
+    // const displayName: string = packageJson.displayName;
+    const displayName: string = 'Serial Replacer Sidebar';
 
     // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
     return /*html*/ `
@@ -67,9 +74,25 @@ export class SerialReplacerSidebarProvider implements WebviewViewProvider {
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <meta http-equiv="Content-Security-Policy" content="${cspContent}">
           <link rel="stylesheet" type="text/css" href="${stylesUri}">
+          ${/*
+            <link href="${stylesUriCodicon}" rel="stylesheet" id="vscode-codicon-stylesheet" />
+          */ ''}
+
+          ${/*
+            <style>
+              @font-face {
+                font-family: 'Codicon';
+                src: url('${stylesUriCodiconTtf}');
+              }
+            </style>
+          */''}
+
           <title>${displayName}</title>
         </head>
         <body>
+          path = src/sidebars/SerialReplacerSidebar.ts
+          <br />
+          stylesUri = ${stylesUri}
           <div id="root"></div>
           <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
         </body>
