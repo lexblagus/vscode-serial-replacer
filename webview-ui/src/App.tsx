@@ -17,13 +17,15 @@ function App() {
 
   return (
     <main>
-      {import.meta.env.DEV ? <vscode-dev-toolbar></vscode-dev-toolbar> : null}
+      <p>
+        <VscodeButton onClick={handleHowdyClick}>hello</VscodeButton>
+      </p>
 
-      <VscodeButton onClick={handleHowdyClick}>hello</VscodeButton>
-
-      <VscodeCollapsible title="Step 1">
-        <p>Suspendisse potenti. Maecenas eu egestas metus. Nulla eget placerat mi, et efficitur augue.</p>
-      </VscodeCollapsible>
+      <p>
+        <VscodeCollapsible title="Step 1">
+          <p>Suspendisse potenti. Maecenas eu egestas metus. Nulla eget placerat mi, et efficitur augue.</p>
+        </VscodeCollapsible>
+      </p>
 
       <p>
         Account icon:{' '}
@@ -33,6 +35,8 @@ function App() {
         Account  span class:{' '}
         <span className="codicon codicon-account"></span>
       </p>
+
+      {import.meta.env.DEV ? <vscode-dev-toolbar></vscode-dev-toolbar> : null}
     </main>
   );
 }

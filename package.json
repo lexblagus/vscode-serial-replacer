@@ -1,5 +1,6 @@
 {
   "name": "serial-replacer",
+  "publisher": "lexa-blagus",
   "displayName": "Serial Replacer",
   "description": "Visual Studio extension for consecutive find-and-replace in a single or multiple files",
   "version": "0.0.1",
@@ -48,7 +49,8 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts"
+    "lint": "eslint src --ext ts",
+    "clear": "rm -rf ./out ./webview-ui/build"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",

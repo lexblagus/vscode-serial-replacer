@@ -13,19 +13,17 @@ import { getNonce } from "./utilities/getNonce";
   const stylesUri = getUri(webview, extensionUri, ["webview-ui", "build", /* "assets", */ "index.css"]);
   const scriptUri = getUri(webview, extensionUri, ["webview-ui", "build", /* "assets", */ "index.js"]);
   const fontUri = getUri(webview, extensionUri, ["webview-ui", "build", /* "assets", */ "codicon.ttf"]);
-
+  
   const nonce = getNonce();
 
   const cspContent = [
-    ["default-src", webview.cspSource /* "'none'" */ ],
-    ["style-src", webview.cspSource],
-    ["font-src", webview.cspSource],
+    ["default-src", "'none'"],
+    ["style-src", `'nonce-${nonce}' ${webview.cspSource}`],
+    ["font-src", 'https:'],
     ["script-src", `'nonce-${nonce}'`],
   ]
     .map((pair) => pair.join(" "))
     .join("; ");
-
-  // FIXME: somehow make the Codicon @font-face src url points to fontUri in index.css
 
   // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
   return /*html*/ `
@@ -37,12 +35,16 @@ import { getNonce } from "./utilities/getNonce";
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <meta http-equiv="Content-Security-Policy" content="${cspContent}">
           <link rel="stylesheet" type="text/css" href="${stylesUri}" nonce="${nonce}" id="vscode-codicon-stylesheet">
+          <style nonce="${nonce}">
+            @font-face {
+              font-family: codicon;
+              font-display: block;
+              src: url(${fontUri}) format("truetype")
+            }
+          </style>
         </head>
         <body>
         <div id="root"></div>
-        <code>fontUri = ${fontUri}</code>
-        ${/*
-        */ ''}
         <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
         </body>
       </html>

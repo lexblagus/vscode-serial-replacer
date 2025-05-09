@@ -4,12 +4,14 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "watch",
 			"type": "npm",
 			"script": "watch",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {
-				"reveal": "never"
+				"reveal": "always",
+				"panel": "dedicated"
 			},
 			"group": {
 				"kind": "build",
@@ -17,16 +19,42 @@
 			}
 		},
 		{
+			"label": "compile",
+			"type": "npm",
+			"script": "compile",
+			"problemMatcher": "$tsc",
+			"isBackground": false,
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			}
+		},
+		{
+			"label": "build:webview",
 			"type": "npm",
 			"script": "build:webview",
 			"problemMatcher": ["$tsc"],
 			"isBackground": false,
 			"presentation": {
-				"reveal": "never"
+				"reveal": "always",
+				"panel": "dedicated"
 			},
 			"group": {
 				"kind": "build",
-				"isDefault": true
+				"isDefault": false
+			}
+		},
+		{
+			"label": "default build",
+			"dependsOn": ["compile", "watch", "build:webview"],
+			"dependsOrder": "sequence",
+			"group": {
+			  "kind": "build",
+			  "isDefault": true
 			}
 		}
 	]
