@@ -1,6 +1,6 @@
 import { vscode } from "./utilities/vscode";
 import "./App.css";
-import "@vscode-elements/elements/dist/vscode-button/index.js";
+// import "@vscode-elements/elements/dist/vscode-button/index.js";
 import { VscodeButton, VscodeCollapsible, VscodeIcon } from "@vscode-elements/react-elements";
 
 if (import.meta.env.DEV) {
@@ -27,10 +27,11 @@ function App() {
 
       <p>
         Account icon:{' '}
-        <VscodeIcon name="account"></VscodeIcon>
+        <VscodeIcon name="account" />
+        <VscodeIcon name="account">account</VscodeIcon>
         <br />
         Account  span class:{' '}
-        <span className="codicon2 codicon2-account"></span>
+        <span className="codicon codicon-account"></span>
       </p>
     </main>
   );
