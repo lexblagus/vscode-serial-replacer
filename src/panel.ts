@@ -1,5 +1,6 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, l10n } from "vscode";
 import { getWebviewContent } from './webview';
+import message from "./message";
 
 const { t } = l10n;
 
@@ -83,16 +84,7 @@ export class SerialReplacerPanel {
    */
   private _setWebviewMessageListener(webview: Webview) {
     webview.onDidReceiveMessage(
-      (message: any) => {
-        const command = message.command;
-        const text = message.text;
-
-        switch (command) {
-          case "hello":
-            window.showInformationMessage(text);
-            return;
-        }
-      },
+      message,
       undefined,
       this._disposables
     );

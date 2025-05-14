@@ -9,6 +9,7 @@ import {
   l10n,
 } from "vscode";
 import { getWebviewContent } from './webview';
+import message from "./message";
 
 const { t } = l10n;
 
@@ -34,16 +35,7 @@ export class SerialReplacerSidebarProvider implements WebviewViewProvider {
 
     webviewView.webview.html = this._getWebviewContent(webviewView.webview, this._extensionUri);
 
-    webviewView.webview.onDidReceiveMessage((message) => {
-      const command = message.command;
-      const text = message.text;
-
-      switch (command) {
-        case "hello":
-          window.showInformationMessage(text);
-          break;
-      }
-    });
+    webviewView.webview.onDidReceiveMessage(message);
   }
 
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {

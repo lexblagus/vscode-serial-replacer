@@ -1,4 +1,5 @@
 import { vscode } from "./utilities/vscode";
+import { config } from "@vscode/l10n";
 import "./App.css";
 import {
   VscodeBadge,
@@ -22,15 +23,15 @@ if (import.meta.env.DEV) {
 
 const l11n = {
   includeFiles: {
-    label: 'files to include',
+    label: "files to include",
     placeholder: `e.g. *.ts, src/**/include (\u21C5 for history)`,
     badgeFiles: `Files`,
-    currentEditor: 'Search in current editor',
+    currentEditor: "Search in current editor",
   },
 };
 
 function App() {
-  function handleHowdyClick() {
+  function handleHelloClick() {
     vscode.postMessage({
       command: "hello",
       text: "Hey there!",
@@ -45,24 +46,26 @@ function App() {
           <VscodeTextfield
             id="includeFiles"
             placeholder={l11n.includeFiles.placeholder}
-            title={l11n.includeFiles.placeholder}
-          >
+            title={l11n.includeFiles.placeholder}>
             <VscodeBadge slot="content-after">88888 {l11n.includeFiles.badgeFiles}</VscodeBadge>
             <VscodeIcon
               slot="content-after"
               name="book"
               id="currentEditor"
               title={l11n.includeFiles.currentEditor}
-              action-icon
-            ></VscodeIcon>
+              action-icon></VscodeIcon>
           </VscodeTextfield>
         </VscodeFormGroup>
       </VscodeFormContainer>
 
       <VscodeDivider />
 
+      <VscodeDivider />
+
       <p>
-        <VscodeButton onClick={handleHowdyClick} icon="replace-all">hello</VscodeButton>
+        <VscodeButton onClick={handleHelloClick} icon="replace-all">
+          hello
+        </VscodeButton>
       </p>
 
       {/*
