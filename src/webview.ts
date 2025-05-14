@@ -1,6 +1,8 @@
-import { Uri, Webview } from "vscode";
+import { l10n, Uri, Webview } from "vscode";
 import { getUri } from "./utilities/getUri";
 import { getNonce } from "./utilities/getNonce";
+
+const { bundle, uri } = l10n;
 
   /**
    * Actual HTML content for the webview (index.html)
@@ -46,6 +48,9 @@ import { getNonce } from "./utilities/getNonce";
         <body>
         <div id="root"></div>
         <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
+        <script nonce="${nonce}">
+          window.i10nBundle = ${JSON.stringify(bundle)};
+        </script>
         </body>
       </html>
     `;

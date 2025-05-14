@@ -2,5 +2,10 @@
   "Serial Replacer": "Substituidor Serial",
   "Serial Replacer Sidebar": "Barra lateral do Substituidor Serial",
   "Serial Replacer Tab": "Aba do Substituidor Serial",
-  "Serial Replacer Panel": "Painel do Substituidor Serial"
+  "Serial Replacer Panel": "Painel do Substituidor Serial",
+
+  "files to include": "arquivos a serem incluídos",
+  "e.g. {0} ({1} for history)": "por exemplo: {0} ({1} para histórico)",
+  "files": "arquivos",
+  "Use current editor": "Use o editor atual"
 }

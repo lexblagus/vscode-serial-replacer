@@ -1,5 +1,5 @@
 import { vscode } from "./utilities/vscode";
-import { config } from "@vscode/l10n";
+import { config, t } from "@vscode/l10n";
 import "./App.css";
 import {
   VscodeBadge,
@@ -21,16 +21,16 @@ if (import.meta.env.DEV) {
   await import("@vscode-elements/webview-playground");
 }
 
-const l11n = {
-  includeFiles: {
-    label: "files to include",
-    placeholder: `e.g. *.ts, src/**/include (\u21C5 for history)`,
-    badgeFiles: `Files`,
-    currentEditor: "Search in current editor",
-  },
+const content = {
+  'sample-file-pattern': '*.ts, src/**/include',
+  'arrow-up-and-down': '\u21C5',
 };
 
 function App() {
+  config({
+      contents: (window as any).i10nBundle
+  });
+
   function handleHelloClick() {
     vscode.postMessage({
       command: "hello",
@@ -42,23 +42,21 @@ function App() {
     <main>
       <VscodeFormContainer>
         <VscodeFormGroup variant="vertical">
-          <VscodeLabel htmlFor="includeFiles">{l11n.includeFiles.label}</VscodeLabel>
+          <VscodeLabel htmlFor="includeFiles">{t('files to include')}</VscodeLabel>
           <VscodeTextfield
             id="includeFiles"
-            placeholder={l11n.includeFiles.placeholder}
-            title={l11n.includeFiles.placeholder}>
-            <VscodeBadge slot="content-after">88888 {l11n.includeFiles.badgeFiles}</VscodeBadge>
+            placeholder={t('e.g. {0} ({1} for history)', content["sample-file-pattern"], content["arrow-up-and-down"])}
+            title={t('e.g.: {0} ({1} for history)', content["sample-file-pattern"], content["arrow-up-and-down"])}>
+            <VscodeBadge slot="content-after">88888 {t('files')}</VscodeBadge>
             <VscodeIcon
               slot="content-after"
               name="book"
               id="currentEditor"
-              title={l11n.includeFiles.currentEditor}
+              title={t('Use current editor')}
               action-icon></VscodeIcon>
           </VscodeTextfield>
         </VscodeFormGroup>
       </VscodeFormContainer>
-
-      <VscodeDivider />
 
       <VscodeDivider />
 
