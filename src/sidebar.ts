@@ -6,8 +6,11 @@ import {
   CancellationToken,
   Webview,
   window,
+  l10n,
 } from "vscode";
 import { getWebviewContent } from './webview';
+
+const { t } = l10n;
 
 export class SerialReplacerSidebarProvider implements WebviewViewProvider {
   public static readonly viewType = "serialReplacer.editorView";
@@ -44,6 +47,6 @@ export class SerialReplacerSidebarProvider implements WebviewViewProvider {
   }
 
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
-    return getWebviewContent(webview, extensionUri, 'Serial Replacer Sidebar');
+    return getWebviewContent(webview, extensionUri, t('Serial Replacer Sidebar'));
   }
 }

@@ -1,17 +1,14 @@
-import { window, commands, ExtensionContext } from "vscode";
+import { window, commands, ExtensionContext, Uri, l10n } from "vscode";
 import { SerialReplacerPanel } from "./panel";
 import { SerialReplacerSidebarProvider } from "./sidebar";
 
-export function activate(context: ExtensionContext) {
-  // Create the 'show serial replacer panel' command
+export async function activate(context: ExtensionContext) {
   const showPanelCommand = commands.registerCommand("serial-replacer.showPanel", () => {
     SerialReplacerPanel.render(context.extensionUri);
   });
 
-  // Add command to the extension context
   context.subscriptions.push(showPanelCommand);
 
-  // Sidebar
   const provider = new SerialReplacerSidebarProvider(context.extensionUri);
 
   context.subscriptions.push(

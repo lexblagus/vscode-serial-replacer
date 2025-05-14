@@ -1,5 +1,7 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from "vscode";
+import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, l10n } from "vscode";
 import { getWebviewContent } from './webview';
+
+const { t } = l10n;
 
 export class SerialReplacerPanel {
   public static currentPanel: SerialReplacerPanel | undefined;
@@ -31,7 +33,7 @@ export class SerialReplacerPanel {
     } else {
       const panel = window.createWebviewPanel(
         "showPanel",
-        "Serial Replacer", // Tab title
+        t('Serial Replacer Tab'),
         ViewColumn.One,
         {
           enableScripts: true,
@@ -69,7 +71,7 @@ export class SerialReplacerPanel {
    * rendered within the webview panel
    */
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
-    return getWebviewContent(webview, extensionUri, 'Serial Replacer Panel');
+    return getWebviewContent(webview, extensionUri, t('Serial Replacer Panel'));
   }
 
   /**

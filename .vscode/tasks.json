@@ -4,10 +4,24 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "compile",
+			"type": "npm",
+			"script": "compile",
+			"isBackground": false,
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": "$tsc"
+		},
+		{
 			"label": "watch",
 			"type": "npm",
 			"script": "watch",
-			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {
 				"reveal": "always",
@@ -16,28 +30,13 @@
 			"group": {
 				"kind": "build",
 				"isDefault": false
-			}
-		},
-		{
-			"label": "compile",
-			"type": "npm",
-			"script": "compile",
-			"problemMatcher": "$tsc",
-			"isBackground": false,
-			"presentation": {
-				"reveal": "always",
-				"panel": "dedicated"
 			},
-			"group": {
-				"kind": "build",
-				"isDefault": false
-			}
+			"problemMatcher": "$tsc-watch"
 		},
 		{
 			"label": "build:webview",
 			"type": "npm",
 			"script": "build:webview",
-			"problemMatcher": ["$tsc"],
 			"isBackground": false,
 			"presentation": {
 				"reveal": "always",
@@ -46,15 +45,52 @@
 			"group": {
 				"kind": "build",
 				"isDefault": false
+			},
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "start:webview",
+			"type": "npm",
+			"script": "start:webview",
+			"isBackground": true,
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": {
+				"pattern": [
+					{
+						"regexp": ".*",
+						"file": 1,
+						"location": 2,
+						"message": 3
+					}
+				],
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "vite v\\d+\\.\\d+\\.\\d+  ready in",
+					"endsPattern": "ready in.*"
+				}
 			}
 		},
 		{
 			"label": "default build",
-			"dependsOn": ["compile", "watch", "build:webview"],
+			"dependsOn": [
+				"compile",
+				"watch",
+				"build:webview",
+				"start:webview"
+			],
 			"dependsOrder": "sequence",
 			"group": {
-			  "kind": "build",
-			  "isDefault": true
+				"kind": "build",
+				"isDefault": true
 			}
 		}
 	]

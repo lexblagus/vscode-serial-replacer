@@ -16,7 +16,7 @@
       "serialReplacerEditorView": [
         {
           "id": "serialReplacer.editorView",
-          "name": "Editor",
+          "name": "%views.editor.name%",
           "type": "webview",
           "icon": "$(replace-all)"
         }
@@ -26,7 +26,7 @@
       "activitybar": [
         {
           "id": "serialReplacerEditorView",
-          "title": "Serial Replacer",
+          "title": "%containers.activitybar.title%",
           "icon": "$(replace-all)"
         }
       ]
@@ -34,13 +34,11 @@
     "commands": [
       {
         "command": "serial-replacer.showPanel",
-        "title": "Serial Replacer: Show Panel"
+        "title": "%commands.title%"
       }
     ]
   },
-  "files": [
-    "webview-ui/build"
-  ],
+  "l10n": "./l10n",
   "scripts": {
     "install:all": "npm install && cd webview-ui && npm install",
     "start:webview": "cd webview-ui && npm run start",
@@ -55,9 +53,10 @@
   "devDependencies": {
     "@types/glob": "^7.1.3",
     "@types/node": "^12.11.7",
-    "@types/vscode": "^1.46.0",
+    "@types/vscode": "^1.100.0",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
+    "@vscode/l10n-dev": "^0.0.35",
     "eslint": "^7.19.0",
     "glob": "^7.1.6",
     "prettier": "^2.2.1",

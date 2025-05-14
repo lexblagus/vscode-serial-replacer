@@ -10,9 +10,9 @@ import { getNonce } from "./utilities/getNonce";
    * @param title Document title in HTML head tag
    */
   export function getWebviewContent(webview: Webview, extensionUri: Uri, title: String) {
-  const stylesUri = getUri(webview, extensionUri, ["webview-ui", "build", /* "assets", */ "index.css"]);
-  const scriptUri = getUri(webview, extensionUri, ["webview-ui", "build", /* "assets", */ "index.js"]);
-  const fontUri = getUri(webview, extensionUri, ["webview-ui", "build", /* "assets", */ "codicon.ttf"]);
+  const stylesUri = getUri(webview, extensionUri, ["webview-ui", "build", "index.css"]);
+  const scriptUri = getUri(webview, extensionUri, ["webview-ui", "build", "index.js"]);
+  const fontUri = getUri(webview, extensionUri, ["webview-ui", "build", "codicon.ttf"]);
   
   const nonce = getNonce();
 
