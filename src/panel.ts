@@ -34,7 +34,7 @@ export class SerialReplacerPanel {
     } else {
       const panel = window.createWebviewPanel(
         "showPanel",
-        t('Serial Replacer Tab'),
+        t('Serial Replacer'), // Tab title
         ViewColumn.One,
         {
           enableScripts: true,

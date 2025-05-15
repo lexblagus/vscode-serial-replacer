@@ -1,4 +1,5 @@
-body {
+html body {
+  /* increase specificity, and therefore priority, over the theme. */
   /* padding: 0; */
 }
 
@@ -8,4 +9,46 @@ main {
   justify-content: center;
   align-items: stretch;
   height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.no-max-width {
+  max-width: none;
+}
+
+.x-margin {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.no-y-margin {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.no-top-margin {
+  margin-top: 0;
+}
+
+.no-bottom-margin {
+  margin-bottom: 0;
+}
+
+.thin-bottom-margin {
+  margin-bottom: 2px;
+}
+
+.label-discreet {
+  font-size: 11px;
+  font-weight: normal;
+}
+
+.textfield-full {
+  display: flex;
+  width: auto;
+}
+
+.display-block {
+  display: block;
 }

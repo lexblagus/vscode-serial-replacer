@@ -5,7 +5,28 @@
   "Serial Replacer Panel": "Painel do Substituidor Serial",
 
   "files to include": "arquivos a serem incluídos",
+  "files to exclude": "arquivos a serem excluídos",
   "e.g. {0} ({1} for history)": "por exemplo: {0} ({1} para histórico)",
-  "files": "arquivos",
-  "Use current editor": "Use o editor atual"
+  "Use current editor": "Use o editor atual",
+  "Use exclude settings and ignore files": "Usar excluir configurações e ignorar arquivos",
+  "Disable": "Desabilitar",
+
+  "Current file: {0}": "Arquivo atual: {0}",
+  "{0} files": "{0} arquivos",
+  "Remove": "Remover",
+
+  "Step {0}": "Etapa {0}",
+  "replacement": "substituição",
+
+  "rename":  "renomear",
+  "move down":  "mover para baixo",
+  "move up":  "mover para cima",
+  "add step bellow":  "adicionar etapa abaixo",
+  "add step above":  "adicionar etapa acima",
+  "remove":  "remover",
+
+  "Replace": "Substituir",
+  "Serial Replace": "Substituir em série",
+
+ "END": "end"
 }
