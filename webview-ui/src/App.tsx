@@ -13,6 +13,7 @@ import {
   VscodeOption,
   VscodeScrollable,
   VscodeSingleSelect,
+  VscodeTextarea,
   VscodeTextfield,
   VscodeTree,
 } from "@vscode-elements/react-elements";
@@ -93,7 +94,22 @@ function App() {
       },
     ],
     steps: Array.from({ length: 3 }, (_, i) => ({
-      title: t("Step {0}", (i + 1).toString()), // should not allow repeated titles
+      expanded: Math.random() < 0.25,
+      autoTitle: true,
+      title: '', // should not allow repeated titles
+      find: {
+        content: "",
+        regExp: false,
+        global: true,
+        multiline: true,
+        caseSensitive: true,
+        wordWrap: true,
+      },
+      replace: {
+        content: "",
+        wordWrap: true,
+      },
+      preview: false,
     })),
   };
 
@@ -115,22 +131,20 @@ function App() {
     <main>
       <VscodeFormContainer className="no-max-width">
         <VscodeFormGroup variant="vertical" className="no-y-margin">
-          <VscodeLabel htmlFor="includeFiles" className="label-discreet">
+          <VscodeLabel htmlFor="includeFiles" className="text-discreet">
             {t("files to include")}
           </VscodeLabel>
           <VscodeTextfield
             id="includeFiles"
             className="textfield-full"
-            placeholder={t(
-              "e.g. {0} ({1} for history)",
-              content["sample-file-pattern"],
+            placeholder={`${t("e.g. {0}", content["sample-file-pattern"])} (${t(
+              "{0} for history",
               content["arrow-up-and-down"]
-            )}
-            title={t(
-              "e.g.: {0} ({1} for history)",
-              content["sample-file-pattern"],
+            )})`}
+            title={`${t("e.g. {0}", content["sample-file-pattern"])} (${t(
+              "{0} for history",
               content["arrow-up-and-down"]
-            )}
+            )})`}
             value={data.includeFiles}>
             <VscodeIcon
               slot="content-after"
@@ -142,22 +156,20 @@ function App() {
         </VscodeFormGroup>
 
         <VscodeFormGroup variant="vertical" className="no-top-margin">
-          <VscodeLabel htmlFor="excludeFiles" className="label-discreet">
+          <VscodeLabel htmlFor="excludeFiles" className="text-discreet">
             {t("files to exclude")}
           </VscodeLabel>
           <VscodeTextfield
             id="excludeFiles"
             className="textfield-full"
-            placeholder={t(
-              "e.g. {0} ({1} for history)",
-              content["sample-file-pattern"],
+            placeholder={`${t("e.g. {0}", content["sample-file-pattern"])} (${t(
+              "{0} for history",
               content["arrow-up-and-down"]
-            )}
-            title={t(
-              "e.g.: {0} ({1} for history)",
-              content["sample-file-pattern"],
+            )})`}
+            title={`${t("e.g. {0}", content["sample-file-pattern"])} (${t(
+              "{0} for history",
               content["arrow-up-and-down"]
-            )}
+            )})`}
             value={data.excludeFiles}>
             <VscodeIcon
               slot="content-after"
@@ -177,8 +189,8 @@ function App() {
         <br />
 
         {data.steps.map((step, index) => (
-          <div className="thin-bottom-margin">
-            <VscodeCollapsible title={step.title} key={step.title}>
+          <div className="thin-bottom-margin" key={JSON.stringify(step)}>
+            <VscodeCollapsible title={step.autoTitle ? t("Step {0}", (index + 1).toString()) : step.title} open={step.expanded}>
               <VscodeIcon
                 action-icon
                 aria-role="button"
@@ -248,19 +260,93 @@ function App() {
                 name="trash"
                 label={t("remove")}
                 title={t("remove")}></VscodeIcon>
-              <p>
-                Suspendisse potenti. Maecenas eu egestas metus. Nulla eget placerat mi, et efficitur
-                augue.
-              </p>
+              <div className="stepInnerWrapper">
+                <VscodeFormGroup variant="vertical" className="no-y-margin">
+                  <div className="labelAndActions">
+                    <div className="label">
+                      <VscodeLabel htmlFor={`step${index}FindContent`} className="text-discreet">
+                        {t("find")}
+                      </VscodeLabel>
+                    </div>
+                    <div className="actions">
+                      <VscodeIcon
+                        name="regex"
+                        id={`step${index}FindRegExp`}
+                        title={t("Use regular expression")}
+                        action-icon></VscodeIcon>
+                      <VscodeIcon
+                        name="globe"
+                        id={`step${index}FindGlobal`}
+                        title={t("Find all occurrences (global)")}
+                        action-icon></VscodeIcon>
+                      <VscodeIcon
+                        name="newline"
+                        id={`step${index}FindMultiline`}
+                        title={t("Search across lines (multiline)")}
+                        action-icon></VscodeIcon>
+                      <VscodeIcon
+                        name="case-sensitive"
+                        id={`step${index}FindCaseSensitive`}
+                        title={t("Case sensitive")}
+                        action-icon></VscodeIcon>
+                      <VscodeIcon
+                        name="word-wrap"
+                        id={`step${index}FindWordWrap`}
+                        title={t("Word wrap")}
+                        action-icon></VscodeIcon>
+                    </div>
+                  </div>
+                  <VscodeTextarea
+                    id={`step${index}FindContent`}
+                    className="textarea-full"
+                    title={t("Find")}
+                    label={t("Find")}
+                    placeholder={t("{0} for history", content["arrow-up-and-down"])}
+                    rows={5}
+                    resize="vertical"
+                    value={step.find.content}></VscodeTextarea>
+                </VscodeFormGroup>
+
+                <VscodeFormGroup variant="vertical" className="no-y-margin">
+                  <div className="labelAndActions">
+                    <div className="label">
+                      <VscodeLabel htmlFor={`step${index}ReplaceContent`} className="text-discreet">
+                        {t("replace")}
+                      </VscodeLabel>
+                    </div>
+                    <div className="actions">
+                      <VscodeIcon
+                        name="word-wrap"
+                        id={`step${index}ReplaceWordWrap`}
+                        title={t("Word wrap")}
+                        action-icon></VscodeIcon>
+                    </div>
+                  </div>
+                  <VscodeTextarea
+                    id={`step${index}ReplaceContent`}
+                    className="textarea-full"
+                    title={t("Replace")}
+                    label={t("replace")}
+                    placeholder={t("{0} for history", content["arrow-up-and-down"])}
+                    rows={5}
+                    resize="vertical"
+                    value={step.find.content}></VscodeTextarea>
+                </VscodeFormGroup>
+                <div className='stepPreviewWrapper text-discreet'>
+                  <a href="#">{t('preview…')}</a>
+                </div>
+                <br />
+              </div>
             </VscodeCollapsible>
           </div>
         ))}
 
-        <p>
+        <br />
+        <div>
           <VscodeButton onClick={handleHelloClick} icon="replace-all" className="display-block">
             {t("Serial Replace")}
           </VscodeButton>
-        </p>
+        </div>
       </VscodeFormContainer>
 
       {import.meta.env.DEV ? <vscode-dev-toolbar></vscode-dev-toolbar> : null}

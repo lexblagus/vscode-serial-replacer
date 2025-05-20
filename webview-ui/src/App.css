@@ -17,7 +17,7 @@ main {
   max-width: none;
 }
 
-.x-margin {
+.x-padding {
   padding-left: 20px;
   padding-right: 20px;
 }
@@ -39,16 +39,43 @@ main {
   margin-bottom: 2px;
 }
 
-.label-discreet {
+.text-discreet {
   font-size: 11px;
   font-weight: normal;
 }
 
 .textfield-full {
-  display: flex;
-  width: auto;
+  width: 100%;
+}
+
+.textarea-full {
+  width: 100%;
 }
 
 .display-block {
   display: block;
+}
+
+.stepInnerWrapper {
+  padding-left: 22px;
+}
+
+.labelAndActions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.labelAndActions > .label {
+}
+
+.labelAndActions > .actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  padding-right: 4px;
+}
+
+.stepPreviewWrapper{
+  display: flex;
+  justify-content: flex-end;
 }
