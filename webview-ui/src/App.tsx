@@ -2,28 +2,40 @@ import { vscode } from "./utilities/vscode";
 import { config, t } from "@vscode/l10n";
 import "./App.css";
 import {
-  VscodeBadge,
   VscodeButton,
   VscodeCollapsible,
-  VscodeDivider,
   VscodeFormContainer,
   VscodeFormGroup,
   VscodeIcon,
   VscodeLabel,
-  VscodeOption,
-  VscodeScrollable,
-  VscodeSingleSelect,
   VscodeTextarea,
   VscodeTextfield,
   VscodeTree,
 } from "@vscode-elements/react-elements";
-import { toWordsOrdinal } from "number-to-words";
+import { useState } from "react";
 
 if (import.meta.env.DEV) {
   await import("@vscode-elements/webview-playground");
 }
 
-const capitalize = (word: string) => word.charAt(0).toUpperCase() + word.slice(1);
+const treeActions = [
+  {
+    icon: "close",
+    actionId: "remove",
+    tooltip: t("Remove"),
+  },
+];
+
+const treeIcons = {
+  branch: "folder",
+  leaf: "file",
+  open: "folder-opened",
+};
+
+const treeItemConfig = {
+  icons: treeIcons,
+  actions: treeActions,
+};
 
 const content = {
   "sample-file-pattern": "*.ts, src/**/include",
@@ -35,30 +47,11 @@ function App() {
     contents: (window as any).i10nBundle,
   });
 
-  const treeActions = [
-    {
-      icon: "close",
-      actionId: "remove",
-      tooltip: t("Remove"),
-    },
-  ];
-
-  const treeIcons = {
-    branch: "folder",
-    leaf: "file",
-    open: "folder-opened",
-  };
-
-  const treeItemConfig = {
-    icons: treeIcons,
-    actions: treeActions,
-  };
-
-  const data = {
+  const initialState = {
+    // TODO: type
     includeFiles: "",
     useCurrentEditor: true,
     excludeFiles: "",
-    resultsLength: Math.floor(Math.random() * 3),
     results: [
       {
         ...treeItemConfig,
@@ -93,10 +86,11 @@ function App() {
         ],
       },
     ],
+    resultsTotalFiles: Math.floor(Math.random() * 3),
     steps: Array.from({ length: 3 }, (_, i) => ({
       expanded: Math.random() < 0.25,
-      autoTitle: true,
-      title: '', // should not allow repeated titles
+      title:
+        Math.random() < 0.25 ? t("Step {0}", (i + 1).toString()) : `Named replacement ${i + 1}`, // should not allow repeated titles
       find: {
         content: "",
         regExp: false,
@@ -113,18 +107,108 @@ function App() {
     })),
   };
 
+  const [state, setState] = useState(initialState);
+
   const treeData = [
     {
       label: t("{0} files", "999"),
-      subItems: data.results,
+      subItems: state.results,
     },
   ];
 
-  function handleHelloClick() {
+  function handleFilesToIncludeChange() {
+    // TODO
+  }
+
+  function handleCurrentEditorClick() {
+    // TODO
+  }
+
+  function handleFilesToExcludeChange() {
+    // TODO
+  }
+
+  function handleExcludeSettingsAndIgnoreFilesClick() {
+    // TODO
+  }
+
+  function handleFileTreeRemoveFileClick() {
+    // TODO
+  }
+
+  function handleStepActionEditClick() {
+    // TODO
+  }
+
+  function handleStepMoveDownClick() {
+    // TODO
+  }
+
+  function handleStepMoveUpClick() {
+    // TODO
+  }
+
+  function handleStepAddBellowClick() {
+    // TODO
+  }
+
+  function handleStepAddAboveClick() {
+    // TODO
+  }
+
+  function handleStepDisableClick() {
+    // TODO
+  }
+
+  function handleStepRemoveClick() {
+    // TODO
+  }
+
+  function handleStepFindRegExpClick() {
+    // TODO
+  }
+
+  function handleStepFindGlobalClick() {
+    // TODO
+  }
+
+  function handleStepFindMultilineClick() {
+    // TODO
+  }
+
+  function handleStepFindCaseSensitiveClick() {
+    // TODO
+  }
+
+  function handleStepFindWordWrapClick() {
+    // TODO
+  }
+
+  function handleStepFindChange() {
+    // TODO
+  }
+
+  function handleStepReplaceWordWrapClick() {
+    // TODO
+  }
+
+  function handleStepReplaceChange() {
+    // TODO
+  }
+
+  function handleStepReplacePreviewClick() {
+    // TODO
+  }
+
+  function handleSerialReplaceClick() {
     vscode.postMessage({
       command: "hello",
       text: "Hey there!",
     });
+  }
+
+  function handleSaveSetClick() {
+    // TODO
   }
 
   return (
@@ -145,13 +229,15 @@ function App() {
               "{0} for history",
               content["arrow-up-and-down"]
             )})`}
-            value={data.includeFiles}>
+            value={state.includeFiles}
+            onChange={handleFilesToIncludeChange}>
             <VscodeIcon
               slot="content-after"
               name="book"
               id="currentEditor"
               title={t("Use current editor")}
-              action-icon></VscodeIcon>
+              action-icon
+              onClick={handleCurrentEditorClick}></VscodeIcon>
           </VscodeTextfield>
         </VscodeFormGroup>
 
@@ -170,44 +256,56 @@ function App() {
               "{0} for history",
               content["arrow-up-and-down"]
             )})`}
-            value={data.excludeFiles}>
+            value={state.excludeFiles}
+            onChange={handleFilesToExcludeChange}>
             <VscodeIcon
               slot="content-after"
               name="exclude"
               id="useExcludeFiles"
               title={t("Use exclude settings and ignore files")}
-              action-icon></VscodeIcon>
+              action-icon
+              onClick={handleExcludeSettingsAndIgnoreFilesClick}></VscodeIcon>
           </VscodeTextfield>
         </VscodeFormGroup>
 
-        {data.resultsLength === 0 && <p className="no-bottom-margin">{t("No files")}</p>}
-        {data.resultsLength === 1 && (
+        {state.resultsTotalFiles === 0 && <p className="no-bottom-margin">{t("No files")}</p>}
+        {state.resultsTotalFiles === 1 && (
           <p className="no-bottom-margin">{t("Current file: {0}", "Untilted.txt")}</p>
         )}
-        {data.resultsLength === 2 && <VscodeTree arrows indent={20} indentGuides data={treeData} />}
+        {state.resultsTotalFiles === 2 && (
+          <VscodeTree
+            arrows
+            indent={20}
+            indentGuides
+            data={treeData}
+            onVscTreeAction={handleFileTreeRemoveFileClick}
+          />
+        )}
 
         <br />
 
-        {data.steps.map((step, index) => (
-          <div className="thin-bottom-margin" key={JSON.stringify(step)}>
-            <VscodeCollapsible title={step.autoTitle ? t("Step {0}", (index + 1).toString()) : step.title} open={step.expanded}>
+        {state.steps.map((step, index) => (
+          <div className="thin-bottom-margin" key={step.title}>
+            <VscodeCollapsible title={step.title} open={step.expanded}>
               <VscodeIcon
                 action-icon
                 aria-role="button"
                 slot="decorations"
                 name="edit"
                 label={t("rename")}
-                title={t("rename")}></VscodeIcon>
-              {data.steps.length > 1 && (
+                title={t("rename")}
+                onClick={handleStepActionEditClick}></VscodeIcon>
+              {state.steps.length > 1 && (
                 <>
-                  {index + 1 < data.steps.length ? (
+                  {index + 1 < state.steps.length ? (
                     <VscodeIcon
                       action-icon
                       aria-role="button"
                       slot="decorations"
                       name="arrow-down"
                       label={t("move down")}
-                      title={t("move down")}></VscodeIcon>
+                      title={t("move down")}
+                      onClick={handleStepMoveDownClick}></VscodeIcon>
                   ) : (
                     <VscodeIcon
                       action-icon
@@ -222,7 +320,8 @@ function App() {
                       slot="decorations"
                       name="arrow-up"
                       label={t("move up")}
-                      title={t("move up")}></VscodeIcon>
+                      title={t("move up")}
+                      onClick={handleStepMoveUpClick}></VscodeIcon>
                   ) : (
                     <VscodeIcon
                       action-icon
@@ -238,28 +337,32 @@ function App() {
                 slot="decorations"
                 name="debug-step-into"
                 label={t("add step bellow")}
-                title={t("add step bellow")}></VscodeIcon>
+                title={t("add step bellow")}
+                onClick={handleStepAddBellowClick}></VscodeIcon>
               <VscodeIcon
                 action-icon
                 aria-role="button"
                 slot="decorations"
                 name="debug-step-out"
                 label={t("add step above")}
-                title={t("add step above")}></VscodeIcon>
+                title={t("add step above")}
+                onClick={handleStepAddAboveClick}></VscodeIcon>
               <VscodeIcon
                 action-icon
                 aria-role="button"
                 slot="decorations"
                 name="circle-slash"
                 label={t("Disable")}
-                title={t("Disable")}></VscodeIcon>
+                title={t("Disable")}
+                onClick={handleStepDisableClick}></VscodeIcon>
               <VscodeIcon
                 action-icon
                 aria-role="button"
                 slot="decorations"
                 name="trash"
                 label={t("remove")}
-                title={t("remove")}></VscodeIcon>
+                title={t("remove")}
+                onClick={handleStepRemoveClick}></VscodeIcon>
               <div className="stepInnerWrapper">
                 <VscodeFormGroup variant="vertical" className="no-y-margin">
                   <div className="labelAndActions">
@@ -273,27 +376,32 @@ function App() {
                         name="regex"
                         id={`step${index}FindRegExp`}
                         title={t("Use regular expression")}
-                        action-icon></VscodeIcon>
+                        action-icon
+                        onClick={handleStepFindRegExpClick}></VscodeIcon>
                       <VscodeIcon
                         name="globe"
                         id={`step${index}FindGlobal`}
                         title={t("Find all occurrences (global)")}
-                        action-icon></VscodeIcon>
+                        action-icon
+                        onClick={handleStepFindGlobalClick}></VscodeIcon>
                       <VscodeIcon
                         name="newline"
                         id={`step${index}FindMultiline`}
                         title={t("Search across lines (multiline)")}
-                        action-icon></VscodeIcon>
+                        action-icon
+                        onClick={handleStepFindMultilineClick}></VscodeIcon>
                       <VscodeIcon
                         name="case-sensitive"
                         id={`step${index}FindCaseSensitive`}
                         title={t("Case sensitive")}
-                        action-icon></VscodeIcon>
+                        action-icon
+                        onClick={handleStepFindCaseSensitiveClick}></VscodeIcon>
                       <VscodeIcon
                         name="word-wrap"
                         id={`step${index}FindWordWrap`}
                         title={t("Word wrap")}
-                        action-icon></VscodeIcon>
+                        action-icon
+                        onClick={handleStepFindWordWrapClick}></VscodeIcon>
                     </div>
                   </div>
                   <VscodeTextarea
@@ -304,7 +412,8 @@ function App() {
                     placeholder={t("{0} for history", content["arrow-up-and-down"])}
                     rows={5}
                     resize="vertical"
-                    value={step.find.content}></VscodeTextarea>
+                    value={step.find.content}
+                    onChange={handleStepFindChange}></VscodeTextarea>
                 </VscodeFormGroup>
 
                 <VscodeFormGroup variant="vertical" className="no-y-margin">
@@ -319,7 +428,8 @@ function App() {
                         name="word-wrap"
                         id={`step${index}ReplaceWordWrap`}
                         title={t("Word wrap")}
-                        action-icon></VscodeIcon>
+                        action-icon
+                        onClick={handleStepReplaceWordWrapClick}></VscodeIcon>
                     </div>
                   </div>
                   <VscodeTextarea
@@ -330,10 +440,11 @@ function App() {
                     placeholder={t("{0} for history", content["arrow-up-and-down"])}
                     rows={5}
                     resize="vertical"
-                    value={step.find.content}></VscodeTextarea>
+                    value={step.find.content}
+                    onChange={handleStepReplaceChange}></VscodeTextarea>
                 </VscodeFormGroup>
-                <div className='stepPreviewWrapper text-discreet'>
-                  <a href="#">{t('preview…')}</a>
+                <div className="x-end text-discreet">
+                  <a href="#" onClick={handleStepReplacePreviewClick}>{t("preview…")}</a>
                 </div>
                 <br />
               </div>
@@ -342,10 +453,15 @@ function App() {
         ))}
 
         <br />
-        <div>
-          <VscodeButton onClick={handleHelloClick} icon="replace-all" className="display-block">
+        <div className="button-group">
+          <VscodeButton
+            onClick={handleSerialReplaceClick}
+            icon="replace-all"
+            className="button-group-grow"
+            title={t("Make replacements")}>
             {t("Serial Replace")}
           </VscodeButton>
+          <VscodeButton icon="save" title={t("Save set…")} onClick={handleSaveSetClick}></VscodeButton>
         </div>
       </VscodeFormContainer>
 

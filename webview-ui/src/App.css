@@ -58,6 +58,7 @@ main {
 
 .stepInnerWrapper {
   padding-left: 22px;
+  padding-right: 2px;
 }
 
 .labelAndActions {
@@ -75,7 +76,17 @@ main {
   padding-right: 4px;
 }
 
-.stepPreviewWrapper{
+.x-end{
   display: flex;
   justify-content: flex-end;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 2px;
+}
+
+.button-group-grow{
+  flex-grow: 1;
 }
