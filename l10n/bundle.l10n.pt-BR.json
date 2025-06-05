@@ -9,10 +9,11 @@
   "e.g. {0}": "por exemplo: {0}",
   "Use current editor": "Use o editor atual",
   "Use exclude settings and ignore files": "Usar excluir configurações e ignorar arquivos",
-  "Disable": "Desabilitar",
 
   "Current file: {0}": "Arquivo atual: {0}",
   "{0} files": "{0} arquivos",
+  "refresh": "atualizar",
+  "No files": "Nenhum arquivo",
   "Remove": "Remover",
 
   "Step {0}": "Etapa {0}",
@@ -23,6 +24,7 @@
   "move up":  "mover para cima",
   "add step bellow":  "adicionar etapa abaixo",
   "add step above":  "adicionar etapa acima",
+  "disable": "desabilitar",
   "remove":  "remover",
 
   "Find": "Pesquisar",
@@ -42,6 +44,9 @@
   "Make replacements": "Executar substituições",
   "Serial Replace": "Substituir em série",
   "Save set…": "Salvar série…",
+
+  "reset": "redefinir",
+  "about…": "sobre…",
 
  "END": "end"
 }

@@ -3,90 +3,15 @@ html body {
   /* padding: 0; */
 }
 
-main {
+html, body, #root, main {
+  height: 100%;
+}
+
+#root, main {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: stretch;
-  height: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.no-max-width {
-  max-width: none;
-}
-
-.x-padding {
-  padding-left: 20px;
-  padding-right: 20px;
-}
-
-.no-y-margin {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.no-top-margin {
-  margin-top: 0;
-}
-
-.no-bottom-margin {
-  margin-bottom: 0;
-}
-
-.thin-bottom-margin {
-  margin-bottom: 2px;
-}
-
-.text-discreet {
-  font-size: 11px;
-  font-weight: normal;
-}
-
-.textfield-full {
-  width: 100%;
-}
-
-.textarea-full {
-  width: 100%;
-}
-
-.display-block {
-  display: block;
-}
-
-.stepInnerWrapper {
-  padding-left: 22px;
-  padding-right: 2px;
-}
-
-.labelAndActions {
-  display: flex;
-  justify-content: space-between;
-}
-
-.labelAndActions > .label {
-}
-
-.labelAndActions > .actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  padding-right: 4px;
-}
-
-.x-end{
-  display: flex;
-  justify-content: flex-end;
-}
-
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  gap: 2px;
-}
-
-.button-group-grow{
-  flex-grow: 1;
 }

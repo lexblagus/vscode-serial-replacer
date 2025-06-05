@@ -1,0 +1,20 @@
+.stepInnerWrapper {
+  padding-left: 22px;
+  padding-right: 2px;
+}
+
+.labelAndActions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.labelAndActions > .label {
+}
+
+.labelAndActions > .actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  padding-right: 4px;
+}
+

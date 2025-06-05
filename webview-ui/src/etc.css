@@ -1,0 +1,73 @@
+.no-max-width {
+  max-width: none;
+}
+
+.x-padding {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.no-y-margin {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.no-top-margin {
+  margin-top: 0;
+}
+
+.no-bottom-margin {
+  margin-bottom: 0;
+}
+
+.thin-bottom-margin {
+  margin-bottom: 2px;
+}
+
+.top-margin {
+  margin-top: 20px;
+}
+
+.thick-bottom-margin {
+  margin-bottom: 1em;
+}
+
+.medium-bottom-margin {
+  margin-bottom: 10px;
+}
+
+.text-discreet {
+  font-size: 11px;
+  font-weight: normal;
+}
+
+.textfield-full {
+  width: 100%;
+}
+
+.textarea-full {
+  width: 100%;
+}
+
+.display-block {
+  display: block;
+}
+
+.gap-em{
+  gap: 1em;
+}
+
+.x-end{
+  display: flex;
+  justify-content: flex-end;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 2px;
+}
+
+.button-group-grow{
+  flex-grow: 1;
+}
