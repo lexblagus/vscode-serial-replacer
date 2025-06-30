@@ -1,12 +1,12 @@
-import { type TreeItem } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
 import { t } from "@vscode/l10n";
-import { SerialReplacerData } from "../types.d";
+import { SerialReplacement, Step } from "../types.d";
 import { treeItemConfig } from "./tree-config";
 
-const initialState: SerialReplacerData = {
+export const sampleReplacement: SerialReplacement = {
   includeFiles: "",
   useCurrentEditor: true,
   excludeFiles: "",
+  useExcludeSettingsAndIgnoreFiles: true,
   results: [
     {
       ...treeItemConfig,
@@ -61,4 +61,29 @@ const initialState: SerialReplacerData = {
   })),
 };
 
-export default initialState;
+export const emptyReplacement: SerialReplacement = {
+  includeFiles: "",
+  useCurrentEditor: true,
+  excludeFiles: "",
+  useExcludeSettingsAndIgnoreFiles: true,
+  results: [],
+  resultsTotalFiles: 0,
+  steps: [],
+};
+
+export const emptyStep: Step = {
+  expanded: false,
+  title: t("Step {0}", 1),
+  find: {
+    content: '',
+    regExp: false,
+    global: true,
+    multiline: true,
+    caseSensitive: false,
+    wordWrap: true,
+  },
+  replace: {
+    content: '',
+    wordWrap: true,
+  },
+};

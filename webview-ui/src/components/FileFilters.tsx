@@ -2,14 +2,20 @@ import type { FC } from "react";
 import {
   VscodeFormGroup,
   VscodeIcon,
-  VscodeLabel, VscodeTextfield,
-  VscodeTree
+  VscodeLabel,
+  VscodeTextfield,
+  VscodeTree,
 } from "@vscode-elements/react-elements";
-import { type TreeItem } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
+import type { TreeItem } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
 import content from "../utils/content";
-import type { TextfieldChangeEventHandler, TextfieldKeyboardEventHandler, VscodeIconMouseEventHandler, VscTreeActionMouseEventHandler } from "../types";
+import type {
+  TextfieldChangeEventHandler,
+  TextfieldKeyboardEventHandler,
+  VscodeIconMouseEventHandler,
+  VscTreeActionMouseEventHandler,
+} from "../types";
 
 const FileFilters: FC = () => {
   const { state, dispatch } = useAppContext();
@@ -18,40 +24,55 @@ const FileFilters: FC = () => {
     {
       label: t("{0} files", "999"),
       open: false,
-      actions: [{
-        icon: "refresh",
-        actionId: "refresh",
-        tooltip: t("refresh"),
-      }],
+      actions: [
+        {
+          icon: "refresh",
+          actionId: "refresh",
+          tooltip: t("refresh"),
+        },
+      ],
       subItems: state.results,
     },
   ];
 
   const handleFilesToIncludeChange: TextfieldChangeEventHandler = (event) => {
-    // TODO
-  }
+    dispatch({
+      type: "SET_FILES_TO_INCLUDE",
+      payload: (event.target as HTMLInputElement).value,
+    });
+  };
 
   const handleFilesToIncludeKeyDown: TextfieldKeyboardEventHandler = (event) => {
     // TODO
   };
 
   const handleCurrentEditorClick: VscodeIconMouseEventHandler = (event) => {
-    // TODO
+    dispatch({
+      type: "SET_USE_CURRENT_EDITOR",
+      payload: !state.useCurrentEditor,
+    });
   };
 
   const handleFilesToExcludeChange: TextfieldChangeEventHandler = (event) => {
-    // TODO
-  }
+    dispatch({
+      type: "SET_FILES_TO_EXCLUDE",
+      payload: (event.target as HTMLInputElement).value,
+    });
+  };
 
   const handleExcludeSettingsAndIgnoreFilesClick: VscodeIconMouseEventHandler = (event) => {
-    // TODO
-  }
+    dispatch({
+      type: "SET_EXCLUDE_SETTINGS_AND_IGNORE_FILES",
+      payload: !state.useExcludeSettingsAndIgnoreFiles,
+    });
+  };
 
   const handleFileTreeRemoveFileClick: VscTreeActionMouseEventHandler = (event) => {
     // TODO
-  }
+  };
 
-  return (<>
+  return (
+    <>
       <VscodeFormGroup variant="vertical" className="no-y-margin">
         <VscodeLabel htmlFor="includeFiles" className="text-discreet">
           {t("files to include")}
@@ -76,7 +97,8 @@ const FileFilters: FC = () => {
             id="currentEditor"
             title={t("Use current editor")}
             action-icon
-            onClick={handleCurrentEditorClick}></VscodeIcon>
+            onClick={handleCurrentEditorClick}
+            aria-pressed={state.useCurrentEditor}></VscodeIcon>
         </VscodeTextfield>
       </VscodeFormGroup>
 
@@ -103,7 +125,8 @@ const FileFilters: FC = () => {
             id="useExcludeFiles"
             title={t("Use exclude settings and ignore files")}
             action-icon
-            onClick={handleExcludeSettingsAndIgnoreFilesClick}></VscodeIcon>
+            onClick={handleExcludeSettingsAndIgnoreFilesClick}
+            aria-pressed={state.useExcludeSettingsAndIgnoreFiles}></VscodeIcon>
         </VscodeTextfield>
       </VscodeFormGroup>
 
@@ -122,7 +145,8 @@ const FileFilters: FC = () => {
           />
         )}
       </div>
-  </>);
-}
+    </>
+  );
+};
 
 export default FileFilters;

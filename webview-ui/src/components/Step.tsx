@@ -15,11 +15,27 @@ const Step: FC<{index: number; }> = ({ index }) => {
   const step = state.steps[index];
 
   const handleStepFindChange: TextareaChangeEventHandler = (event) => {
-    // TODO
+    dispatch({
+      type: "SET_STEP_FIND",
+      payload: {
+        index,
+        find: {
+          content: (event.target as HTMLInputElement).value
+        }
+      },
+    });
   };
 
   const handleStepReplaceChange: TextareaChangeEventHandler = (event) => {
-    // TODO
+    dispatch({
+      type: "SET_STEP_REPLACE",
+      payload: {
+        index,
+        replace: {
+          content: (event.target as HTMLInputElement).value
+        }
+      },
+    });
   };
 
   const handleStepReplacePreviewClick: LinkMouseEventHandler = (event) => {
@@ -36,7 +52,7 @@ const Step: FC<{index: number; }> = ({ index }) => {
 
   return (
     <div className="thin-bottom-margin">
-      <VscodeCollapsible title={step.title} open={step.expanded}>
+      <VscodeCollapsible title={step.title} open={state.steps.length === 1 || step.expanded}>
         <StepActions index={index} />
         <div className="stepInnerWrapper">
           <VscodeFormGroup variant="vertical" className="no-y-margin">
@@ -82,7 +98,7 @@ const Step: FC<{index: number; }> = ({ index }) => {
               placeholder={t("{0} for history", content["arrow-up-and-down"])}
               rows={5}
               resize="vertical"
-              value={step.find.content}
+              value={step.replace.content}
               onChange={handleStepReplaceChange}
               onKeyDown={handleStepReplaceKeyDown}></VscodeTextarea>
           </VscodeFormGroup>

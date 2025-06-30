@@ -1,17 +1,20 @@
 import { createContext, useReducer, useContext, ReactNode } from "react";
 import { appStateReducer } from "./reducer";
-import initialState from "./utils/initial-state";
-import type { SerialReplacerData, AppAction } from "./types";
+import { emptyReplacement, emptyStep, sampleReplacement } from "./utils/data";
+import type { SerialReplacement, AppAction } from "./types";
 
 type AppContextType = {
-  state: SerialReplacerData;
+  state: SerialReplacement;
   dispatch: React.Dispatch<AppAction>;
 };
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(appStateReducer, initialState);
+  const [state, dispatch] = useReducer(appStateReducer, sampleReplacement, data => ({
+    ...data,
+    steps: data.steps.length > 0 ? data.steps : [emptyStep],
+  }));
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

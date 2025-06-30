@@ -15,3 +15,15 @@ html, body, #root, main {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+vscode-icon{
+  /* cursor: pointer; */
+  border: 1px solid transparent;
+}
+
+vscode-icon[aria-pressed="true"] {
+  color: var(--vscode-inputOption-activeForeground);
+  background-color: var(--vscode-inputOption-activeBackground);
+  border: 1px solid var(--vscode-inputOption-activeBorder);
+  border-radius: 3px;
+}

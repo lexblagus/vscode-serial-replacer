@@ -98,22 +98,26 @@ export const StepActions: FC<{ index: number }> = ({ index }) => {
         label={t("add step above")}
         title={t("add step above")}
         onClick={handleStepAddAboveClick}></VscodeIcon>
-      <VscodeIcon
-        action-icon
-        aria-role="button"
-        slot="decorations"
-        name="circle-slash"
-        label={t("disable")}
-        title={t("disable")}
-        onClick={handleStepDisableClick}></VscodeIcon>
-      <VscodeIcon
-        action-icon
-        aria-role="button"
-        slot="decorations"
-        name="trash"
-        label={t("remove")}
-        title={t("remove")}
-        onClick={handleStepRemoveClick}></VscodeIcon>
+      {state.steps.length > 1 && (
+        <>
+          <VscodeIcon
+            action-icon
+            aria-role="button"
+            slot="decorations"
+            name="circle-slash"
+            label={t("disable")}
+            title={t("disable")}
+            onClick={handleStepDisableClick}></VscodeIcon>
+          <VscodeIcon
+            action-icon
+            aria-role="button"
+            slot="decorations"
+            name="trash"
+            label={t("remove")}
+            title={t("remove")}
+            onClick={handleStepRemoveClick}></VscodeIcon>
+        </>
+      )}
     </>
   );
 };
