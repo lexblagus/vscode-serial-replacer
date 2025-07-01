@@ -1,55 +1,88 @@
 import type { FC } from "react";
 import { VscodeIcon } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
-import { useAppContext } from "../context";
-import type { VscodeIconMouseEventHandler } from "../types";
+import { useAppContext } from "../../context";
+import type { VscodeIconMouseEventHandler } from "../../types";
 
-export const StepActions: FC<{ index: number }> = ({ index }) => {
+const Actions: FC<{ index: number }> = ({ index }) => {
   const { state, dispatch } = useAppContext();
   const step = state.steps[index];
 
-  const handleStepActionEditClick: VscodeIconMouseEventHandler = (event) => {
+  const preventCollapsibleToggle = () => {
+    // FIXME: stop propagation is not working on handlers; temporary fix, hopefully
+    dispatch({
+      type: "SET_STEP_EXPANDED",
+      payload: {
+        index,
+        expanded: !step.expanded,
+      },
+    });
+  };
+  
+  const handleStepActionRenameClick: VscodeIconMouseEventHandler = (event) => {
+    event.stopPropagation();
+    preventCollapsibleToggle();
     // TODO
   };
 
   const handleStepMoveDownClick: VscodeIconMouseEventHandler = (event) => {
+    event.stopPropagation();
+    preventCollapsibleToggle();
     // TODO
   };
 
   const handleStepMoveUpClick: VscodeIconMouseEventHandler = (event) => {
+    event.stopPropagation();
+    preventCollapsibleToggle();
     // TODO
   };
 
   const handleStepAddBellowClick: VscodeIconMouseEventHandler = (event) => {
+    event.stopPropagation();
+    preventCollapsibleToggle();
     // TODO
   };
 
   const handleStepAddAboveClick: VscodeIconMouseEventHandler = (event) => {
+    event.stopPropagation();
+    preventCollapsibleToggle();
     // TODO
   };
 
   const handleStepDisableClick: VscodeIconMouseEventHandler = (event) => {
-    // TODO
+    event.stopPropagation();
+    preventCollapsibleToggle();
+    dispatch({
+      type: "SET_STEP_ENABLED",
+      payload: {
+        index,
+        enabled: !step.enabled,
+      }
+    });
   };
 
   const handleStepRemoveClick: VscodeIconMouseEventHandler = (event) => {
+    event.stopPropagation();
+    preventCollapsibleToggle();
     // TODO
   };
 
   return (
     <>
       <VscodeIcon
+        id={`step${index}ActionAddStepRename`}
         action-icon
         aria-role="button"
         slot="decorations"
         name="edit"
         label={t("rename")}
         title={t("rename")}
-        onClick={handleStepActionEditClick}></VscodeIcon>
+        onClick={handleStepActionRenameClick}></VscodeIcon>
       {state.steps.length > 1 && (
         <>
           {index + 1 < state.steps.length ? (
             <VscodeIcon
+              id={`step${index}ActionAddStepMoveDown`}
               action-icon
               aria-role="button"
               slot="decorations"
@@ -66,6 +99,7 @@ export const StepActions: FC<{ index: number }> = ({ index }) => {
           )}
           {index > 0 ? (
             <VscodeIcon
+              id={`step${index}ActionAddStepMoveUp`}
               action-icon
               aria-role="button"
               slot="decorations"
@@ -83,6 +117,7 @@ export const StepActions: FC<{ index: number }> = ({ index }) => {
         </>
       )}
       <VscodeIcon
+        id={`step${index}ActionAddStepBellow`}
         action-icon
         aria-role="button"
         slot="decorations"
@@ -91,6 +126,7 @@ export const StepActions: FC<{ index: number }> = ({ index }) => {
         title={t("add step bellow")}
         onClick={handleStepAddBellowClick}></VscodeIcon>
       <VscodeIcon
+        id={`step${index}ActionAddStepAbove`}
         action-icon
         aria-role="button"
         slot="decorations"
@@ -101,14 +137,17 @@ export const StepActions: FC<{ index: number }> = ({ index }) => {
       {state.steps.length > 1 && (
         <>
           <VscodeIcon
+            id={`step${index}ActionDisable`}
             action-icon
             aria-role="button"
             slot="decorations"
             name="circle-slash"
             label={t("disable")}
             title={t("disable")}
-            onClick={handleStepDisableClick}></VscodeIcon>
+            onClick={handleStepDisableClick}
+            aria-pressed={!step.enabled}></VscodeIcon>
           <VscodeIcon
+            id={`step${index}ActionRemove`}
             action-icon
             aria-role="button"
             slot="decorations"
@@ -122,82 +161,4 @@ export const StepActions: FC<{ index: number }> = ({ index }) => {
   );
 };
 
-export const StepFindActions: FC<{ index: number }> = ({ index }) => {
-  const { state, dispatch } = useAppContext();
-  const step = state.steps[index];
-
-  const handleStepFindRegExpClick: VscodeIconMouseEventHandler = (event) => {
-    // TODO
-  };
-
-  const handleStepFindGlobalClick: VscodeIconMouseEventHandler = (event) => {
-    // TODO
-  };
-
-  const handleStepFindMultilineClick: VscodeIconMouseEventHandler = (event) => {
-    // TODO
-  };
-
-  const handleStepFindCaseSensitiveClick: VscodeIconMouseEventHandler = (event) => {
-    // TODO
-  };
-
-  const handleStepFindWordWrapClick: VscodeIconMouseEventHandler = (event) => {
-    // TODO
-  };
-
-  return (
-    <>
-      <VscodeIcon
-        name="regex"
-        id={`step${index}FindRegExp`}
-        title={t("Use regular expression")}
-        action-icon
-        onClick={handleStepFindRegExpClick}></VscodeIcon>
-      <VscodeIcon
-        name="globe"
-        id={`step${index}FindGlobal`}
-        title={t("Find all occurrences (global)")}
-        action-icon
-        onClick={handleStepFindGlobalClick}></VscodeIcon>
-      <VscodeIcon
-        name="newline"
-        id={`step${index}FindMultiline`}
-        title={t("Search across lines (multiline)")}
-        action-icon
-        onClick={handleStepFindMultilineClick}></VscodeIcon>
-      <VscodeIcon
-        name="case-sensitive"
-        id={`step${index}FindCaseSensitive`}
-        title={t("Case sensitive")}
-        action-icon
-        onClick={handleStepFindCaseSensitiveClick}></VscodeIcon>
-      <VscodeIcon
-        name="word-wrap"
-        id={`step${index}FindWordWrap`}
-        title={t("Word wrap")}
-        action-icon
-        onClick={handleStepFindWordWrapClick}></VscodeIcon>
-    </>
-  );
-};
-
-export const StepReplaceActions: FC<{ index: number }> = ({ index }) => {
-  const { state, dispatch } = useAppContext();
-  const step = state.steps[index];
-
-  const handleStepReplaceWordWrapClick: VscodeIconMouseEventHandler = (event) => {
-    // TODO
-  };
-
-  return (
-    <>
-      <VscodeIcon
-        name="word-wrap"
-        id={`step${index}ReplaceWordWrap`}
-        title={t("Word wrap")}
-        action-icon
-        onClick={handleStepReplaceWordWrapClick}></VscodeIcon>
-    </>
-  );
-};
+export default Actions;

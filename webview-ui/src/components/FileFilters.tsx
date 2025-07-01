@@ -94,7 +94,6 @@ const FileFilters: FC = () => {
           <VscodeIcon
             slot="content-after"
             name="book"
-            id="currentEditor"
             title={t("Use current editor")}
             action-icon
             onClick={handleCurrentEditorClick}
@@ -122,7 +121,6 @@ const FileFilters: FC = () => {
           <VscodeIcon
             slot="content-after"
             name="exclude"
-            id="useExcludeFiles"
             title={t("Use exclude settings and ignore files")}
             action-icon
             onClick={handleExcludeSettingsAndIgnoreFilesClick}

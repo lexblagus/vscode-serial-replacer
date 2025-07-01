@@ -1,18 +1,39 @@
-import type { FC } from "react";
+import { MutableRefObject, ReactElement, Ref, useEffect, useRef, type FC } from "react";
 import {
-  VscodeCollapsible, VscodeFormGroup, VscodeLabel,
-  VscodeTextarea
+  VscodeCollapsible,
+  VscodeFormGroup,
+  VscodeLabel,
+  VscodeTextarea,
 } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
-import { useAppContext } from "../context";
-import content from "../utils/content";
-import type { LinkMouseEventHandler, TextareaChangeEventHandler, TextfieldKeyboardEventHandler } from "../types";
+import { useAppContext } from "../../context";
+import content from "../../utils/content";
+import type {
+  LinkMouseEventHandler,
+  TextareaChangeEventHandler,
+  TextfieldKeyboardEventHandler,
+  VscodeCollapsibleToggleEventHandler,
+} from "../../types";
 import "./Step.css";
-import { StepActions, StepFindActions, StepReplaceActions } from "./StepActions";
+import Actions from "./Actions";
+import FindActions from "./FindActions";
+import ReplaceActions from "./ReplaceActions";
+import type { VscCollapsibleToggleEvent, VscodeCollapsible as VscodeCollapsibleConstructor } from "@vscode-elements/elements/dist/vscode-collapsible/vscode-collapsible";
 
-const Step: FC<{index: number; }> = ({ index }) => {
+const Step: FC<{ index: number }> = ({ index }) => {
   const { state, dispatch } = useAppContext();
   const step = state.steps[index];
+  const collapsibleRef = useRef<VscodeCollapsibleConstructor | null>(null);
+
+  const CollapsibleToggleEventHandler: VscodeCollapsibleToggleEventHandler = (event) => {
+    dispatch({
+      type: "SET_STEP_EXPANDED",
+      payload: {
+        index,
+        expanded: event.detail.open,
+      },
+    });
+  };
 
   const handleStepFindChange: TextareaChangeEventHandler = (event) => {
     dispatch({
@@ -20,10 +41,14 @@ const Step: FC<{index: number; }> = ({ index }) => {
       payload: {
         index,
         find: {
-          content: (event.target as HTMLInputElement).value
-        }
+          content: (event.target as HTMLInputElement).value,
+        },
       },
     });
+  };
+
+  const handleStepFindKeyDown: TextfieldKeyboardEventHandler = (event) => {
+    // TODO
   };
 
   const handleStepReplaceChange: TextareaChangeEventHandler = (event) => {
@@ -32,28 +57,38 @@ const Step: FC<{index: number; }> = ({ index }) => {
       payload: {
         index,
         replace: {
-          content: (event.target as HTMLInputElement).value
-        }
+          content: (event.target as HTMLInputElement).value,
+        },
       },
     });
-  };
-
-  const handleStepReplacePreviewClick: LinkMouseEventHandler = (event) => {
-    // TODO
-  };
-
-  const handleStepFindKeyDown: TextfieldKeyboardEventHandler = (event) => {
-    // TODO
   };
 
   const handleStepReplaceKeyDown: TextfieldKeyboardEventHandler = (event) => {
     // TODO
   };
 
+  const handleStepReplacePreviewClick: LinkMouseEventHandler = (event) => {
+    // TODO
+  };
+
+  useEffect(() => {
+    const collapsible = collapsibleRef.current;
+    if (!collapsible) return;
+
+    collapsible.addEventListener("vsc-collapsible-toggle", CollapsibleToggleEventHandler);
+
+    return () => {
+      collapsible.removeEventListener("vsc-collapsible-toggle", CollapsibleToggleEventHandler);
+    };
+  }, []);
+
   return (
     <div className="thin-bottom-margin">
-      <VscodeCollapsible title={step.title} open={state.steps.length === 1 || step.expanded}>
-        <StepActions index={index} />
+      <VscodeCollapsible
+        title={step.title}
+        open={state.steps.length === 1 || step.expanded}
+        ref={collapsibleRef}>
+        <Actions index={index} />
         <div className="stepInnerWrapper">
           <VscodeFormGroup variant="vertical" className="no-y-margin">
             <div className="labelAndActions">
@@ -63,7 +98,7 @@ const Step: FC<{index: number; }> = ({ index }) => {
                 </VscodeLabel>
               </div>
               <div className="actions">
-                <StepFindActions index={index} />
+                <FindActions index={index} />
               </div>
             </div>
             <VscodeTextarea
@@ -87,7 +122,7 @@ const Step: FC<{index: number; }> = ({ index }) => {
                 </VscodeLabel>
               </div>
               <div className="actions">
-                <StepReplaceActions index={index} />
+                <ReplaceActions index={index} />
               </div>
             </div>
             <VscodeTextarea
@@ -112,6 +147,6 @@ const Step: FC<{index: number; }> = ({ index }) => {
       </VscodeCollapsible>
     </div>
   );
-}
+};
 
 export default Step;

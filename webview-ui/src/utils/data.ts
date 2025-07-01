@@ -1,5 +1,5 @@
 import { t } from "@vscode/l10n";
-import { SerialReplacement, Step } from "../types.d";
+import { SerialReplacement, Step } from "../types";
 import { treeItemConfig } from "./tree-config";
 
 export const sampleReplacement: SerialReplacement = {
@@ -45,6 +45,7 @@ export const sampleReplacement: SerialReplacement = {
   steps: Array.from({ length: 3 }, (_, i) => ({
     expanded: Math.random() < 0.25,
     title: Math.random() < 0.25 ? t("Step {0}", (i + 1).toString()) : `Named replacement ${i + 1}`, // should not allow repeated titles
+    enabled: Math.random() < 0.75,
     find: {
       content: "",
       regExp: false,
@@ -74,6 +75,7 @@ export const emptyReplacement: SerialReplacement = {
 export const emptyStep: Step = {
   expanded: false,
   title: t("Step {0}", 1),
+  enabled: true,
   find: {
     content: '',
     regExp: false,
