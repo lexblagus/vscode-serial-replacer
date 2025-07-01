@@ -1,4 +1,5 @@
-import type { SerialReplacement, AppAction } from "../types";
+import type { SerialReplacement } from "../types/app";
+import type { AppAction } from "../types/actions";
 
 type Reducer = (state: SerialReplacement, action: AppAction) => SerialReplacement;
 

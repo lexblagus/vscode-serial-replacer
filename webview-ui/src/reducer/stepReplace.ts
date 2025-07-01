@@ -1,12 +1,12 @@
-import type { SerialReplacement, AppAction } from "../types";
 import { emptyReplacement } from "../utils/data";
+import type { SerialReplacement } from "../types/app";
+import type { AppAction } from "../types/actions";
 
 export function stepReplaceReducer(
   state: SerialReplacement = emptyReplacement,
   action: AppAction
 ): SerialReplacement {
   switch (action.type) {
-
     case "SET_STEP_REPLACE":
       return {
         ...state,
@@ -24,7 +24,7 @@ export function stepReplaceReducer(
         })),
       };
 
-      case "SET_STEP_REPLACE_WORD_WRAP":
+    case "SET_STEP_REPLACE_WORD_WRAP":
       return {
         ...state,
         steps: state.steps.map((step, index) => ({

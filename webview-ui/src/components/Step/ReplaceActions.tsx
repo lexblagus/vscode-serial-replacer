@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { VscodeIcon } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../../context";
-import type { VscodeIconMouseEventHandler } from "../../types";
+import type { VscodeIconMouseEventHandler } from "../../types/event-handlers";
 
 const ReplaceActions: FC<{ index: number }> = ({ index }) => {
   const { state, dispatch } = useAppContext();
@@ -15,8 +15,8 @@ const ReplaceActions: FC<{ index: number }> = ({ index }) => {
         index,
         replace: {
           wordWrap: !step.replace.wordWrap,
-        }
-      }
+        },
+      },
     });
   };
 

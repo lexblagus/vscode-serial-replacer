@@ -1,5 +1,5 @@
 import { t } from "@vscode/l10n";
-import { SerialReplacement, Step } from "../types";
+import { SerialReplacement, Step } from "../types/app";
 import { treeItemConfig } from "./tree-config";
 
 export const sampleReplacement: SerialReplacement = {
@@ -77,7 +77,7 @@ export const emptyStep: Step = {
   title: t("Step {0}", 1),
   enabled: true,
   find: {
-    content: '',
+    content: "",
     regExp: false,
     global: true,
     multiline: true,
@@ -85,7 +85,7 @@ export const emptyStep: Step = {
     wordWrap: true,
   },
   replace: {
-    content: '',
+    content: "",
     wordWrap: true,
   },
 };

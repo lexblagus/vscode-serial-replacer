@@ -1,4 +1,5 @@
-import { MutableRefObject, ReactElement, Ref, useEffect, useRef, type FC } from "react";
+import { useEffect, useRef } from "react";
+import type { FC } from "react";
 import {
   VscodeCollapsible,
   VscodeFormGroup,
@@ -13,12 +14,12 @@ import type {
   TextareaChangeEventHandler,
   TextfieldKeyboardEventHandler,
   VscodeCollapsibleToggleEventHandler,
-} from "../../types";
+} from "../../types/event-handlers";
 import "./Step.css";
 import Actions from "./Actions";
 import FindActions from "./FindActions";
 import ReplaceActions from "./ReplaceActions";
-import type { VscCollapsibleToggleEvent, VscodeCollapsible as VscodeCollapsibleConstructor } from "@vscode-elements/elements/dist/vscode-collapsible/vscode-collapsible";
+import type { VscodeCollapsible as VscodeCollapsibleConstructor } from "@vscode-elements/elements/dist/vscode-collapsible/vscode-collapsible";
 
 const Step: FC<{ index: number }> = ({ index }) => {
   const { state, dispatch } = useAppContext();
@@ -86,10 +87,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
 
   return (
     <div className="thin-bottom-margin">
-      <VscodeCollapsible
-        title={step.title}
-        ref={collapsibleRef}>
-        open={open}
+      <VscodeCollapsible title={step.title} ref={collapsibleRef} open={open}>
         <Actions index={index} />
         <div className="stepInnerWrapper">
           <VscodeFormGroup variant="vertical" className="no-y-margin">

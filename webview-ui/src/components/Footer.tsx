@@ -1,8 +1,7 @@
 import type { FC } from "react";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
-import type { LinkMouseEventHandler } from "../types";
-
+import type { LinkMouseEventHandler } from "../types/event-handlers";
 
 export const Footer: FC = () => {
   const { state, dispatch } = useAppContext();
@@ -16,17 +15,17 @@ export const Footer: FC = () => {
   };
 
   return (
-      <footer>
-        <div className="text-discreet top-margin medium-bottom-margin x-end gap-em">
-          <a href="#" onClick={handleResetClick}>
-            {t("reset")}
-          </a>
-          <a href="#" onClick={handleAboutClick}>
-            {t("about…")}
-          </a>
-        </div>
-      </footer>
+    <footer>
+      <div className="text-discreet top-margin medium-bottom-margin x-end gap-em">
+        <a href="#" onClick={handleResetClick}>
+          {t("reset")}
+        </a>
+        <a href="#" onClick={handleAboutClick}>
+          {t("about…")}
+        </a>
+      </div>
+    </footer>
   );
 };
 
-export default Footer
+export default Footer;
