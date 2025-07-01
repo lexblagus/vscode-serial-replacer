@@ -22,8 +22,8 @@ import type { VscCollapsibleToggleEvent, VscodeCollapsible as VscodeCollapsibleC
 
 const Step: FC<{ index: number }> = ({ index }) => {
   const { state, dispatch } = useAppContext();
-  const step = state.steps[index];
   const collapsibleRef = useRef<VscodeCollapsibleConstructor | null>(null);
+  const step = state.steps[index];
 
   const CollapsibleToggleEventHandler: VscodeCollapsibleToggleEventHandler = (event) => {
     dispatch({
@@ -72,22 +72,24 @@ const Step: FC<{ index: number }> = ({ index }) => {
   };
 
   useEffect(() => {
-    const collapsible = collapsibleRef.current;
-    if (!collapsible) return;
+    const currentElement = collapsibleRef.current;
+    if (!currentElement) return;
 
-    collapsible.addEventListener("vsc-collapsible-toggle", CollapsibleToggleEventHandler);
+    currentElement.addEventListener("vsc-collapsible-toggle", CollapsibleToggleEventHandler);
 
     return () => {
-      collapsible.removeEventListener("vsc-collapsible-toggle", CollapsibleToggleEventHandler);
+      currentElement.removeEventListener("vsc-collapsible-toggle", CollapsibleToggleEventHandler);
     };
   }, []);
+
+  const open = state.steps.length === 1 || step.expanded;
 
   return (
     <div className="thin-bottom-margin">
       <VscodeCollapsible
         title={step.title}
-        open={state.steps.length === 1 || step.expanded}
         ref={collapsibleRef}>
+        open={open}
         <Actions index={index} />
         <div className="stepInnerWrapper">
           <VscodeFormGroup variant="vertical" className="no-y-margin">
