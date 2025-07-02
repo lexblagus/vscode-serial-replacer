@@ -99,7 +99,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
     return () => {
       currentElement.removeEventListener("vsc-collapsible-toggle", CollapsibleToggleEventHandler);
     };
-  }, []);
+  }, [collapsibleRef, CollapsibleToggleEventHandler]);
 
   useEffect(() => {
     const el = textareaFindRef.current;

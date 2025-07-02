@@ -177,7 +177,7 @@ const Actions: FC<{ index: number }> = ({ index }) => {
             title={title ?? label}
             aria-pressed={ariaPressed}
           />
-        ) : length > 1 ? (
+        ) : length > 2 ? (
           <VscodeIcon
             key={key}
             action-icon
