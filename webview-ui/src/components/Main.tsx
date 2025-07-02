@@ -31,7 +31,7 @@ export const Main: FC = () => {
         <FileFilters />
 
         {state.steps.map((step, index) => (
-          <Step key={step.title} index={index} />
+          <Step key={step.id} index={index} />
         ))}
 
         <br />

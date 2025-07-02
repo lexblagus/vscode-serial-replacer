@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { Fragment, useCallback, useEffect, useRef } from "react";
 import type { FC } from "react";
 import { VscodeIcon } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
@@ -28,6 +28,7 @@ const Actions: FC<{ index: number }> = ({ index }) => {
   const { state, dispatch } = useAppContext();
 
   const step = state.steps[index];
+  const length = state.steps.length;
 
   const refs: Refs = {
     rename: useRef<VscodeIconRefObject>(null),
@@ -53,16 +54,40 @@ const Actions: FC<{ index: number }> = ({ index }) => {
       // TODO
     }),
     moveDown: createHandler(() => {
-      // TODO
+      dispatch({
+        type: "SET_STEP_POSITION",
+        payload: {
+          index,
+          position: index + 1,
+        },
+      });
     }),
     moveUp: createHandler(() => {
-      // TODO
+      dispatch({
+        type: "SET_STEP_POSITION",
+        payload: {
+          index,
+          position: index - 1,
+        },
+      });
     }),
     addBelow: createHandler(() => {
-      // TODO
+      dispatch({
+        type: "ADD_STEP",
+        payload: {
+          index,
+          position: index + 1,
+        },
+      });
     }),
     addAbove: createHandler(() => {
-      // TODO
+      dispatch({
+        type: "ADD_STEP",
+        payload: {
+          index,
+          position: index,
+        },
+      });
     }),
     disable: createHandler(() => {
       dispatch({
@@ -74,7 +99,13 @@ const Actions: FC<{ index: number }> = ({ index }) => {
       });
     }),
     remove: createHandler(() => {
-      // TODO
+      // TODO: Are your sure?
+      dispatch({
+        type: "REMOVE_STEP",
+        payload: {
+          index,
+        },
+      });
     }),
   };
 
@@ -93,7 +124,7 @@ const Actions: FC<{ index: number }> = ({ index }) => {
       key: "moveDown",
       label: t("move down"),
       icon: "arrow-down",
-      visible: index + 1 < state.steps.length,
+      visible: index + 1 < length,
     },
     {
       key: "moveUp",
@@ -117,14 +148,14 @@ const Actions: FC<{ index: number }> = ({ index }) => {
       key: "disable",
       label: t("disable"),
       icon: "circle-slash",
-      visible: state.steps.length > 1,
+      visible: length > 1,
       ariaPressed: !step.enabled,
     },
     {
       key: "remove",
       label: t("disable"),
       icon: "trash",
-      visible: state.steps.length > 1,
+      visible: length > 1,
     },
   ];
 
@@ -146,15 +177,15 @@ const Actions: FC<{ index: number }> = ({ index }) => {
             title={title ?? label}
             aria-pressed={ariaPressed}
           />
-        ) : (
+        ) : length > 1 ? (
           <VscodeIcon
-            key={`${key}-blank`}
+            key={key}
             action-icon
             role="presentation"
             slot={slot}
             name="blank"
           />
-        )
+        ) : <Fragment key={key} />
       )}
     </>
   );

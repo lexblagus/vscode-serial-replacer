@@ -1,3 +1,7 @@
+type MainAction = {
+  type: "RESET";
+};
+
 type FileFiltersAction =
   | { type: "SET_FILES_TO_INCLUDE"; payload: string }
   | { type: "SET_FILES_TO_EXCLUDE"; payload: string }
@@ -50,15 +54,7 @@ type StepContextualAction =
       type: "ADD_STEP";
       payload: {
         index: number;
-        offset: number;
-        /* prettier-ignore-start
-        e.g.:
-          -2: penultimate item;
-          -1: last item;
-          0: before;
-          1: bellow;
-          2: after one (second, if possible, otherwise last).
-        prettier-ignore-end */
+        position: number;
       };
     }
   | {
@@ -133,9 +129,9 @@ type StepReplaceContextualAction = {
 };
 
 export type AppAction =
+  | MainAction
   | FileFiltersAction
   | StepAction
   | StepContextualAction
   | StepFindContextualAction
-  | StepReplaceContextualAction
-  | { type: "RESET_STATE" };
+  | StepReplaceContextualAction;

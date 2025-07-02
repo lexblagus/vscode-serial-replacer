@@ -1,11 +1,9 @@
-import { emptyReplacement } from "../utils/data";
+import { changePosition, insertAtPosition, removeAtIndex } from "../utils/etc";
+import { emptyStep } from "../utils/data";
 import type { SerialReplacement } from "../types/app";
 import type { AppAction } from "../types/actions";
 
-export function stepReducer(
-  state: SerialReplacement = emptyReplacement,
-  action: AppAction
-): SerialReplacement {
+export function stepReducer(state: SerialReplacement, action: AppAction): SerialReplacement {
   switch (action.type) {
     case "SET_STEP_EXPANDED":
       return {
@@ -33,6 +31,19 @@ export function stepReducer(
             : step),
         })),
       };
+
+    case "ADD_STEP":
+      return {
+        ...state,
+        steps: insertAtPosition(state.steps, emptyStep(), action.payload.position),
+      };
+
+    case "SET_STEP_POSITION":
+      return {
+        ...state,
+        steps: changePosition(state.steps, action.payload.index, action.payload.position),
+      };
+
     case "SET_STEP_ENABLED":
       return {
         ...state,
@@ -46,6 +57,13 @@ export function stepReducer(
             : step),
         })),
       };
+
+    case "REMOVE_STEP":
+      return {
+        ...state,
+        steps: removeAtIndex(state.steps, action.payload.index),
+      };
+
     default:
       return state;
   }

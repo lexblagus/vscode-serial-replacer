@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FC } from "react";
 import {
   VscodeCollapsible,
   VscodeFormGroup,
+  VscodeFormHelper,
   VscodeLabel,
   VscodeTextarea,
 } from "@vscode-elements/react-elements";
@@ -20,11 +21,16 @@ import Actions from "./Actions";
 import FindActions from "./FindActions";
 import ReplaceActions from "./ReplaceActions";
 import type { VscodeCollapsible as VscodeCollapsibleConstructor } from "@vscode-elements/elements/dist/vscode-collapsible/vscode-collapsible";
+import type { VscodeTextarea as VscodeTextareaConstructor } from "@vscode-elements/elements/dist/vscode-textarea/vscode-textarea";
 
 const Step: FC<{ index: number }> = ({ index }) => {
   const { state, dispatch } = useAppContext();
+  const [findErrorMessage, setFindErrorMessage] = useState<string | null>(null);
   const collapsibleRef = useRef<VscodeCollapsibleConstructor | null>(null);
+  const textareaFindRef = useRef<VscodeTextareaConstructor | null>(null);
+  const textareaReplaceRef = useRef<VscodeTextareaConstructor | null>(null);
   const step = state.steps[index];
+  const title = step.title ?? t("Step {0}", (index + 1).toString());
 
   const CollapsibleToggleEventHandler: VscodeCollapsibleToggleEventHandler = (event) => {
     dispatch({
@@ -50,6 +56,18 @@ const Step: FC<{ index: number }> = ({ index }) => {
 
   const handleStepFindKeyDown: TextfieldKeyboardEventHandler = (event) => {
     // TODO
+  };
+
+  const handleStepFindKeyUp: TextfieldKeyboardEventHandler = (event) => {
+    dispatch({
+      type: "SET_STEP_FIND",
+      payload: {
+        index,
+        find: {
+          content: (event.target as HTMLInputElement).value,
+        },
+      },
+    });
   };
 
   const handleStepReplaceChange: TextareaChangeEventHandler = (event) => {
@@ -83,11 +101,45 @@ const Step: FC<{ index: number }> = ({ index }) => {
     };
   }, []);
 
-  const open = state.steps.length === 1 || step.expanded;
+  useEffect(() => {
+    const el = textareaFindRef.current;
+    if (!el) return;
+
+    el.wrappedElement.setAttribute("wrap", step.find.wordWrap ? "soft" : "off");
+  }, [step]);
+
+  useEffect(() => {
+    const el = textareaReplaceRef.current;
+    if (!el) return;
+
+    el.wrappedElement.setAttribute("wrap", step.replace.wordWrap ? "soft" : "off");
+  }, [step]);
+
+  useEffect(() => {
+    try {
+      if (step.find.regExp) {
+        new RegExp(
+          step.find.content,
+          [step.find.global && "g", !step.find.caseSensitive && "i", step.find.multiline && "m"]
+            .filter(Boolean)
+            .join("")
+        );
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        setFindErrorMessage(err.message);
+        return;
+      }
+      setFindErrorMessage(`${err}`);
+      return;
+    }
+
+    setFindErrorMessage(null);
+  }, [step.find]);
 
   return (
     <div className="thin-bottom-margin">
-      <VscodeCollapsible title={step.title} ref={collapsibleRef} open={open}>
+      <VscodeCollapsible title={title} ref={collapsibleRef} open={step.expanded}>
         <Actions index={index} />
         <div className="stepInnerWrapper">
           <VscodeFormGroup variant="vertical" className="no-y-margin">
@@ -103,15 +155,19 @@ const Step: FC<{ index: number }> = ({ index }) => {
             </div>
             <VscodeTextarea
               id={`step${index}FindContent`}
+              ref={textareaFindRef}
               className="textarea-full"
-              title={t("Find")}
               label={t("Find")}
               placeholder={t("{0} for history", content["arrow-up-and-down"])}
-              rows={5}
               resize="vertical"
               value={step.find.content}
+              invalid={findErrorMessage !== null}
               onChange={handleStepFindChange}
-              onKeyDown={handleStepFindKeyDown}></VscodeTextarea>
+              onKeyDown={handleStepFindKeyDown}
+              onKeyUp={handleStepFindKeyUp}></VscodeTextarea>
+            {findErrorMessage && (
+              <VscodeFormHelper className="error-message">{findErrorMessage}</VscodeFormHelper>
+            )}
           </VscodeFormGroup>
 
           <VscodeFormGroup variant="vertical" className="no-y-margin">
@@ -127,11 +183,11 @@ const Step: FC<{ index: number }> = ({ index }) => {
             </div>
             <VscodeTextarea
               id={`step${index}ReplaceContent`}
+              ref={textareaReplaceRef}
               className="textarea-full"
               title={t("Replace")}
               label={t("replace")}
               placeholder={t("{0} for history", content["arrow-up-and-down"])}
-              rows={5}
               resize="vertical"
               value={step.replace.content}
               onChange={handleStepReplaceChange}

@@ -1,11 +1,7 @@
-import { emptyReplacement } from "../utils/data";
 import type { SerialReplacement } from "../types/app";
 import type { AppAction } from "../types/actions";
 
-export function stepReplaceReducer(
-  state: SerialReplacement = emptyReplacement,
-  action: AppAction
-): SerialReplacement {
+export function stepReplaceReducer(state: SerialReplacement, action: AppAction): SerialReplacement {
   switch (action.type) {
     case "SET_STEP_REPLACE":
       return {

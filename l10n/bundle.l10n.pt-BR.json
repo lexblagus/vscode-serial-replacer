@@ -35,6 +35,7 @@
   "Search across lines (multiline)": "Procurar em todas as linhas (multilinhas)",
   "Case sensitive": "Diferenciar maiúsculas de minúsculas",
   "Word wrap": "Quebra automática de linha",
+  "Word wrap: won't affect find/replace behaviour, it's just for visual aid": "Quebra automática de linha: não afeta o comportamento de procurar/substituir, é apenas um auxílio visual",
 
   "Replace": "Substituir",
   "replace": "substituir",

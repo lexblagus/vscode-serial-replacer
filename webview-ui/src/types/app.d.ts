@@ -1,9 +1,10 @@
 import { TreeItem } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
 
 export interface Step {
-  expanded: boolean;
-  title: string;
+  id: string;
+  title?: string;
   enabled: boolean;
+  expanded: boolean;
   find: {
     content: string;
     regExp: boolean;
@@ -19,6 +20,7 @@ export interface Step {
 }
 
 export interface SerialReplacement {
+  id: string;
   includeFiles: string;
   useCurrentEditor: boolean;
   excludeFiles: string;

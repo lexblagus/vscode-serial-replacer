@@ -96,7 +96,7 @@ const FindActions: FC<{ index: number }> = ({ index }) => {
         aria-pressed={step.find.caseSensitive}></VscodeIcon>
       <VscodeIcon
         name="word-wrap"
-        title={t("Word wrap")}
+        title={t("Word wrap: won't affect find/replace behaviour, it's just for visual aid")}
         action-icon
         onClick={handleStepFindWordWrapClick}
         aria-pressed={step.find.wordWrap}></VscodeIcon>

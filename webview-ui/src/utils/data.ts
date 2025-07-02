@@ -1,8 +1,9 @@
-import { t } from "@vscode/l10n";
-import { SerialReplacement, Step } from "../types/app";
+import { v4 as uuidv4 } from 'uuid';
 import { treeItemConfig } from "./tree-config";
+import type { SerialReplacement, Step } from "../types/app";
 
-export const sampleReplacement: SerialReplacement = {
+export const sampleReplacement: () => SerialReplacement = () => ({
+  id: uuidv4(),
   includeFiles: "",
   useCurrentEditor: true,
   excludeFiles: "",
@@ -43,9 +44,10 @@ export const sampleReplacement: SerialReplacement = {
   ],
   resultsTotalFiles: Math.floor(Math.random() * 3),
   steps: Array.from({ length: 3 }, (_, i) => ({
-    expanded: Math.random() < 0.25,
-    title: Math.random() < 0.25 ? t("Step {0}", (i + 1).toString()) : `Named replacement ${i + 1}`, // should not allow repeated titles
+    id: uuidv4(),
+    title: Math.random() < 0.25 ? undefined : `Named replacement ${i + 1}`, // should not allow repeated titles
     enabled: Math.random() < 0.75,
+    expanded: Math.random() < 0.25,
     find: {
       content: "",
       regExp: Math.random() < 0.25,
@@ -60,9 +62,10 @@ export const sampleReplacement: SerialReplacement = {
     },
     preview: false,
   })),
-};
+});
 
-export const emptyReplacement: SerialReplacement = {
+export const emptyReplacement: () => SerialReplacement = () => ({
+  id: uuidv4(),
   includeFiles: "",
   useCurrentEditor: true,
   excludeFiles: "",
@@ -70,12 +73,12 @@ export const emptyReplacement: SerialReplacement = {
   results: [],
   resultsTotalFiles: 0,
   steps: [],
-};
+});
 
-export const emptyStep: Step = {
-  expanded: false,
-  title: t("Step {0}", 1),
+export const emptyStep: () => Step = () => ({
+  id: uuidv4(),
   enabled: true,
+  expanded: false,
   find: {
     content: "",
     regExp: false,
@@ -88,4 +91,12 @@ export const emptyStep: Step = {
     content: "",
     wordWrap: true,
   },
-};
+});
+
+export const initialReplacement: () => SerialReplacement = () => ({
+  ...emptyReplacement(),
+  steps: [{
+    ...emptyStep(),
+    expanded: true,
+  }],
+});

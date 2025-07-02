@@ -7,10 +7,15 @@ export const Footer: FC = () => {
   const { state, dispatch } = useAppContext();
 
   const handleResetClick: LinkMouseEventHandler = (event) => {
-    // TODO
+    event.preventDefault();
+    // TODO: Are you sure?
+    dispatch({
+      type: "RESET",
+    });
   };
 
   const handleAboutClick: LinkMouseEventHandler = (event) => {
+    event.preventDefault();
     // TODO
   };
 
