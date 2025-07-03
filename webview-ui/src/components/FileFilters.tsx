@@ -15,7 +15,7 @@ import type {
   TextfieldKeyboardEventHandler,
   VscodeIconMouseEventHandler,
   VscTreeActionMouseEventHandler,
-} from "../types/event-handlers";
+} from "../types/events";
 
 const FileFilters: FC = () => {
   const { state, dispatch } = useAppContext();

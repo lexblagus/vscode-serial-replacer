@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
-import type { LinkMouseEventHandler } from "../types/event-handlers";
+import type { LinkMouseEventHandler } from "../types/events";
 
 export const Footer: FC = () => {
   const { state, dispatch } = useAppContext();

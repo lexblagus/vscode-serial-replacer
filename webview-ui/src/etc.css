@@ -63,6 +63,18 @@
   justify-content: flex-end;
 }
 
+.button-link-helper {
+  background-color: transparent;
+  color: var(--vscode-textLink-foreground);
+  padding: 0;
+  border-width: 0;
+  border-style: none;
+  text-transform: uppercase;
+  font-size: 11px;
+  line-height: 11px;
+  cursor: pointer;
+}
+
 .button-group {
   display: flex;
   justify-content: space-between;
@@ -80,4 +92,11 @@
   margin-top: 0;
   padding: 0 2px;
   color: var(--vscode-editorError-foreground);
+}
+
+.helper-text {
+  color: var(--vscode-sideBarTitle-foreground);
+  text-transform: uppercase;
+  font-size: 11px;
+  line-height: 11px;
 }

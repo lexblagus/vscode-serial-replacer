@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { t } from "@vscode/l10n";
 import { VscodeButton, VscodeFormContainer } from "@vscode-elements/react-elements";
 import { useAppContext } from "../context";
-import { VscodeButtonMouseEventHandler } from "../types/event-handlers";
+import { VscodeButtonMouseEventHandler } from "../types/events";
 import FileFilters from "./FileFilters";
 import Step from "./Step";
 import { vscode } from "../utils/vscode";

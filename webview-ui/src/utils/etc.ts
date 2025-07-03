@@ -1,3 +1,8 @@
+import { CombineSequentialReducers } from "../types/reducers";
+
+export const combineSequentialReducers: CombineSequentialReducers = (...reducers) => (state, action) =>
+    reducers.reduce((currentState, reducer) => reducer(currentState, action), state);
+
 export const insertAtPosition = <T>(array: T[], item: T, position: number): T[] => {
   const length = array.length;
   let index = position >= 0 ? position : length + position;

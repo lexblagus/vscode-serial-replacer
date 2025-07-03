@@ -17,6 +17,23 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  padding-right: 4px;
+  gap: 2px;
 }
 
+.stepActionIcons{
+  display: none;
+}
+
+.stepActionsMenu{
+  display: block;
+}
+
+@media (min-width: 300px) {
+  .stepActionIcons{
+    display: block;
+  }
+
+  .stepActionsMenu{
+    display: none;
+  }
+}

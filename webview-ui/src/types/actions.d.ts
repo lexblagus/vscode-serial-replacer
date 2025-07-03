@@ -8,7 +8,7 @@ type FileFiltersAction =
   | { type: "SET_USE_CURRENT_EDITOR"; payload: boolean }
   | { type: "SET_EXCLUDE_SETTINGS_AND_IGNORE_FILES"; payload: boolean };
 
-type StepAction =
+type StepActions =
   | {
       type: "SET_STEP_EXPANDED";
       payload: {
@@ -131,7 +131,7 @@ type StepReplaceContextualAction = {
 export type AppAction =
   | MainAction
   | FileFiltersAction
-  | StepAction
+  | StepActions
   | StepContextualAction
   | StepFindContextualAction
   | StepReplaceContextualAction;

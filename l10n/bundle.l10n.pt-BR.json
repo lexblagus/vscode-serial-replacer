@@ -17,7 +17,8 @@
   "Remove": "Remover",
 
   "Step {0}": "Etapa {0}",
-  "replacement": "substituição",
+  "disabled": "desabilitado",
+  "Widen this panel to see options": "Aumente este painel horizontalmente para ver opções",
 
   "rename":  "renomear",
   "move down":  "mover para baixo",
@@ -26,6 +27,10 @@
   "add step above":  "adicionar etapa acima",
   "disable": "desabilitar",
   "remove":  "remover",
+
+  "Remove this step?": "Remover esta etapa?",
+  "Yes": "Sim",
+  "No": "Não",
 
   "Find": "Pesquisar",
   "find": "pesquisar",

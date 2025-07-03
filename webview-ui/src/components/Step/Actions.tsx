@@ -1,6 +1,6 @@
-import { Fragment, useCallback, useEffect, useRef } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import type { FC } from "react";
-import { VscodeIcon } from "@vscode-elements/react-elements";
+import { VscodeIcon, VscodeContextMenu } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../../context";
 import {
@@ -8,13 +8,13 @@ import {
   VscodeIconRefObject,
   CreateHandler,
   Handlers,
-  IconConfig,
-  UseIconClickEventListenerArgs,
-} from "../../types/step-actions";
+  StepActionIcon,
+  UseClickEventListenerArgs,
+} from "../../types/events";
 
-function useIconClickEventListener(
-  ref: UseIconClickEventListenerArgs[0],
-  handler: UseIconClickEventListenerArgs[1]
+function useClickEventListener(
+  ref: UseClickEventListenerArgs[0],
+  handler: UseClickEventListenerArgs[1]
 ) {
   useEffect(() => {
     const el = ref.current;
@@ -26,18 +26,24 @@ function useIconClickEventListener(
 
 const Actions: FC<{ index: number }> = ({ index }) => {
   const { state, dispatch } = useAppContext();
+  const [confirmRemoval, setConfirmRemoval] = useState(false);
 
   const step = state.steps[index];
   const length = state.steps.length;
 
-  const refs: Refs = {
-    rename: useRef<VscodeIconRefObject>(null),
-    moveDown: useRef<VscodeIconRefObject>(null),
-    moveUp: useRef<VscodeIconRefObject>(null),
-    addBelow: useRef<VscodeIconRefObject>(null),
-    addAbove: useRef<VscodeIconRefObject>(null),
-    disable: useRef<VscodeIconRefObject>(null),
-    remove: useRef<VscodeIconRefObject>(null),
+  const iconRefs: Refs<VscodeIconRefObject> = {
+    rename: useRef(null),
+    moveDown: useRef(null),
+    moveUp: useRef(null),
+    addBelow: useRef(null),
+    addAbove: useRef(null),
+    disable: useRef(null),
+    remove: useRef(null),
+  };
+
+  const buttonRefs: Refs<HTMLButtonElement> = {
+    cancelRemoval: useRef(null),
+    confirmRemoval: useRef(null),
   };
 
   const createHandler: CreateHandler = (fn) =>
@@ -99,7 +105,13 @@ const Actions: FC<{ index: number }> = ({ index }) => {
       });
     }),
     remove: createHandler(() => {
-      // TODO: Are your sure?
+      setConfirmRemoval(true);
+      buttonRefs?.confirmRemoval?.current?.focus();
+    }),
+    cancelRemoval: createHandler(() => {
+      setConfirmRemoval(false);
+    }),
+    confirmRemoval: createHandler(() => {
       dispatch({
         type: "REMOVE_STEP",
         payload: {
@@ -109,11 +121,15 @@ const Actions: FC<{ index: number }> = ({ index }) => {
     }),
   };
 
-  Object.entries(refs).forEach(([key, ref]) => {
-    useIconClickEventListener(ref, handlers[key as keyof typeof handlers]);
+  Object.entries(iconRefs).forEach(([key, ref]) => {
+    useClickEventListener(ref, handlers[key as keyof typeof handlers]);
   });
 
-  const icons: IconConfig[] = [
+  Object.entries(buttonRefs).forEach(([key, ref]) => {
+    useClickEventListener(ref, handlers[key as keyof typeof handlers]);
+  });
+
+  const icons: StepActionIcon[] = [
     {
       key: "rename",
       label: t("rename"),
@@ -148,12 +164,12 @@ const Actions: FC<{ index: number }> = ({ index }) => {
       key: "disable",
       label: t("disable"),
       icon: "circle-slash",
-      visible: length > 1,
+      visible: true,
       ariaPressed: !step.enabled,
     },
     {
       key: "remove",
-      label: t("disable"),
+      label: t("remove"),
       icon: "trash",
       visible: length > 1,
     },
@@ -161,32 +177,44 @@ const Actions: FC<{ index: number }> = ({ index }) => {
 
   const slot = "decorations"; // 'actions' or 'decorations'
 
-  return (
+  return confirmRemoval ? (
+    <div role="alertdialog" slot={slot} className="helper-text">
+      {t("Remove this step?")}
+      &emsp;
+      <button ref={buttonRefs.confirmRemoval} className="button-link-helper">
+        {t("Yes")}
+      </button>
+      &emsp;
+      <button ref={buttonRefs.cancelRemoval} className="button-link-helper">
+        {t("No")}
+      </button>
+    </div>
+  ) : (
     <>
-      {icons.map(({ key, label, title, icon, visible, ariaPressed }) =>
-        visible ? (
-          <VscodeIcon
-            key={key}
-            id={`iconStep${index}Action${key}`}
-            ref={refs[key]}
-            action-icon
-            slot={slot}
-            role="button"
-            name={icon}
-            label={label}
-            title={title ?? label}
-            aria-pressed={ariaPressed}
-          />
-        ) : length > 2 ? (
-          <VscodeIcon
-            key={key}
-            action-icon
-            role="presentation"
-            slot={slot}
-            name="blank"
-          />
-        ) : <Fragment key={key} />
-      )}
+      <div className="stepActionIcons" slot={slot}>
+        {icons.map(({ key, label, title, icon, visible, ariaPressed }) =>
+          visible ? (
+            <VscodeIcon
+              key={key}
+              id={`iconStep${index}Action${key}`}
+              ref={iconRefs[key]}
+              action-icon
+              role="button"
+              name={icon}
+              label={label}
+              title={title ?? label}
+              aria-pressed={ariaPressed}
+            />
+          ) : length > 2 ? (
+            <VscodeIcon key={key} action-icon role="presentation" name="blank" />
+          ) : (
+            <Fragment key={key} />
+          )
+        )}
+      </div>
+      <div className="stepActionsMenu" slot={slot} title={t("Widen this panel to see options")}>
+        …
+      </div>
     </>
   );
 };

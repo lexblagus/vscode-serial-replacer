@@ -13,9 +13,9 @@ import content from "../../utils/content";
 import type {
   LinkMouseEventHandler,
   TextareaChangeEventHandler,
-  TextfieldKeyboardEventHandler,
+  TextareaKeyboardEventHandler,
   VscodeCollapsibleToggleEventHandler,
-} from "../../types/event-handlers";
+} from "../../types/events";
 import "./Step.css";
 import Actions from "./Actions";
 import FindActions from "./FindActions";
@@ -54,11 +54,11 @@ const Step: FC<{ index: number }> = ({ index }) => {
     });
   };
 
-  const handleStepFindKeyDown: TextfieldKeyboardEventHandler = (event) => {
+  const handleStepFindKeyDown: TextareaKeyboardEventHandler = (event) => {
     // TODO
   };
 
-  const handleStepFindKeyUp: TextfieldKeyboardEventHandler = (event) => {
+  const handleStepFindKeyUp: TextareaKeyboardEventHandler = (event) => {
     dispatch({
       type: "SET_STEP_FIND",
       payload: {
@@ -82,7 +82,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
     });
   };
 
-  const handleStepReplaceKeyDown: TextfieldKeyboardEventHandler = (event) => {
+  const handleStepReplaceKeyDown: TextareaKeyboardEventHandler = (event) => {
     // TODO
   };
 
@@ -139,7 +139,14 @@ const Step: FC<{ index: number }> = ({ index }) => {
 
   return (
     <div className="thin-bottom-margin">
-      <VscodeCollapsible title={title} ref={collapsibleRef} open={step.expanded}>
+      <VscodeCollapsible
+        style={{
+          opacity: step.enabled ? 1 : 0.5
+        }}
+        title={title}
+        description={!step.enabled ? `(${t("disabled")})` : undefined}
+        ref={collapsibleRef}
+        open={step.expanded}>
         <Actions index={index} />
         <div className="stepInnerWrapper">
           <VscodeFormGroup variant="vertical" className="no-y-margin">

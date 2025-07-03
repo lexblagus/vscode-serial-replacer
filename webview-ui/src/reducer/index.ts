@@ -1,10 +1,10 @@
-import { combineSequentialReducers } from "../utils/combineSequentialReducers";
+import { combineSequentialReducers } from "../utils/etc";
 import mainReducer from "./main";
 import fileFilterReducer from "./fileFilters";
 import stepReducer from "./step";
 import stepFindReducer from "./stepFind";
 import stepReplaceReducer from "./stepReplace";
-import type { SerialReplacement } from "../types/app";
+import type { SerialReplacement } from "../types/replacers";
 import type { AppAction } from "../types/actions";
 
 const combinedReducer = combineSequentialReducers(

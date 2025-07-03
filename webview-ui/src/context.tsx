@@ -1,7 +1,7 @@
 import { createContext, useReducer, useContext, ReactNode } from "react";
 import { appStateReducer } from "./reducer";
 import { emptyStep, initialReplacement } from "./utils/data";
-import type { SerialReplacement } from "./types/app";
+import type { SerialReplacement } from "./types/replacers";
 import type { AppAction } from "./types/actions";
 
 type AppContextType = {

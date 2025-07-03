@@ -1,6 +1,6 @@
 import { changePosition, insertAtPosition, removeAtIndex } from "../utils/etc";
 import { emptyStep } from "../utils/data";
-import type { SerialReplacement } from "../types/app";
+import type { SerialReplacement } from "../types/replacers";
 import type { AppAction } from "../types/actions";
 
 export function stepReducer(state: SerialReplacement, action: AppAction): SerialReplacement {
