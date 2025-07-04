@@ -55,7 +55,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
   };
 
   const handleStepFindKeyDown: TextareaKeyboardEventHandler = (event) => {
-    // TODO
+    // TODO: arrow history
   };
 
   const handleStepFindKeyUp: TextareaKeyboardEventHandler = (event) => {
@@ -83,7 +83,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
   };
 
   const handleStepReplaceKeyDown: TextareaKeyboardEventHandler = (event) => {
-    // TODO
+    // TODO: arrow history
   };
 
   const handleStepReplacePreviewClick: LinkMouseEventHandler = (event) => {

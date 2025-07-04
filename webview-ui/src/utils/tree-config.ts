@@ -1,4 +1,4 @@
-import { type TreeItem } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
+import type { TreeItem } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
 import { t } from "@vscode/l10n";
 
 export const treeItemConfig: Pick<TreeItem, 'icons' | 'actions'> = {

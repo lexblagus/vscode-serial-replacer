@@ -3,18 +3,13 @@ import { SerialReplacerPanel } from "./panel";
 import { SerialReplacerSidebarProvider } from "./sidebar";
 
 export async function activate(context: ExtensionContext) {
-  const showPanelCommand = commands.registerCommand("serial-replacer.showPanel", () => {
-    SerialReplacerPanel.render(context.extensionUri);
+  const showPanelCommand = commands.registerCommand("serial-replacer.newPanel", () => {
+    new SerialReplacerPanel(context);
   });
-
   context.subscriptions.push(showPanelCommand);
 
-  const provider = new SerialReplacerSidebarProvider(context.extensionUri);
-
+  const sidebarProvider = new SerialReplacerSidebarProvider(context);
   context.subscriptions.push(
-    window.registerWebviewViewProvider(
-      SerialReplacerSidebarProvider.viewType,
-      provider
-    )
+    window.registerWebviewViewProvider(SerialReplacerSidebarProvider.viewType, sidebarProvider)
   );
 }

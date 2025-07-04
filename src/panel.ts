@@ -1,6 +1,6 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, l10n } from "vscode";
-import { getWebviewContent } from './webview';
-import message from "./message";
+import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, l10n, ExtensionContext } from "vscode";
+import { getWebviewContent } from "./webview";
+import MessageExchange from "./messageExchange";
 
 const { t } = l10n;
 
@@ -9,44 +9,23 @@ export class SerialReplacerPanel {
   private readonly _panel: WebviewPanel;
   private _disposables: Disposable[] = [];
 
-  /**
-   * The SerialReplacerPanel class private constructor (called only from the render method).
-   *
-   * @param panel A reference to the webview panel
-   * @param extensionUri The URI of the directory containing the extension
-   */
-  private constructor(panel: WebviewPanel, extensionUri: Uri) {
+  constructor(context: ExtensionContext) {
+    const panel = window.createWebviewPanel(
+      "showPanel",
+      t("Serial Replacer"), // Tab title
+      ViewColumn.One,
+      {
+        enableScripts: true,
+        localResourceRoots: [
+          Uri.joinPath(context.extensionUri, "out"),
+          Uri.joinPath(context.extensionUri, "webview-ui/build"),
+        ],
+      }
+    );
     this._panel = panel;
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-    this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri);
+    this._panel.webview.html = this._getWebviewContent(this._panel.webview, context.extensionUri);
     this._setWebviewMessageListener(this._panel.webview);
-  }
-
-  /**
-   * Renders the current webview panel if it exists otherwise a new webview panel
-   * will be created and displayed.
-   *
-   * @param extensionUri The URI of the directory containing the extension.
-   */
-  public static render(extensionUri: Uri) {
-    if (SerialReplacerPanel.currentPanel) {
-      SerialReplacerPanel.currentPanel._panel.reveal(ViewColumn.One);
-    } else {
-      const panel = window.createWebviewPanel(
-        "showPanel",
-        t('Serial Replacer'), // Tab title
-        ViewColumn.One,
-        {
-          enableScripts: true,
-          localResourceRoots: [
-            Uri.joinPath(extensionUri, "out"),
-            Uri.joinPath(extensionUri, "webview-ui/build"),
-          ],
-        }
-      );
-
-      SerialReplacerPanel.currentPanel = new SerialReplacerPanel(panel, extensionUri);
-    }
   }
 
   public dispose() {
@@ -60,33 +39,14 @@ export class SerialReplacerPanel {
     }
   }
 
-  /**
-   * Defines and returns the HTML that should be rendered within the webview panel.
-   *
-   * @remarks This is also the place where references to the React webview build files
-   * are created and inserted into the webview HTML.
-   *
-   * @param webview A reference to the extension webview
-   * @param extensionUri The URI of the directory containing the extension
-   * @returns A template string literal containing the HTML that should be
-   * rendered within the webview panel
-   */
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
-    return getWebviewContent(webview, extensionUri, t('Serial Replacer Panel'));
+    return getWebviewContent(webview, extensionUri, t("Serial Replacer Panel"));
   }
 
-  /**
-   * Sets up an event listener to listen for messages passed from the webview context and
-   * executes code based on the message that is recieved.
-   *
-   * @param webview A reference to the extension webview
-   * @param context A reference to the extension context
-   */
   private _setWebviewMessageListener(webview: Webview) {
-    webview.onDidReceiveMessage(
-      message,
-      undefined,
-      this._disposables
+    const messageExchange = new MessageExchange(
+      webview
     );
+    webview.onDidReceiveMessage(messageExchange.receivedMessage.bind(messageExchange));
   }
 }

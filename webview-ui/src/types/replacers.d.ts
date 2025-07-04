@@ -1,4 +1,4 @@
-import { TreeItem } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
+import type { TreeItem } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
 
 export interface Step {
   id: string;
@@ -19,13 +19,16 @@ export interface Step {
   };
 }
 
-export interface SerialReplacement {
-  id: string;
+export interface FileFilters {
   includeFiles: string;
   useCurrentEditor: boolean;
   excludeFiles: string;
   useExcludeSettingsAndIgnoreFiles: boolean;
+}
+
+export interface SerialReplacement extends FileFilters {
+  id: string;
   results: TreeItem[];
-  resultsTotalFiles: Number;
+  resultsTotalFiles: number;
   steps: Step[];
 }

@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   VscodeFormGroup,
   VscodeIcon,
@@ -6,34 +6,23 @@ import {
   VscodeTextfield,
   VscodeTree,
 } from "@vscode-elements/react-elements";
-import type { TreeItem } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
 import content from "../utils/content";
+import type { FC } from "react";
+import type { TreeItem } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
 import type {
   TextfieldChangeEventHandler,
   TextfieldKeyboardEventHandler,
   VscodeIconMouseEventHandler,
   VscTreeActionMouseEventHandler,
+  VscTreeSelectMouseEventHandler,
 } from "../types/events";
+import { vscode } from "../utils/vscode";
 
 const FileFilters: FC = () => {
   const { state, dispatch } = useAppContext();
-
-  const treeData: TreeItem[] = [
-    {
-      label: t("{0} files", "999"),
-      open: false,
-      actions: [
-        {
-          icon: "refresh",
-          actionId: "refresh",
-          tooltip: t("refresh"),
-        },
-      ],
-      subItems: state.results,
-    },
-  ];
+  const [rootOpen, setRootOpen] = useState(false);
 
   const handleFilesToIncludeChange: TextfieldChangeEventHandler = (event) => {
     dispatch({
@@ -43,7 +32,14 @@ const FileFilters: FC = () => {
   };
 
   const handleFilesToIncludeKeyDown: TextfieldKeyboardEventHandler = (event) => {
-    // TODO
+    // TODO: arrow history
+  };
+
+  const handleFilesToIncludeKeyUp: TextfieldKeyboardEventHandler = (event) => {
+    dispatch({
+      type: "SET_FILES_TO_INCLUDE",
+      payload: (event.target as HTMLInputElement).value,
+    });
   };
 
   const handleCurrentEditorClick: VscodeIconMouseEventHandler = (event) => {
@@ -60,6 +56,17 @@ const FileFilters: FC = () => {
     });
   };
 
+  const handleFilesToExcludeKeyDown: TextfieldKeyboardEventHandler = (event) => {
+    // TODO: arrow history
+  };
+
+  const handleFilesToExcludeKeyUp: TextfieldKeyboardEventHandler = (event) => {
+    dispatch({
+      type: "SET_FILES_TO_EXCLUDE",
+      payload: (event.target as HTMLInputElement).value,
+    });
+  };
+
   const handleExcludeSettingsAndIgnoreFilesClick: VscodeIconMouseEventHandler = (event) => {
     dispatch({
       type: "SET_EXCLUDE_SETTINGS_AND_IGNORE_FILES",
@@ -67,9 +74,55 @@ const FileFilters: FC = () => {
     });
   };
 
-  const handleFileTreeRemoveFileClick: VscTreeActionMouseEventHandler = (event) => {
+  const handleTreeAction: VscTreeActionMouseEventHandler = (event) => {
     // TODO
+    // rootOpen
+    console.log('handleTreeAction', event.detail);
   };
+
+  const handleTreeSelect: VscTreeSelectMouseEventHandler = (event) => {
+    // TODO
+    // rootOpen
+    console.log('handleTreeSelect', event.detail);
+    if(event.detail.path === '0'){
+      setRootOpen(!rootOpen);
+    }
+  };
+
+  useEffect(() => {
+    const { includeFiles, excludeFiles, useCurrentEditor, useExcludeSettingsAndIgnoreFiles } =
+      state;
+
+    vscode.postMessage({
+      command: "GET_FILES",
+      payload: {
+        includeFiles,
+        excludeFiles,
+        useCurrentEditor,
+        useExcludeSettingsAndIgnoreFiles,
+      },
+    });
+  }, [
+    state.includeFiles,
+    state.excludeFiles,
+    state.useCurrentEditor,
+    state.useExcludeSettingsAndIgnoreFiles,
+  ]);
+
+  const treeData: TreeItem[] = useMemo(() => ([
+    {
+      label: t("{0} files", state.resultsTotalFiles.toString()),
+      open: rootOpen,
+      actions: [
+        {
+          icon: "refresh",
+          actionId: "refresh",
+          tooltip: t("refresh"),
+        },
+      ],
+      subItems: state.results,
+    },
+  ]), [state.results, state.resultsTotalFiles, rootOpen]);
 
   return (
     <>
@@ -90,7 +143,8 @@ const FileFilters: FC = () => {
           )})`}
           value={state.includeFiles}
           onChange={handleFilesToIncludeChange}
-          onKeyDown={handleFilesToIncludeKeyDown}>
+          onKeyDown={handleFilesToIncludeKeyDown}
+          onKeyUp={handleFilesToIncludeKeyUp}>
           <VscodeIcon
             slot="content-after"
             name="book"
@@ -117,7 +171,9 @@ const FileFilters: FC = () => {
             content["arrow-up-and-down"]
           )})`}
           value={state.excludeFiles}
-          onChange={handleFilesToExcludeChange}>
+          onChange={handleFilesToExcludeChange}
+          onKeyDown={handleFilesToExcludeKeyDown}
+          onKeyUp={handleFilesToExcludeKeyUp}>
           <VscodeIcon
             slot="content-after"
             name="exclude"
@@ -131,15 +187,16 @@ const FileFilters: FC = () => {
       <div className="thick-bottom-margin">
         {state.resultsTotalFiles === 0 && <p className="no-bottom-margin">{t("No files")}</p>}
         {state.resultsTotalFiles === 1 && (
-          <p className="no-bottom-margin">{t("Current file: {0}", "Untilted.txt")}</p>
+          <p className="no-bottom-margin">{t("Current file: {0}", state.results[0].label)}</p>
         )}
-        {state.resultsTotalFiles === 2 && (
+        {state.resultsTotalFiles > 1 && (
           <VscodeTree
             arrows
             indent={20}
             indentGuides
             data={treeData}
-            onVscTreeAction={handleFileTreeRemoveFileClick}
+            onVscTreeAction={handleTreeAction}
+            onVscTreeSelect={handleTreeSelect}
           />
         )}
       </div>

@@ -2,7 +2,7 @@
 
 > Visual Studio Code extension that provides a powerful find-and-replace solution. It allows you to perform consecutive replacements by defining steps with search patterns — either regular expressions or plain text — and substitution text. It works across open editors, multiple folders, or entire workspaces.
 
-![screenshot](docs/screenshot.png)
+![screenshot](./docs/screenshot.png)
 
 ## Features
 
@@ -34,6 +34,13 @@
   - ✓ …
 - Extension (backend)
   - Bi-direction communication _(in progress)_
+    - From webview to extension
+      - file filters
+      - make replacement
+      - preview
+      - about
+    - From extension to webview
+      - file tree
   - Get files and folders
 - Docs
   - Final screenshot (animated)

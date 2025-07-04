@@ -16,8 +16,8 @@ export const Main: FC = () => {
 
   const handleSerialReplaceClick: VscodeButtonMouseEventHandler = (event) => {
     vscode.postMessage({
-      command: "hello",
-      text: "Hey there!",
+      command: "SHOW_INFORMATION_MESSAGE",
+      payload: "This is Serial Replacer!",
     });
   };
 

@@ -1,4 +1,7 @@
+import { WebviewMessage } from "../../../src/types";
 import { CombineSequentialReducers } from "../types/reducers";
+import type { TreeItem } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
+import { vscode } from "./vscode";
 
 export const combineSequentialReducers: CombineSequentialReducers = (...reducers) => (state, action) =>
     reducers.reduce((currentState, reducer) => reducer(currentState, action), state);
@@ -30,3 +33,9 @@ export const removeAtIndex = <T>(array: T[], index: number): T[] => {
   if (index < 0 || index >= array.length) return [...array];
   return [...array.slice(0, index), ...array.slice(index + 1)];
 };
+
+export const countTreeItems = (items: TreeItem[]): number =>
+  items.reduce(
+    (count, { subItems }) => count + 1 + (subItems ? countTreeItems(subItems) : 0),
+    0
+  );

@@ -1,3 +1,5 @@
+import { TreeItem } from "./replacers";
+
 type MainAction = {
   type: "RESET";
 };
@@ -6,7 +8,8 @@ type FileFiltersAction =
   | { type: "SET_FILES_TO_INCLUDE"; payload: string }
   | { type: "SET_FILES_TO_EXCLUDE"; payload: string }
   | { type: "SET_USE_CURRENT_EDITOR"; payload: boolean }
-  | { type: "SET_EXCLUDE_SETTINGS_AND_IGNORE_FILES"; payload: boolean };
+  | { type: "SET_EXCLUDE_SETTINGS_AND_IGNORE_FILES"; payload: boolean }
+  | { type: "SET_FILE_TREE"; payload: TreeItem[] };
 
 type StepActions =
   | {

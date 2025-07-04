@@ -1,5 +1,6 @@
 import type { SerialReplacement } from "../types/replacers";
 import type { AppAction } from "../types/actions";
+import { countTreeItems } from "../utils/etc";
 
 export function fileFilterReducer(state: SerialReplacement, action: AppAction): SerialReplacement {
   switch (action.type) {
@@ -25,6 +26,13 @@ export function fileFilterReducer(state: SerialReplacement, action: AppAction): 
       return {
         ...state,
         useExcludeSettingsAndIgnoreFiles: action.payload,
+      };
+
+    case "SET_FILE_TREE":
+      return {
+        ...state,
+        results: action.payload,
+        resultsTotalFiles: countTreeItems(action.payload)
       };
 
     default:
