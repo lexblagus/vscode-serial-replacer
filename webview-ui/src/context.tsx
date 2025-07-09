@@ -6,6 +6,7 @@ import type { SerialReplacement } from "./types/replacers";
 import type { AppAction } from "./types/actions";
 import type { ExtensionMessage } from "../../src/types";
 import { treeItemConfig } from "./utils/tree-config";
+import { parseFileTree } from "./utils/etc";
 
 type AppContextType = {
   state: SerialReplacement;
@@ -31,13 +32,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         case "SET_FILES":
           dispatch({
             type: "SET_FILE_TREE",
-            /*
-            payload: message.payload.map(filename => ({
-              ...treeItemConfig,
-              label: filename,
-            })),
-            */
-           payload: message.payload,
+            payload: {
+              quantity: message.payload.files.length,
+              tree: parseFileTree(message.payload),
+            }
           });
           break;
 

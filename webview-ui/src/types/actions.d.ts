@@ -9,7 +9,26 @@ type FileFiltersAction =
   | { type: "SET_FILES_TO_EXCLUDE"; payload: string }
   | { type: "SET_USE_CURRENT_EDITORS"; payload: boolean }
   | { type: "SET_EXCLUDE_SETTINGS_AND_IGNORE_FILES"; payload: boolean }
-  | { type: "SET_FILE_TREE"; payload: TreeItem[] };
+  | {
+      type: "SET_FILE_TREE";
+      payload: {
+        tree: TreeItem[];
+        quantity: number;
+      };
+    }
+  | {
+      type: "SET_TREE_ITEM_VISIBILITY";
+      payload: {
+        value: string;
+        visibility: 'expanded' | 'collapsed';
+      };
+    }  | {
+      type: "SET_TREE_ITEM_VISIBILITY_RECURSIVELY";
+      payload: {
+        value: string;
+        visibility: 'expanded' | 'collapsed';
+      };
+    };
 
 type StepActions =
   | {

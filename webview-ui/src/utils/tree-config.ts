@@ -1,7 +1,7 @@
 import type { TreeItem } from "../types/tree";
 import { t } from "@vscode/l10n";
 
-export const treeItemConfig: Pick<TreeItem, 'icons' | 'actions'> = {
+export const treeItemConfig: Pick<TreeItem, "icons" | "actions"> = {
   icons: {
     branch: "folder",
     open: "folder-opened",

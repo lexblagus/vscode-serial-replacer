@@ -16,7 +16,7 @@ export const Footer: FC = () => {
 
   const handleAboutClick: LinkMouseEventHandler = (event) => {
     event.preventDefault();
-    // TODO
+    // TODO: about
   };
 
   return (

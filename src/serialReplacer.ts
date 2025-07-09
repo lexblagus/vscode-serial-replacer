@@ -8,10 +8,9 @@ import {
   window,
   workspace,
 } from "vscode";
-import { WebviewMessage, ExtensionMessage } from "./types";
 import { basename } from "path";
 import type { FileFilters } from "webview-ui/src/types/replacers";
-import type { TreeItem } from "webview-ui/src/types/tree";
+import type { WebviewMessage, ExtensionMessage, Files } from "./types";
 
 const { bundle } = l10n;
 
@@ -43,35 +42,30 @@ enum LogLevel {
 }
 
 export class SerialReplacer {
+  private readonly _context: ExtensionContext;
   private readonly _webview: Webview;
-  private _context: ExtensionContext;
-  private _outputChannel: OutputChannel;
+  private readonly _tag: string;
+  private readonly _outputChannel: OutputChannel;
   private _fileFilters: FileFilters | null;
   private _subscriptions: Disposable[] = [];
 
   constructor(
     private readonly extensionContext: ExtensionContext,
-    private readonly webview: Webview
+    private readonly webview: Webview,
+    private readonly tag: string
   ) {
     this._context = extensionContext;
     this._webview = webview;
-    this._outputChannel = window.createOutputChannel("Serial Replacer");
+    this._tag = tag;
+    this._outputChannel = window.createOutputChannel(`Serial Replacer ${tag}`, 'log');
     this._fileFilters = null;
 
-    this._log(LogLevel.info, `Serial Replacer initialized`);
-    /*
-    this._log(LogLevel.silent, `silent`);
-    this._log(LogLevel.fatal, `fatal`);
-    this._log(LogLevel.error, `error`);
-    this._log(LogLevel.warn, `warn`);
-    this._log(LogLevel.info, `info`);
-    this._log(LogLevel.debug, `debug`);
-    this._log(LogLevel.trace, `trace`);
-    */
+    this._log(LogLevel.info, `Serial Replacer ${tag} initialized`);
   }
 
   private _log(level: LogLevel, message: string) {
     const configLevel = LogLevel["trace"]; // TODO: put in User Preference
+    const maxLogMessageSize = 1024;
     if (
       configLevel < level ||
       (configLevel as LogLevel) === LogLevel.silent ||
@@ -79,138 +73,50 @@ export class SerialReplacer {
     ) {
       return;
     }
-    this._outputChannel.appendLine(`${new Date().toISOString()} [${LogLevel[level]}] ${message}\n`);
+    this._outputChannel.appendLine(
+      `[${new Date().toISOString()}] ${LogLevel[level].toUpperCase()} ${((msg, maxSize) =>
+        msg.length > maxSize ? `${msg.slice(0, maxSize)}… (truncated)` : msg)(message, maxLogMessageSize)}\n`
+    );
   }
 
-  private _changedFiles() {
-    this._log(LogLevel.trace, `Changed files: fileFilters=${JSON.stringify(this._fileFilters)}`);
+  private async _setFiles() {
+    this._log(LogLevel.trace, `Set files: fileFilters=${JSON.stringify(this._fileFilters)}`);
 
-    // TODO: work in progress
+    if (!this._fileFilters) {
+      return;
+    }
 
-    /*
-    const editor = window.activeTextEditor;
-    const doc = editor?.document;
-    const uri = doc?.uri;
-    const scheme = uri?.scheme;
-    const folder = uri && workspace.getWorkspaceFolder(uri);
-    const folders = workspace.workspaceFolders ?? [];
-    const fsPath = uri?.fsPath && basename(uri.fsPath);
-    const multiRootConfigForResource = workspace.getConfiguration("multiRootSample", uri);
-    const color = multiRootConfigForResource.get("statusColor");
-    const textDocuments = workspace.textDocuments.filter((item) => item.uri.scheme === "file");
-    const visibleTextEditors = window.visibleTextEditors;
-    // const tabs = window.tabGroups.all[0].tabs;
+    const selectedFiles: Files = {
+      workspaces: [],
+      files: [],
+    };
 
-    this._log(LogLevel.debug, `editor=${JSON.stringify(editor)}`);
-    this._log(LogLevel.debug, `doc=${JSON.stringify(doc)}`);
-    this._log(LogLevel.debug, `uri=${JSON.stringify(uri)}`);
-    this._log(LogLevel.debug, `scheme=${JSON.stringify(scheme)}`);
-    this._log(LogLevel.debug, `folder=${JSON.stringify(folder)}`);
-    this._log(LogLevel.debug, `folders=${JSON.stringify(folders)}`);
-    this._log(LogLevel.debug, `fsPath=${JSON.stringify(fsPath)}`);
-    this._log(LogLevel.debug, `multiRootConfigForResource=${JSON.stringify(multiRootConfigForResource)}`);
-    this._log(LogLevel.debug, `color=${JSON.stringify(color)}`);
-    this._log(LogLevel.debug, `textDocuments=${JSON.stringify(textDocuments)}`);
-    this._log(LogLevel.debug, `visibleTextEditors=${JSON.stringify(visibleTextEditors)}`);
-    // this._log(LogLevel.debug, `tabs=${JSON.stringify(tabs)}`);
-    */
+    for (const workspaceFolder of workspace.workspaceFolders ?? []) {
+      selectedFiles.workspaces.push(workspaceFolder.uri.fsPath);
+    }
 
-    /*
-    is Workspace
-    is useCurrentEditors
-    */
-
-    const tree: TreeItem[] = [];
-
-
-    if (this._fileFilters?.useCurrentEditors) {
-      const activeEditors: string[] = [];
+    if (this._fileFilters.useCurrentEditors) {
       for (const tabGroup of window.tabGroups.all) {
         for (const tab of tabGroup.tabs) {
           if (tab.input instanceof TabInputText) {
-            const uri = tab.input.uri;
-            const fsPath = uri.fsPath;
             // TODO: apply filters
-            activeEditors.push(fsPath);
-            tree.push({
-              label: basename(fsPath),
-              icons: {
-                branch: "folder",
-                open: "folder-opened",
-                leaf: "file",
-              },
-            });
+            selectedFiles.files.push(tab.input.uri.fsPath);
           }
         }
       }
-      this._log(LogLevel.debug, `activeEditors=${JSON.stringify(activeEditors)}`);
     }
 
-    if (!this._fileFilters?.useCurrentEditors) {
-      // TODO: read FS tree and add to tree
-      const workspaceFolders = [];
-      for (const folder of workspace.workspaceFolders ?? []) {
-        workspaceFolders.push(folder.uri.fsPath);
-        // this._log(LogLevel.trace, `folder.uri.fsPath=${JSON.stringify(folder.uri.fsPath)}`);
-        tree.push({
-          label: basename(folder.uri.fsPath),
-          icons: {
-            branch: "folder",
-            open: "folder-opened",
-            leaf: "folder",
-          },
-        });
-      }
-      this._log(LogLevel.trace, `workspaceFolders=${JSON.stringify(workspaceFolders)}`);
-      const isWorkspace = tree.length > 0;
-      this._log(LogLevel.trace, `isWorkspace=${JSON.stringify(isWorkspace)}`);
+    if (!this._fileFilters.useCurrentEditors) {
+      const workspaceFiles = await workspace.findFiles("**/*");
+      selectedFiles.files = workspaceFiles.map((item) => item.fsPath);
     }
 
-    this._log(LogLevel.debug, `tree=${JSON.stringify(tree)}`);
+    this._log(LogLevel.debug, `files=${JSON.stringify(selectedFiles)}`);
 
     this.postMessage({
       type: "SET_FILES",
-      payload: tree,
+      payload: selectedFiles,
     });
-    /*
-
-    const sample: TreeItem[] = [
-      {
-        label: "Folder A",
-        subItems: [
-          {
-            label: "File A1",
-          },
-        ],
-      },
-      {
-        label: "Folder B",
-        subItems: [
-          {
-            label: "File B1",
-          },
-          {
-            label: "Folder BA",
-            subItems: [
-              {
-                label: "File BA1",
-              },
-            ],
-          },
-        ],
-      },
-    ];
-
-    this.postMessage({
-      type: "SET_FILES",
-      payload: sample,
-    });
-
-    this.postMessage({
-      type: "SET_FILES",
-      payload: activeEditors,
-    });
-    */
   }
 
   private _subscribeChanges() {
@@ -221,10 +127,9 @@ export class SerialReplacer {
 
     this.dispose();
 
-    // const changedFiles = this._changedFiles.bind(this);
     const changedFiles = (scope: string) => () => {
-      this._log(LogLevel.trace, `File changes: scope=${JSON.stringify(scope)}`);
-      this._changedFiles();
+      this._log(LogLevel.info, `File changes: scope=${JSON.stringify(scope)}`);
+      this._setFiles();
     };
 
     // Fired when any config value changes.
@@ -236,7 +141,7 @@ export class SerialReplacer {
     // Fired when new files are created.
     workspace.onDidCreateFiles(changedFiles("workspace.onDidCreateFiles"));
     // Fired when the window gains or loses focus.
-    window.onDidChangeWindowState(changedFiles("window.onDidChangeWindowState")); // Maybe
+    // window.onDidChangeWindowState(changedFiles("window.onDidChangeWindowState")); // Maybe remove
 
     if (this._fileFilters?.useCurrentEditors) {
       // Fired when a text document is opened.
@@ -244,9 +149,9 @@ export class SerialReplacer {
       // Fired when a text document is closed.
       workspace.onDidCloseTextDocument(changedFiles("workspace.onDidCloseTextDocument"));
       // Fired when the list of visible editors changes (e.g., split view).
-      window.onDidChangeVisibleTextEditors(changedFiles("window.onDidChangeVisibleTextEditors"));
+      // window.onDidChangeVisibleTextEditors(changedFiles("window.onDidChangeVisibleTextEditors"));
       //Fires when user switches to a different editor (tab)
-      window.onDidChangeActiveTextEditor(changedFiles("window.onDidChangeActiveTextEditor"));
+      // window.onDidChangeActiveTextEditor(changedFiles("window.onDidChangeActiveTextEditor"));
 
       return;
     }
@@ -263,12 +168,6 @@ export class SerialReplacer {
     this._log(LogLevel.trace, `Received message: webviewMessage=${JSON.stringify(webviewMessage)}`);
 
     switch (webviewMessage.command) {
-      /*
-      case "INIT":
-        // this._subscribeChanges();
-        return;
-      */
-
       case "DISPLAY_INFORMATION_MESSAGE":
         window.showInformationMessage(webviewMessage.payload);
         this.postMessage({
@@ -280,7 +179,7 @@ export class SerialReplacer {
       case "GET_FILE_CHANGES":
         this._fileFilters = webviewMessage.payload;
         this._subscribeChanges();
-        this._changedFiles();
+        this._setFiles();
         return;
     }
   }

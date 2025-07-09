@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import type { FC } from "react";
 import {
   VscodeCollapsible,
   VscodeFormGroup,
@@ -9,17 +8,18 @@ import {
 } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../../context";
-import content from "../../utils/content";
+import "./Step.css";
+import Actions from "./Actions";
+import FindActions from "./FindActions";
+import ReplaceActions from "./ReplaceActions";
+import { text } from "../../utils/etc";
+import type { FC } from "react";
 import type {
   LinkMouseEventHandler,
   TextareaChangeEventHandler,
   TextareaKeyboardEventHandler,
   VscodeCollapsibleToggleEventHandler,
 } from "../../types/events";
-import "./Step.css";
-import Actions from "./Actions";
-import FindActions from "./FindActions";
-import ReplaceActions from "./ReplaceActions";
 import type { VscodeCollapsible as VscodeCollapsibleConstructor } from "@vscode-elements/elements/dist/vscode-collapsible/vscode-collapsible";
 import type { VscodeTextarea as VscodeTextareaConstructor } from "@vscode-elements/elements/dist/vscode-textarea/vscode-textarea";
 
@@ -87,7 +87,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
   };
 
   const handleStepReplacePreviewClick: LinkMouseEventHandler = (event) => {
-    // TODO
+    // TODO: preview
   };
 
   useEffect(() => {
@@ -165,7 +165,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
               ref={textareaFindRef}
               className="textarea-full"
               label={t("Find")}
-              placeholder={t("{0} for history", content["arrow-up-and-down"])}
+              placeholder={t("{0} for history", text["arrow-up-and-down"])}
               resize="vertical"
               value={step.find.content}
               invalid={findErrorMessage !== null}
@@ -194,7 +194,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
               className="textarea-full"
               title={t("Replace")}
               label={t("replace")}
-              placeholder={t("{0} for history", content["arrow-up-and-down"])}
+              placeholder={t("{0} for history", text["arrow-up-and-down"])}
               resize="vertical"
               value={step.replace.content}
               onChange={handleStepReplaceChange}

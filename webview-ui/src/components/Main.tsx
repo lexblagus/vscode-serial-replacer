@@ -22,7 +22,7 @@ export const Main: FC = () => {
   };
 
   const handleSaveSetClick: VscodeButtonMouseEventHandler = (event) => {
-    // TODO
+    // TODO: save set
   };
 
   return (

@@ -9,8 +9,8 @@ import {
 } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
-import content from "../utils/content";
 import { treeItemConfig } from "../utils/tree-config";
+import { text, treeItemActionRefresh, treeItemActionToggle } from "../utils/etc";
 import type { FC } from "react";
 import type { TreeItem } from "../types/tree";
 import type {
@@ -76,17 +76,17 @@ const FileFilters: FC = () => {
   };
 
   const handleTreeAction: VscTreeActionMouseEventHandler = (event) => {
-    // TODO
+    // TODO: tree actions
     console.log("handleTreeAction", event.detail);
     console.log("event.detail.actionId", event.detail.actionId);
 
-    switch(event.detail.actionId){
-      case 'expand-all': {
-        // TODO
-        console.log('expand all')
+    switch (event.detail.actionId) {
+      case "toggle": {
+        // TODO: expand all
+        console.log("toggle");
         break;
       }
-      case 'refresh': {
+      case "refresh": {
         vscode.postMessage({
           command: "GET_FILE_CHANGES",
           payload: {
@@ -98,19 +98,39 @@ const FileFilters: FC = () => {
         });
         break;
       }
-      case 'remove': {
-        // TODO
-        console.log('remove item')
+      case "remove": {
+        // TODO: remove item
+        console.log("remove item", event.detail.value);
         break;
       }
     }
   };
 
   const handleTreeSelect: VscTreeSelectMouseEventHandler = (event) => {
-    // TODO: open/preview file
+    // TODO: toggle/preview folder/file
     console.log("handleTreeSelect", event.detail);
-    if (event.detail.path === "0") {
-      setRootOpen(!rootOpen);
+
+    if (event.detail.path === "0" && event.detail.itemType === "branch") {
+      console.log("root toggle");
+      console.log("event.detail.open", event.detail.open);
+
+      setRootOpen(event.detail.open); // or !rootOpen
+      return;
+    }
+
+    if (event.detail.path !== "0") {
+      if (event.detail.itemType === "branch") {
+        console.log("toggle");
+        console.log("event.detail.value", event.detail.value);
+        console.log("event.detail.open", event.detail.open);
+        return;
+      }
+      if (event.detail.itemType === "leaf") {
+        console.log("preview (?)");
+        console.log("event.detail.value", event.detail.value);
+        return;
+      }
+
     }
   };
 
@@ -140,18 +160,7 @@ const FileFilters: FC = () => {
         icons: treeItemConfig.icons,
         label: t("{0} files", state.resultsTotalFiles.toString()),
         open: rootOpen,
-        actions: [
-          {
-            icon: "expand-all",
-            actionId: "expand-all",
-            tooltip: t("expand all"),
-          },
-          {
-            icon: "refresh",
-            actionId: "refresh",
-            tooltip: t("refresh"),
-          },
-        ],
+        actions: [treeItemActionToggle, treeItemActionRefresh],
         subItems: state.results,
       },
     ],
@@ -167,13 +176,13 @@ const FileFilters: FC = () => {
         <VscodeTextfield
           id="includeFiles"
           className="textfield-full"
-          placeholder={`${t("e.g. {0}", content["sample-file-pattern"])} (${t(
+          placeholder={`${t("e.g. {0}", text["sample-file-pattern"])} (${t(
             "{0} for history",
-            content["arrow-up-and-down"]
+            text["arrow-up-and-down"]
           )})`}
-          title={`${t("e.g. {0}", content["sample-file-pattern"])} (${t(
+          title={`${t("e.g. {0}", text["sample-file-pattern"])} (${t(
             "{0} for history",
-            content["arrow-up-and-down"]
+            text["arrow-up-and-down"]
           )})`}
           value={state.includeFiles}
           onChange={handleFilesToIncludeChange}
@@ -196,13 +205,13 @@ const FileFilters: FC = () => {
         <VscodeTextfield
           id="excludeFiles"
           className="textfield-full"
-          placeholder={`${t("e.g. {0}", content["sample-file-pattern"])} (${t(
+          placeholder={`${t("e.g. {0}", text["sample-file-pattern"])} (${t(
             "{0} for history",
-            content["arrow-up-and-down"]
+            text["arrow-up-and-down"]
           )})`}
-          title={`${t("e.g. {0}", content["sample-file-pattern"])} (${t(
+          title={`${t("e.g. {0}", text["sample-file-pattern"])} (${t(
             "{0} for history",
-            content["arrow-up-and-down"]
+            text["arrow-up-and-down"]
           )})`}
           value={state.excludeFiles}
           onChange={handleFilesToExcludeChange}

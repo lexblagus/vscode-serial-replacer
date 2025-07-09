@@ -1,7 +1,29 @@
-import { CombineSequentialReducers } from "../types/reducers";
-import type { TreeItem } from "../types/tree";
+import { treeItemConfig } from "./tree-config";
+import { t } from "@vscode/l10n";
+import type { CombineSequentialReducers } from "../types/reducers";
+import type { TreeItem, TreeItemAction } from "../types/tree";
+import type { Files } from "../../../src/types";
 
-export const combineSequentialReducers: CombineSequentialReducers = (...reducers) => (state, action) =>
+export const text: Record<string, string> = {
+  "sample-file-pattern": "*.ts, src/**/include",
+  "arrow-up-and-down": "\u21C5",
+};
+
+export const treeItemActionToggle: TreeItemAction = {
+  icon: "expand-all",
+  actionId: "toggle",
+  tooltip: t("expand all"),
+};
+
+export const treeItemActionRefresh: TreeItemAction = {
+  icon: "refresh",
+  actionId: "refresh",
+  tooltip: t("refresh"),
+};
+
+export const combineSequentialReducers: CombineSequentialReducers =
+  (...reducers) =>
+  (state, action) =>
     reducers.reduce((currentState, reducer) => reducer(currentState, action), state);
 
 export const insertAtPosition = <T>(array: T[], item: T, position: number): T[] => {
@@ -32,16 +54,93 @@ export const removeAtIndex = <T>(array: T[], index: number): T[] => {
   return [...array.slice(0, index), ...array.slice(index + 1)];
 };
 
-/* export const countTreeItems = (items: TreeItem[]): number =>
-  items.reduce(
-    (count, { subItems }) => count + 1 + (subItems ? countTreeItems(subItems) : 0),
-    0
-  ); */
+const flatFilesToTree = (
+  fileList: string[],
+  startingPath: string,
+  defaultItemProps: Partial<TreeItem>
+): TreeItem[] => {
+  const root: TreeItem[] = [];
 
-export const countTreeItems = (items: TreeItem[]): number =>
-  items.reduce((count, item) => {
-    if (item.subItems && item.subItems.length > 0) {
-      return count + countTreeItems(item.subItems);
+  for (const filePath of fileList) {
+    const relativePath = filePath.replace(startingPath, "").replace(/^\/+/, "");
+    const parts = relativePath.split("/").filter(Boolean);
+    let currentLevel = root;
+
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      let existing = currentLevel.find((item) => item.label === part);
+
+      if (!existing) {
+        const absolutePath = `${startingPath}/${parts.slice(0, i + 1).join("/")}`;
+        existing = {
+          ...defaultItemProps,
+          ...{
+            actions: [
+              ...(i === parts.length - 1 ? [] : [treeItemActionToggle]),
+              ...(defaultItemProps.actions ?? []),
+            ],
+          },
+          label: part,
+          value: absolutePath,
+          // description: `startingPath=${JSON.stringify(startingPath)} filePath=${JSON.stringify(filePath)} i=${i} parts=${JSON.stringify(parts)} `,
+        };
+        currentLevel.push(existing);
+      }
+
+      if (i < parts.length - 1) {
+        if (!existing.subItems) {
+          existing.subItems = [];
+        }
+        currentLevel = existing.subItems;
+      }
     }
-    return item.icons?.leaf === 'file' ? count + 1 : count;
-  }, 0);
+  }
+
+  return root;
+};
+
+export const parseFileTree = (files: Files): TreeItem[] => {
+  let output: TreeItem[] = [];
+
+  if (files.workspaces.length === 0) {
+    for (const file of files.files) {
+      output.push({
+        ...treeItemConfig,
+        label: file.split("/").filter(Boolean).pop() || "(error: file name not parsed)",
+        value: file,
+      });
+    }
+    return output;
+  }
+
+  for (const workspaceFolder of files.workspaces.filter((workspace) =>
+    files.files.some((file) => file.startsWith(workspace))
+  )) {
+    const rePrefix = new RegExp(`^${workspaceFolder}`);
+    output.push({
+      label: workspaceFolder.split("/").filter(Boolean).pop() || "",
+      value: workspaceFolder,
+      ...treeItemConfig,
+      ...{
+        actions: [treeItemActionToggle, ...(treeItemConfig.actions ?? [])],
+      },
+      subItems: flatFilesToTree(
+        files.files.filter((item) => rePrefix.test(item)),
+        workspaceFolder,
+        treeItemConfig
+      ),
+    });
+  }
+  files.files
+    .filter(
+      (file) => !files.workspaces.some((workspaceFolders) => file.startsWith(workspaceFolders))
+    )
+    .map((fileOutsideWorkspaces) => {
+      output.push({
+        label: fileOutsideWorkspaces.split("/").filter(Boolean).pop() || "",
+        value: fileOutsideWorkspaces,
+        ...treeItemConfig,
+      });
+    });
+  return output;
+};

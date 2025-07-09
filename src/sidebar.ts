@@ -37,16 +37,10 @@ export class SerialReplacerSidebarProvider implements WebviewViewProvider {
 
     const messageExchange = new SerialReplacer(
       this._context,
-      this._view.webview
+      this._view.webview,
+      'sidebar'
     );
     webviewView.webview.onDidReceiveMessage(messageExchange.receiveMessage.bind(messageExchange));
-
-    /*
-    this._message.postMessage({
-      type: "SEND_LOG",
-      payload: { sidebar: `WORKS` },
-    });
-    */
   }
 
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
