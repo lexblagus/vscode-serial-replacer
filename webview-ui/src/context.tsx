@@ -23,17 +23,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // receives messages from extension ("backend")
   useEffect(() => {
     const handleMessage = (event: MessageEvent<ExtensionMessage>) => {
+      console.log(`handleMessage event.data=${JSON.stringify(event.data)}`);
+
       const message = event.data;
 
       switch (message.type) {
         case "SET_FILES":
-          console.log("Received file tree from extension:", message.payload);
           dispatch({
             type: "SET_FILE_TREE",
+            /*
             payload: message.payload.map(filename => ({
               ...treeItemConfig,
               label: filename,
             })),
+            */
+           payload: message.payload,
           });
           break;
 
@@ -48,20 +52,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // send initialization message to extension ("backend")
+  /*
   useEffect(() => {
-    const { includeFiles, excludeFiles, useCurrentEditor, useExcludeSettingsAndIgnoreFiles } =
+    const { includeFiles, excludeFiles, useCurrentEditors, useExcludeSettingsAndIgnoreFiles } =
       state;
 
     vscode.postMessage({
-      command: "GET_FILES",
+      command: "INIT",
+    });
+    vscode.postMessage({
+      command: "GET_FILE_CHANGES",
       payload: {
         includeFiles,
         excludeFiles,
-        useCurrentEditor,
+        useCurrentEditors,
         useExcludeSettingsAndIgnoreFiles,
       },
     });
   }, []);
+  */
 
   return <AppContext.Provider value={{ state, dispatch }}>{children}</AppContext.Provider>;
 }

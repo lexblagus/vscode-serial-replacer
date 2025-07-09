@@ -16,10 +16,10 @@ export function fileFilterReducer(state: SerialReplacement, action: AppAction): 
         excludeFiles: action.payload,
       };
 
-    case "SET_USE_CURRENT_EDITOR":
+    case "SET_USE_CURRENT_EDITORS":
       return {
         ...state,
-        useCurrentEditor: action.payload,
+        useCurrentEditors: action.payload,
       };
 
     case "SET_EXCLUDE_SETTINGS_AND_IGNORE_FILES":
@@ -31,7 +31,7 @@ export function fileFilterReducer(state: SerialReplacement, action: AppAction): 
     case "SET_FILE_TREE":
       return {
         ...state,
-        results: action.payload,
+        results: action.payload, // TODO: apply action icons
         resultsTotalFiles: countTreeItems(action.payload)
       };
 

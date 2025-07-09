@@ -1,15 +1,17 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, l10n, ExtensionContext } from "vscode";
 import { getWebviewContent } from "./webview";
-import MessageExchange from "./messageExchange";
+import SerialReplacer from "./serialReplacer";
 
 const { t } = l10n;
 
 export class SerialReplacerPanel {
-  public static currentPanel: SerialReplacerPanel | undefined;
+  private _context: ExtensionContext;
   private readonly _panel: WebviewPanel;
   private _disposables: Disposable[] = [];
+  private _serialReplacer: SerialReplacer | null;
 
-  constructor(context: ExtensionContext) {
+  constructor(extensionContext: ExtensionContext) {
+    this._context = extensionContext;
     const panel = window.createWebviewPanel(
       "showPanel",
       t("Serial Replacer"), // Tab title
@@ -17,19 +19,20 @@ export class SerialReplacerPanel {
       {
         enableScripts: true,
         localResourceRoots: [
-          Uri.joinPath(context.extensionUri, "out"),
-          Uri.joinPath(context.extensionUri, "webview-ui/build"),
+          Uri.joinPath(extensionContext.extensionUri, "out"),
+          Uri.joinPath(extensionContext.extensionUri, "webview-ui/build"),
         ],
       }
     );
     this._panel = panel;
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-    this._panel.webview.html = this._getWebviewContent(this._panel.webview, context.extensionUri);
+    this._panel.webview.html = this._getWebviewContent(this._panel.webview, this._context.extensionUri);
     this._setWebviewMessageListener(this._panel.webview);
+    this._serialReplacer = null;
   }
 
   public dispose() {
-    SerialReplacerPanel.currentPanel = undefined;
+    this._serialReplacer?.dispose();
     this._panel.dispose();
     while (this._disposables.length) {
       const disposable = this._disposables.pop();
@@ -44,9 +47,10 @@ export class SerialReplacerPanel {
   }
 
   private _setWebviewMessageListener(webview: Webview) {
-    const messageExchange = new MessageExchange(
+    this._serialReplacer = new SerialReplacer(
+      this._context,
       webview
     );
-    webview.onDidReceiveMessage(messageExchange.receivedMessage.bind(messageExchange));
+    webview.onDidReceiveMessage(this._serialReplacer.receiveMessage.bind(this._serialReplacer));
   }
 }

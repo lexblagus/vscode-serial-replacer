@@ -1,3 +1,4 @@
+import { vscode } from "../utils/vscode";
 import { useEffect, useMemo, useState } from "react";
 import {
   VscodeFormGroup,
@@ -9,8 +10,9 @@ import {
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
 import content from "../utils/content";
+import { treeItemConfig } from "../utils/tree-config";
 import type { FC } from "react";
-import type { TreeItem } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
+import type { TreeItem } from "../types/tree";
 import type {
   TextfieldChangeEventHandler,
   TextfieldKeyboardEventHandler,
@@ -18,7 +20,6 @@ import type {
   VscTreeActionMouseEventHandler,
   VscTreeSelectMouseEventHandler,
 } from "../types/events";
-import { vscode } from "../utils/vscode";
 
 const FileFilters: FC = () => {
   const { state, dispatch } = useAppContext();
@@ -42,10 +43,10 @@ const FileFilters: FC = () => {
     });
   };
 
-  const handleCurrentEditorClick: VscodeIconMouseEventHandler = (event) => {
+  const handleCurrentEditorsClick: VscodeIconMouseEventHandler = (event) => {
     dispatch({
-      type: "SET_USE_CURRENT_EDITOR",
-      payload: !state.useCurrentEditor,
+      type: "SET_USE_CURRENT_EDITORS",
+      payload: !state.useCurrentEditors,
     });
   };
 
@@ -76,53 +77,86 @@ const FileFilters: FC = () => {
 
   const handleTreeAction: VscTreeActionMouseEventHandler = (event) => {
     // TODO
-    // rootOpen
-    console.log('handleTreeAction', event.detail);
+    console.log("handleTreeAction", event.detail);
+    console.log("event.detail.actionId", event.detail.actionId);
+
+    switch(event.detail.actionId){
+      case 'expand-all': {
+        // TODO
+        console.log('expand all')
+        break;
+      }
+      case 'refresh': {
+        vscode.postMessage({
+          command: "GET_FILE_CHANGES",
+          payload: {
+            includeFiles: state.includeFiles,
+            excludeFiles: state.excludeFiles,
+            useCurrentEditors: state.useCurrentEditors,
+            useExcludeSettingsAndIgnoreFiles: state.useExcludeSettingsAndIgnoreFiles,
+          },
+        });
+        break;
+      }
+      case 'remove': {
+        // TODO
+        console.log('remove item')
+        break;
+      }
+    }
   };
 
   const handleTreeSelect: VscTreeSelectMouseEventHandler = (event) => {
-    // TODO
-    // rootOpen
-    console.log('handleTreeSelect', event.detail);
-    if(event.detail.path === '0'){
+    // TODO: open/preview file
+    console.log("handleTreeSelect", event.detail);
+    if (event.detail.path === "0") {
       setRootOpen(!rootOpen);
     }
   };
 
   useEffect(() => {
-    const { includeFiles, excludeFiles, useCurrentEditor, useExcludeSettingsAndIgnoreFiles } =
+    const { includeFiles, excludeFiles, useCurrentEditors, useExcludeSettingsAndIgnoreFiles } =
       state;
 
     vscode.postMessage({
-      command: "GET_FILES",
+      command: "GET_FILE_CHANGES",
       payload: {
         includeFiles,
         excludeFiles,
-        useCurrentEditor,
+        useCurrentEditors,
         useExcludeSettingsAndIgnoreFiles,
       },
     });
   }, [
     state.includeFiles,
     state.excludeFiles,
-    state.useCurrentEditor,
+    state.useCurrentEditors,
     state.useExcludeSettingsAndIgnoreFiles,
   ]);
 
-  const treeData: TreeItem[] = useMemo(() => ([
-    {
-      label: t("{0} files", state.resultsTotalFiles.toString()),
-      open: rootOpen,
-      actions: [
-        {
-          icon: "refresh",
-          actionId: "refresh",
-          tooltip: t("refresh"),
-        },
-      ],
-      subItems: state.results,
-    },
-  ]), [state.results, state.resultsTotalFiles, rootOpen]);
+  const treeData: TreeItem[] = useMemo(
+    () => [
+      {
+        icons: treeItemConfig.icons,
+        label: t("{0} files", state.resultsTotalFiles.toString()),
+        open: rootOpen,
+        actions: [
+          {
+            icon: "expand-all",
+            actionId: "expand-all",
+            tooltip: t("expand all"),
+          },
+          {
+            icon: "refresh",
+            actionId: "refresh",
+            tooltip: t("refresh"),
+          },
+        ],
+        subItems: state.results,
+      },
+    ],
+    [state.results, state.resultsTotalFiles, rootOpen]
+  );
 
   return (
     <>
@@ -148,10 +182,10 @@ const FileFilters: FC = () => {
           <VscodeIcon
             slot="content-after"
             name="book"
-            title={t("Use current editor")}
+            title={t("Use open editors")}
             action-icon
-            onClick={handleCurrentEditorClick}
-            aria-pressed={state.useCurrentEditor}></VscodeIcon>
+            onClick={handleCurrentEditorsClick}
+            aria-pressed={state.useCurrentEditors}></VscodeIcon>
         </VscodeTextfield>
       </VscodeFormGroup>
 

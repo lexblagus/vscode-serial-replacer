@@ -1,0 +1,29 @@
+import type {
+	TreeItem as VscodeTreeItem,
+	TreeItemIconConfig as VscodeTreeItemIconConfig,
+	TreeItemAction as VscodeTreeItemAction,
+	VscTreeSelectEvent as VscodeTreeSelectEvent,
+	VscTreeActionEvent as VscodeTreeActionEvent,
+} from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
+
+export type TreeItemActionId = 'expand-all' | 'refresh' | 'remove';
+
+export interface TreeItemAction extends VscodeTreeItemAction {
+	actionId: TreeItemActionId;
+}
+
+export interface TreeItem extends VscodeTreeItem {
+	subItems?: TreeItem[];
+	icons?: VscodeTreeItemIconConfig;
+	actions?: TreeItemAction[];
+}
+
+export type TreeActionEvent = CustomEvent<{
+    actionId: TreeItemActionId;
+    item: TreeItem | null;
+    value: string;
+}>
+
+export type VscTreeSelectEvent = VscodeTreeSelectEvent;
+export type VscTreeActionEvent = VscodeTreeActionEvent;
+export type VscTreeItemAction = VscodeTreeItemAction;

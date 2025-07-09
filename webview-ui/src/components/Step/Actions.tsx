@@ -58,6 +58,7 @@ const Actions: FC<{ index: number }> = ({ index }) => {
   const handlers: Handlers = {
     rename: createHandler(() => {
       // TODO
+      // Not allow repeated names!
     }),
     moveDown: createHandler(() => {
       dispatch({

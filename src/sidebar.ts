@@ -10,7 +10,7 @@ import {
   ExtensionContext,
 } from "vscode";
 import { getWebviewContent } from "./webview";
-import MessageExchange from "./messageExchange";
+import SerialReplacer from "./serialReplacer";
 
 const { t } = l10n;
 
@@ -35,10 +35,11 @@ export class SerialReplacerSidebarProvider implements WebviewViewProvider {
 
     webviewView.webview.html = this._getWebviewContent(webviewView.webview, this._context.extensionUri);
 
-    const messageExchange = new MessageExchange(
+    const messageExchange = new SerialReplacer(
+      this._context,
       this._view.webview
     );
-    webviewView.webview.onDidReceiveMessage(messageExchange.receivedMessage.bind(messageExchange));
+    webviewView.webview.onDidReceiveMessage(messageExchange.receiveMessage.bind(messageExchange));
 
     /*
     this._message.postMessage({

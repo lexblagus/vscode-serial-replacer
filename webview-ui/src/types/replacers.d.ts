@@ -1,4 +1,4 @@
-import type { TreeItem } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
+import type { TreeItem } from "../types/tree";
 
 export interface Step {
   id: string;
@@ -21,7 +21,7 @@ export interface Step {
 
 export interface FileFilters {
   includeFiles: string;
-  useCurrentEditor: boolean;
+  useCurrentEditors: boolean;
   excludeFiles: string;
   useExcludeSettingsAndIgnoreFiles: boolean;
 }

@@ -5,7 +5,7 @@ import type { SerialReplacement, Step } from "../types/replacers";
 export const sampleReplacement: () => SerialReplacement = () => ({
   id: uuidv4(),
   includeFiles: "",
-  useCurrentEditor: true,
+  useCurrentEditors: true,
   excludeFiles: "",
   useExcludeSettingsAndIgnoreFiles: true,
   results: [
@@ -67,7 +67,7 @@ export const sampleReplacement: () => SerialReplacement = () => ({
 export const emptyReplacement: () => SerialReplacement = () => ({
   id: uuidv4(),
   includeFiles: "",
-  useCurrentEditor: true,
+  useCurrentEditors: true,
   excludeFiles: "",
   useExcludeSettingsAndIgnoreFiles: true,
   results: [],

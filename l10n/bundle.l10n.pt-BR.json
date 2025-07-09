@@ -7,11 +7,12 @@
   "files to include": "arquivos a serem incluídos",
   "files to exclude": "arquivos a serem excluídos",
   "e.g. {0}": "por exemplo: {0}",
-  "Use current editor": "Use o editor atual",
+  "Use open editors": "Usar os editores abertos",
   "Use exclude settings and ignore files": "Usar excluir configurações e ignorar arquivos",
 
   "Current file: {0}": "Arquivo atual: {0}",
   "{0} files": "{0} arquivos",
+  "expand all": "expandir tudo",
   "refresh": "atualizar",
   "No files": "Nenhum arquivo",
   "Remove": "Remover",
