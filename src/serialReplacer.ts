@@ -8,7 +8,9 @@ import {
   window,
   workspace,
 } from "vscode";
-import { basename } from "path";
+import { basename, join } from "path";
+import { existsSync } from "fs";
+import { isMatch } from "micromatch";
 import type { FileFilters } from "webview-ui/src/types/replacers";
 import type { WebviewMessage, ExtensionMessage, Files } from "./types";
 
@@ -57,7 +59,7 @@ export class SerialReplacer {
     this._context = extensionContext;
     this._webview = webview;
     this._tag = tag;
-    this._outputChannel = window.createOutputChannel(`Serial Replacer ${tag}`, 'log');
+    this._outputChannel = window.createOutputChannel(`Serial Replacer ${tag}`, "log");
     this._fileFilters = null;
 
     this._log(LogLevel.info, `Serial Replacer ${tag} initialized`);
@@ -75,8 +77,53 @@ export class SerialReplacer {
     }
     this._outputChannel.appendLine(
       `[${new Date().toISOString()}] ${LogLevel[level].toUpperCase()} ${((msg, maxSize) =>
-        msg.length > maxSize ? `${msg.slice(0, maxSize)}… (truncated)` : msg)(message, maxLogMessageSize)}\n`
+        msg.length > maxSize ? `${msg.slice(0, maxSize)}… (truncated)` : msg)(
+        message,
+        maxLogMessageSize
+      )}\n`
     );
+  }
+
+  private _filterFiles(filePath: string): string | undefined {
+    if (
+      !existsSync(filePath) ||
+      (this._fileFilters?.includeFiles && !isMatch(filePath, this._fileFilters?.includeFiles.split(new RegExp(',\s*', 'g')))) ||
+      (this._fileFilters?.excludeFiles && isMatch(filePath, this._fileFilters?.excludeFiles.split(new RegExp(',\s*', 'g'))))
+    ) {
+      return;
+    }
+
+    if (this._fileFilters?.useExcludeSettingsAndIgnoreFiles) {
+      const patterns = new Set<string>();
+
+      const globalConfig = workspace.getConfiguration("search");
+      const globalExclude = globalConfig.get<Record<string, boolean>>("exclude") ?? {};
+      for (const [pattern, active] of Object.entries(globalExclude)) {
+        if (active) {
+          patterns.add(pattern);
+        }
+      }
+
+      const folders = workspace.workspaceFolders;
+      if (folders && folders.length > 0) {
+        for (const folder of folders) {
+          const folderConfig = workspace.getConfiguration("search", folder.uri);
+          const folderExclude = folderConfig.get<Record<string, boolean>>("exclude") ?? {};
+          for (const [pattern, active] of Object.entries(folderExclude)) {
+            if (active) {
+              const fullPattern = join(folder.uri.fsPath, pattern);
+              patterns.add(fullPattern);
+            }
+          }
+        }
+      }
+
+      if (isMatch(filePath, Array.from(patterns))) {
+        return undefined;
+      }
+    }
+
+    return filePath;
   }
 
   private async _setFiles() {
@@ -99,8 +146,11 @@ export class SerialReplacer {
       for (const tabGroup of window.tabGroups.all) {
         for (const tab of tabGroup.tabs) {
           if (tab.input instanceof TabInputText) {
-            // TODO: apply filters
-            selectedFiles.files.push(tab.input.uri.fsPath);
+            const currentFilePath = this._filterFiles(tab.input.uri.fsPath);
+            if (!currentFilePath) {
+              continue;
+            }
+            selectedFiles.files.push(currentFilePath);
           }
         }
       }
@@ -108,7 +158,13 @@ export class SerialReplacer {
 
     if (!this._fileFilters.useCurrentEditors) {
       const workspaceFiles = await workspace.findFiles("**/*");
-      selectedFiles.files = workspaceFiles.map((item) => item.fsPath);
+      for (const workspaceFile of workspaceFiles) {
+        const currentFilePath = this._filterFiles(workspaceFile.fsPath);
+        if (!currentFilePath) {
+          continue;
+        }
+        selectedFiles.files.push(currentFilePath);
+      }
     }
 
     this._log(LogLevel.debug, `files=${JSON.stringify(selectedFiles)}`);

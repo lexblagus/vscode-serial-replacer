@@ -58,6 +58,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     vscode.postMessage({
       command: "INIT",
     });
+  }, []);
+  */
+
+  useEffect(() => {
+    console.log('state', state);
+  }, [state]);
+
+  useEffect(() => {
+    const { includeFiles, excludeFiles, useCurrentEditors, useExcludeSettingsAndIgnoreFiles } =
+      state;
+
     vscode.postMessage({
       command: "GET_FILE_CHANGES",
       payload: {
@@ -67,8 +78,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         useExcludeSettingsAndIgnoreFiles,
       },
     });
-  }, []);
-  */
+  }, [
+    state.includeFiles,
+    state.excludeFiles,
+    state.useCurrentEditors,
+    state.useExcludeSettingsAndIgnoreFiles,
+  ]);
 
   return <AppContext.Provider value={{ state, dispatch }}>{children}</AppContext.Provider>;
 }

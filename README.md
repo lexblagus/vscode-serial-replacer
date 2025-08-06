@@ -26,6 +26,12 @@
 - Internationalization
   - Brazilian Portuguese
 
+## Bugs
+
+- Performance when working with a large set of files
+- files to include/exclude hangs (because of the controlled component)
+- when moving panels loses context (like file filters)
+
 ## Roadmap
 
 - ✓ Webview (frontend)
@@ -35,13 +41,14 @@
 - Extension (backend)
   - Bi-direction communication _(in progress)_
     - From webview to extension
-      - file filters
+      - ✓ file filters
       - make replacement
       - preview
       - about
     - From extension to webview
-      - file tree
-  - Get files and folders
+      - ✓ file tree
+  - ✓ Get files and folders
+  - Data persistance
 - Docs
   - Final screenshot (animated)
   - Tutorial and features

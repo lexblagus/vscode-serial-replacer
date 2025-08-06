@@ -62,3 +62,5 @@ export type StepActionIcon = {
   visible: boolean;
   ariaPressed?: boolean;
 };
+
+export type VscodeTextfieldConstructor = VscodeTextfieldConstructor;

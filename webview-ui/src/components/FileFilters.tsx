@@ -1,34 +1,32 @@
-import { vscode } from "../utils/vscode";
-import { useEffect, useMemo, useState } from "react";
+import { useState, useRef } from "react";
 import {
   VscodeFormGroup,
   VscodeIcon,
   VscodeLabel,
-  VscodeTextfield,
-  VscodeTree,
+  VscodeTextfield
 } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
-import { treeItemConfig } from "../utils/tree-config";
-import { text, treeItemActionRefresh, treeItemActionToggle } from "../utils/etc";
+import FileTree from "./FileTree";
+import { text } from "../utils/etc";
 import type { FC } from "react";
-import type { TreeItem } from "../types/tree";
 import type {
   TextfieldChangeEventHandler,
   TextfieldKeyboardEventHandler,
   VscodeIconMouseEventHandler,
-  VscTreeActionMouseEventHandler,
-  VscTreeSelectMouseEventHandler,
+  VscodeTextfieldConstructor
 } from "../types/events";
 
 const FileFilters: FC = () => {
   const { state, dispatch } = useAppContext();
   const [rootOpen, setRootOpen] = useState(false);
+  const inputFilesToIncludeRef = useRef<VscodeTextfieldConstructor>(null);
+  const inputFilesToExcludeRef = useRef<VscodeTextfieldConstructor>(null);
 
   const handleFilesToIncludeChange: TextfieldChangeEventHandler = (event) => {
     dispatch({
       type: "SET_FILES_TO_INCLUDE",
-      payload: (event.target as HTMLInputElement).value,
+      payload: inputFilesToIncludeRef.current?.value ?? '',
     });
   };
 
@@ -39,7 +37,7 @@ const FileFilters: FC = () => {
   const handleFilesToIncludeKeyUp: TextfieldKeyboardEventHandler = (event) => {
     dispatch({
       type: "SET_FILES_TO_INCLUDE",
-      payload: (event.target as HTMLInputElement).value,
+      payload: inputFilesToIncludeRef.current?.value ?? '',
     });
   };
 
@@ -53,7 +51,7 @@ const FileFilters: FC = () => {
   const handleFilesToExcludeChange: TextfieldChangeEventHandler = (event) => {
     dispatch({
       type: "SET_FILES_TO_EXCLUDE",
-      payload: (event.target as HTMLInputElement).value,
+      payload: inputFilesToExcludeRef.current?.value ?? '',
     });
   };
 
@@ -64,7 +62,7 @@ const FileFilters: FC = () => {
   const handleFilesToExcludeKeyUp: TextfieldKeyboardEventHandler = (event) => {
     dispatch({
       type: "SET_FILES_TO_EXCLUDE",
-      payload: (event.target as HTMLInputElement).value,
+      payload: inputFilesToExcludeRef.current?.value ?? '',
     });
   };
 
@@ -74,98 +72,6 @@ const FileFilters: FC = () => {
       payload: !state.useExcludeSettingsAndIgnoreFiles,
     });
   };
-
-  const handleTreeAction: VscTreeActionMouseEventHandler = (event) => {
-    // TODO: tree actions
-    console.log("handleTreeAction", event.detail);
-    console.log("event.detail.actionId", event.detail.actionId);
-
-    switch (event.detail.actionId) {
-      case "toggle": {
-        // TODO: expand all
-        console.log("toggle");
-        break;
-      }
-      case "refresh": {
-        vscode.postMessage({
-          command: "GET_FILE_CHANGES",
-          payload: {
-            includeFiles: state.includeFiles,
-            excludeFiles: state.excludeFiles,
-            useCurrentEditors: state.useCurrentEditors,
-            useExcludeSettingsAndIgnoreFiles: state.useExcludeSettingsAndIgnoreFiles,
-          },
-        });
-        break;
-      }
-      case "remove": {
-        // TODO: remove item
-        console.log("remove item", event.detail.value);
-        break;
-      }
-    }
-  };
-
-  const handleTreeSelect: VscTreeSelectMouseEventHandler = (event) => {
-    // TODO: toggle/preview folder/file
-    console.log("handleTreeSelect", event.detail);
-
-    if (event.detail.path === "0" && event.detail.itemType === "branch") {
-      console.log("root toggle");
-      console.log("event.detail.open", event.detail.open);
-
-      setRootOpen(event.detail.open); // or !rootOpen
-      return;
-    }
-
-    if (event.detail.path !== "0") {
-      if (event.detail.itemType === "branch") {
-        console.log("toggle");
-        console.log("event.detail.value", event.detail.value);
-        console.log("event.detail.open", event.detail.open);
-        return;
-      }
-      if (event.detail.itemType === "leaf") {
-        console.log("preview (?)");
-        console.log("event.detail.value", event.detail.value);
-        return;
-      }
-
-    }
-  };
-
-  useEffect(() => {
-    const { includeFiles, excludeFiles, useCurrentEditors, useExcludeSettingsAndIgnoreFiles } =
-      state;
-
-    vscode.postMessage({
-      command: "GET_FILE_CHANGES",
-      payload: {
-        includeFiles,
-        excludeFiles,
-        useCurrentEditors,
-        useExcludeSettingsAndIgnoreFiles,
-      },
-    });
-  }, [
-    state.includeFiles,
-    state.excludeFiles,
-    state.useCurrentEditors,
-    state.useExcludeSettingsAndIgnoreFiles,
-  ]);
-
-  const treeData: TreeItem[] = useMemo(
-    () => [
-      {
-        icons: treeItemConfig.icons,
-        label: t("{0} files", state.resultsTotalFiles.toString()),
-        open: rootOpen,
-        actions: [treeItemActionToggle, treeItemActionRefresh],
-        subItems: state.results,
-      },
-    ],
-    [state.results, state.resultsTotalFiles, rootOpen]
-  );
 
   return (
     <>
@@ -185,6 +91,7 @@ const FileFilters: FC = () => {
             text["arrow-up-and-down"]
           )})`}
           value={state.includeFiles}
+          ref={inputFilesToIncludeRef}
           onChange={handleFilesToIncludeChange}
           onKeyDown={handleFilesToIncludeKeyDown}
           onKeyUp={handleFilesToIncludeKeyUp}>
@@ -214,6 +121,7 @@ const FileFilters: FC = () => {
             text["arrow-up-and-down"]
           )})`}
           value={state.excludeFiles}
+          ref={inputFilesToExcludeRef}
           onChange={handleFilesToExcludeChange}
           onKeyDown={handleFilesToExcludeKeyDown}
           onKeyUp={handleFilesToExcludeKeyUp}>
@@ -227,22 +135,7 @@ const FileFilters: FC = () => {
         </VscodeTextfield>
       </VscodeFormGroup>
 
-      <div className="thick-bottom-margin">
-        {state.resultsTotalFiles === 0 && <p className="no-bottom-margin">{t("No files")}</p>}
-        {state.resultsTotalFiles === 1 && (
-          <p className="no-bottom-margin">{t("Current file: {0}", state.results[0].label)}</p>
-        )}
-        {state.resultsTotalFiles > 1 && (
-          <VscodeTree
-            arrows
-            indent={20}
-            indentGuides
-            data={treeData}
-            onVscTreeAction={handleTreeAction}
-            onVscTreeSelect={handleTreeSelect}
-          />
-        )}
-      </div>
+      <FileTree />
     </>
   );
 };

@@ -54,6 +54,10 @@ export const removeAtIndex = <T>(array: T[], index: number): T[] => {
   return [...array.slice(0, index), ...array.slice(index + 1)];
 };
 
+const parentPath = (fullPath: string) => `${fullPath.split("/").slice(0, -1).join('/')}/`;
+
+const basename = (fullPath: string) => fullPath.split("/").filter(Boolean).pop() || "(error: file basename not parsed)";
+
 const flatFilesToTree = (
   fileList: string[],
   startingPath: string,
@@ -82,7 +86,7 @@ const flatFilesToTree = (
           },
           label: part,
           value: absolutePath,
-          // description: `startingPath=${JSON.stringify(startingPath)} filePath=${JSON.stringify(filePath)} i=${i} parts=${JSON.stringify(parts)} `,
+          tooltip: absolutePath,
         };
         currentLevel.push(existing);
       }
@@ -106,8 +110,9 @@ export const parseFileTree = (files: Files): TreeItem[] => {
     for (const file of files.files) {
       output.push({
         ...treeItemConfig,
-        label: file.split("/").filter(Boolean).pop() || "(error: file name not parsed)",
+        label: basename(file),
         value: file,
+        tooltip: file,
       });
     }
     return output;
@@ -118,12 +123,14 @@ export const parseFileTree = (files: Files): TreeItem[] => {
   )) {
     const rePrefix = new RegExp(`^${workspaceFolder}`);
     output.push({
-      label: workspaceFolder.split("/").filter(Boolean).pop() || "",
-      value: workspaceFolder,
       ...treeItemConfig,
       ...{
         actions: [treeItemActionToggle, ...(treeItemConfig.actions ?? [])],
       },
+      label: basename(workspaceFolder),
+      description: files.workspaces.filter(item => basename(item) === basename(workspaceFolder)).length > 1 ? basename(parentPath(workspaceFolder)) : undefined,
+      value: workspaceFolder,
+      tooltip: workspaceFolder,
       subItems: flatFilesToTree(
         files.files.filter((item) => rePrefix.test(item)),
         workspaceFolder,
@@ -133,13 +140,15 @@ export const parseFileTree = (files: Files): TreeItem[] => {
   }
   files.files
     .filter(
-      (file) => !files.workspaces.some((workspaceFolders) => file.startsWith(workspaceFolders))
+      (file) => !files.workspaces.some((workspaceFolder) => file.startsWith(workspaceFolder))
     )
     .map((fileOutsideWorkspaces) => {
       output.push({
-        label: fileOutsideWorkspaces.split("/").filter(Boolean).pop() || "",
-        value: fileOutsideWorkspaces,
         ...treeItemConfig,
+        label: basename(fileOutsideWorkspaces),
+        description: parentPath(fileOutsideWorkspaces),
+        value: fileOutsideWorkspaces,
+        tooltip: fileOutsideWorkspaces,
       });
     });
   return output;
