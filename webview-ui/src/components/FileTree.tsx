@@ -1,8 +1,6 @@
 import { vscode } from "../utils/vscode";
 import { useMemo, useState } from "react";
-import {
-  VscodeTree
-} from "@vscode-elements/react-elements";
+import { VscodeIcon, VscodeTree } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
 import { treeItemConfig } from "../utils/tree-config";
@@ -10,13 +8,28 @@ import { treeItemActionRefresh, treeItemActionToggle } from "../utils/etc";
 import type { FC } from "react";
 import type { TreeItem } from "../types/tree";
 import type {
+  VscodeButtonMouseEventHandler,
   VscTreeActionMouseEventHandler,
-  VscTreeSelectMouseEventHandler
+  VscTreeSelectMouseEventHandler,
 } from "../types/events";
 
 const FileTree: FC = () => {
+  console.log("▶ FileTree");
+
   const { state, dispatch } = useAppContext();
   const [rootOpen, setRootOpen] = useState(false);
+
+  const handleRefreshClick: VscodeButtonMouseEventHandler = (event) => {
+    vscode.postMessage({
+      command: "GET_FILE_CHANGES",
+      payload: {
+        includeFiles: state.includeFiles,
+        excludeFiles: state.excludeFiles,
+        useCurrentEditors: state.useCurrentEditors,
+        useExcludeSettingsAndIgnoreFiles: state.useExcludeSettingsAndIgnoreFiles,
+      },
+    });
+  };
 
   const handleTreeAction: VscTreeActionMouseEventHandler = (event) => {
     // TODO: tree actions
@@ -79,8 +92,15 @@ const FileTree: FC = () => {
   const treeData: TreeItem[] = useMemo(
     () => [
       {
-        icons: treeItemConfig.icons,
-        label: state.resultsTotalFiles === 1 ? t("One file") : t("{0} files", state.resultsTotalFiles.toString()),
+        icons: {
+          ...treeItemConfig.icons,
+          branch: "root-folder",
+          open: "root-folder-opened",
+        },
+        label:
+          state.resultsTotalFiles === 1
+            ? t("One file")
+            : t("{0} files", state.resultsTotalFiles.toString()),
         open: rootOpen,
         actions: [treeItemActionToggle, treeItemActionRefresh],
         subItems: state.results,
@@ -91,7 +111,18 @@ const FileTree: FC = () => {
 
   return (
     <div className="thick-bottom-margin">
-      {state.resultsTotalFiles === 0 && <p className="no-bottom-margin">{t("No files")}</p>}
+      {state.resultsTotalFiles === 0 && (
+        <div className="button-group">
+          <div className="button-group-grow">{t("No files")}</div>
+          <div>
+            <VscodeIcon
+              name="refresh"
+              title={t("refresh")}
+              action-icon
+              onClick={handleRefreshClick}></VscodeIcon>
+          </div>
+        </div>
+      )}
       {state.resultsTotalFiles > 0 && (
         <VscodeTree
           arrows
@@ -101,7 +132,7 @@ const FileTree: FC = () => {
           onVscTreeAction={handleTreeAction}
           onVscTreeSelect={handleTreeSelect}
           onDoubleClick={(event) => {
-            console.log('Double click!', event);
+            console.log("Double click!", event);
           }}
         />
       )}

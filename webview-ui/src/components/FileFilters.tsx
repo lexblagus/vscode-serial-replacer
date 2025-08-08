@@ -1,45 +1,68 @@
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import {
   VscodeFormGroup,
   VscodeIcon,
   VscodeLabel,
-  VscodeTextfield
+  VscodeTextfield,
 } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
 import FileTree from "./FileTree";
 import { text } from "../utils/etc";
-import type { FC } from "react";
+import type { Dispatch, FC, RefObject } from "react";
 import type {
   TextfieldChangeEventHandler,
   TextfieldKeyboardEventHandler,
   VscodeIconMouseEventHandler,
-  VscodeTextfieldConstructor
+  VscodeTextfieldConstructor,
 } from "../types/events";
+import type { AppAction } from "../types/actions";
+
+const DEBOUNCE_DELAY = 500;
+
+function useDebouncedDispatch(
+  ref: RefObject<VscodeTextfieldConstructor>,
+  type: "SET_FILES_TO_INCLUDE" | "SET_FILES_TO_EXCLUDE",
+  dispatch: Dispatch<AppAction>,
+  delay = DEBOUNCE_DELAY
+) {
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  return () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      dispatch({
+        type,
+        payload: ref.current?.value ?? "",
+      });
+    }, delay);
+  };
+}
 
 const FileFilters: FC = () => {
+  console.log('▶ FileFilters');
+
   const { state, dispatch } = useAppContext();
-  const [rootOpen, setRootOpen] = useState(false);
   const inputFilesToIncludeRef = useRef<VscodeTextfieldConstructor>(null);
   const inputFilesToExcludeRef = useRef<VscodeTextfieldConstructor>(null);
+  const debouncedInclude = useDebouncedDispatch(
+    inputFilesToIncludeRef,
+    "SET_FILES_TO_INCLUDE",
+    dispatch
+  );
+  const debouncedExclude = useDebouncedDispatch(
+    inputFilesToExcludeRef,
+    "SET_FILES_TO_EXCLUDE",
+    dispatch
+  );
 
-  const handleFilesToIncludeChange: TextfieldChangeEventHandler = (event) => {
-    dispatch({
-      type: "SET_FILES_TO_INCLUDE",
-      payload: inputFilesToIncludeRef.current?.value ?? '',
-    });
-  };
+  const handleFilesToIncludeChange: TextfieldChangeEventHandler = (event) => debouncedInclude();
 
   const handleFilesToIncludeKeyDown: TextfieldKeyboardEventHandler = (event) => {
     // TODO: arrow history
   };
 
-  const handleFilesToIncludeKeyUp: TextfieldKeyboardEventHandler = (event) => {
-    dispatch({
-      type: "SET_FILES_TO_INCLUDE",
-      payload: inputFilesToIncludeRef.current?.value ?? '',
-    });
-  };
+  const handleFilesToIncludeKeyUp: TextfieldKeyboardEventHandler = (event) => debouncedInclude();
 
   const handleCurrentEditorsClick: VscodeIconMouseEventHandler = (event) => {
     dispatch({
@@ -48,23 +71,13 @@ const FileFilters: FC = () => {
     });
   };
 
-  const handleFilesToExcludeChange: TextfieldChangeEventHandler = (event) => {
-    dispatch({
-      type: "SET_FILES_TO_EXCLUDE",
-      payload: inputFilesToExcludeRef.current?.value ?? '',
-    });
-  };
+  const handleFilesToExcludeChange: TextfieldChangeEventHandler = (event) => debouncedExclude();
 
   const handleFilesToExcludeKeyDown: TextfieldKeyboardEventHandler = (event) => {
     // TODO: arrow history
   };
 
-  const handleFilesToExcludeKeyUp: TextfieldKeyboardEventHandler = (event) => {
-    dispatch({
-      type: "SET_FILES_TO_EXCLUDE",
-      payload: inputFilesToExcludeRef.current?.value ?? '',
-    });
-  };
+  const handleFilesToExcludeKeyUp: TextfieldKeyboardEventHandler = (event) => debouncedExclude();
 
   const handleExcludeSettingsAndIgnoreFilesClick: VscodeIconMouseEventHandler = (event) => {
     dispatch({
@@ -104,7 +117,6 @@ const FileFilters: FC = () => {
             aria-pressed={state.useCurrentEditors}></VscodeIcon>
         </VscodeTextfield>
       </VscodeFormGroup>
-
       <VscodeFormGroup variant="vertical" className="no-top-margin">
         <VscodeLabel htmlFor="excludeFiles" className="text-discreet">
           {t("files to exclude")}
@@ -134,7 +146,6 @@ const FileFilters: FC = () => {
             aria-pressed={state.useExcludeSettingsAndIgnoreFiles}></VscodeIcon>
         </VscodeTextfield>
       </VscodeFormGroup>
-
       <FileTree />
     </>
   );

@@ -8,30 +8,12 @@ import {
   window,
   workspace,
 } from "vscode";
-import { basename, join } from "path";
-import { existsSync } from "fs";
-import { isMatch } from "micromatch";
+import { join } from "path";
+import { filterFileByLists, splitOutsideCurlyBraces } from "./aux";
 import type { FileFilters } from "webview-ui/src/types/replacers";
 import type { WebviewMessage, ExtensionMessage, Files } from "./types";
 
 const { bundle } = l10n;
-
-function safeStringify(obj: any) {
-  const seen = new WeakSet();
-  return JSON.stringify(
-    obj,
-    (key, value) => {
-      if (typeof value === "object" && value !== null) {
-        if (seen.has(value)) {
-          return "[Circular]";
-        }
-        seen.add(value);
-      }
-      return value;
-    },
-    2
-  );
-}
 
 enum LogLevel {
   silent = 0,
@@ -67,7 +49,7 @@ export class SerialReplacer {
 
   private _log(level: LogLevel, message: string) {
     const configLevel = LogLevel["trace"]; // TODO: put in User Preference
-    const maxLogMessageSize = 1024;
+    const maxLogMessageSize = Infinity; // 1024;
     if (
       configLevel < level ||
       (configLevel as LogLevel) === LogLevel.silent ||
@@ -82,48 +64,6 @@ export class SerialReplacer {
         maxLogMessageSize
       )}\n`
     );
-  }
-
-  private _filterFiles(filePath: string): string | undefined {
-    if (
-      !existsSync(filePath) ||
-      (this._fileFilters?.includeFiles && !isMatch(filePath, this._fileFilters?.includeFiles.split(new RegExp(',\s*', 'g')))) ||
-      (this._fileFilters?.excludeFiles && isMatch(filePath, this._fileFilters?.excludeFiles.split(new RegExp(',\s*', 'g'))))
-    ) {
-      return;
-    }
-
-    if (this._fileFilters?.useExcludeSettingsAndIgnoreFiles) {
-      const patterns = new Set<string>();
-
-      const globalConfig = workspace.getConfiguration("search");
-      const globalExclude = globalConfig.get<Record<string, boolean>>("exclude") ?? {};
-      for (const [pattern, active] of Object.entries(globalExclude)) {
-        if (active) {
-          patterns.add(pattern);
-        }
-      }
-
-      const folders = workspace.workspaceFolders;
-      if (folders && folders.length > 0) {
-        for (const folder of folders) {
-          const folderConfig = workspace.getConfiguration("search", folder.uri);
-          const folderExclude = folderConfig.get<Record<string, boolean>>("exclude") ?? {};
-          for (const [pattern, active] of Object.entries(folderExclude)) {
-            if (active) {
-              const fullPattern = join(folder.uri.fsPath, pattern);
-              patterns.add(fullPattern);
-            }
-          }
-        }
-      }
-
-      if (isMatch(filePath, Array.from(patterns))) {
-        return undefined;
-      }
-    }
-
-    return filePath;
   }
 
   private async _setFiles() {
@@ -142,11 +82,86 @@ export class SerialReplacer {
       selectedFiles.workspaces.push(workspaceFolder.uri.fsPath);
     }
 
+    const subFolderGlobRegExp = new RegExp("\\*\\*|\\/");
+
+    const includeFilesList = splitOutsideCurlyBraces(this._fileFilters?.includeFiles).map(
+      (includePattern) =>
+        // '**' or '/'
+        subFolderGlobRegExp.test(includePattern) ? includePattern : `**/${includePattern}`
+    );
+
+    const userExcludeFilesList: string[] = splitOutsideCurlyBraces(
+      this._fileFilters?.excludeFiles
+    ).map((excludePattern) =>
+      // '**' or '/'
+      subFolderGlobRegExp.test(excludePattern) ? excludePattern : `**/${excludePattern}`
+    );
+
+    /*
+    Includes:
+    - default global settings (VSCode internals);
+    - user global settings (settings.json);
+    - .code-workspace file settings (.code-workspace settings['search.exclude']).
+    Always filled
+    */
+    const globalExcludeList: string[] = [];
+
+    /*
+    Includes (for each workspace folder):
+    - default global settings (VSCode internals);
+    - user global settings (settings.json);
+    - .code-workspace file settings['search.exclude']);
+    - .vscode/settings file settings['search.exclude'];
+    Empty with no workspace loaded
+    */
+    const workspaceFolderExcludeList: string[] = [];
+
+    if (this._fileFilters?.useExcludeSettingsAndIgnoreFiles) {
+      const globalConfig = workspace.getConfiguration("search");
+      const globalExclude = globalConfig.get<Record<string, boolean>>("exclude") ?? {};
+      for (const [pattern, active] of Object.entries(globalExclude)) {
+        if (active) {
+          globalExcludeList.push(pattern);
+        }
+      }
+
+      const folders = workspace.workspaceFolders;
+      if (folders && folders.length > 0) {
+        for (const folder of folders) {
+          const folderConfig = workspace.getConfiguration("search", folder.uri);
+          const folderExclude = folderConfig.get<Record<string, boolean>>("exclude") ?? {};
+          for (const [pattern, active] of Object.entries(folderExclude)) {
+            if (active) {
+              const fullPattern = join(folder.uri.fsPath, pattern);
+              workspaceFolderExcludeList.push(fullPattern);
+            }
+          }
+        }
+      }
+    }
+
+    const excludeFilesList = [
+      ...globalExcludeList,
+      ...workspaceFolderExcludeList,
+      ...userExcludeFilesList,
+    ];
+
+    this._log(
+      LogLevel.trace,
+      `File lists: includeFilesList=${JSON.stringify(
+        includeFilesList
+      )}; excludeFilesList=${JSON.stringify(excludeFilesList)}`
+    );
+
     if (this._fileFilters.useCurrentEditors) {
       for (const tabGroup of window.tabGroups.all) {
         for (const tab of tabGroup.tabs) {
           if (tab.input instanceof TabInputText) {
-            const currentFilePath = this._filterFiles(tab.input.uri.fsPath);
+            const currentFilePath = filterFileByLists(
+              tab.input.uri.fsPath,
+              includeFilesList,
+              excludeFilesList
+            );
             if (!currentFilePath) {
               continue;
             }
@@ -159,7 +174,11 @@ export class SerialReplacer {
     if (!this._fileFilters.useCurrentEditors) {
       const workspaceFiles = await workspace.findFiles("**/*");
       for (const workspaceFile of workspaceFiles) {
-        const currentFilePath = this._filterFiles(workspaceFile.fsPath);
+        const currentFilePath = filterFileByLists(
+          workspaceFile.fsPath,
+          includeFilesList,
+          excludeFilesList
+        );
         if (!currentFilePath) {
           continue;
         }
@@ -167,7 +186,7 @@ export class SerialReplacer {
       }
     }
 
-    this._log(LogLevel.debug, `files=${JSON.stringify(selectedFiles)}`);
+    this._log(LogLevel.debug, `Selected files: selectedFiles=${JSON.stringify(selectedFiles)}`);
 
     this.postMessage({
       type: "SET_FILES",

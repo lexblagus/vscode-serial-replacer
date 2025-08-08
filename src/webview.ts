@@ -1,6 +1,5 @@
 import { l10n, Uri, Webview } from "vscode";
-import { getUri } from "./utilities/getUri";
-import { getNonce } from "./utilities/getNonce";
+import { getUri, getNonce } from "./aux";
 
 const { bundle, uri } = l10n;
 

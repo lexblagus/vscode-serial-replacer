@@ -12,6 +12,8 @@ if (import.meta.env.DEV) {
 }
 
 export const Main: FC = () => {
+  console.log('▶ Main');
+
   const { state, dispatch } = useAppContext();
 
   const handleSerialReplaceClick: VscodeButtonMouseEventHandler = (event) => {
