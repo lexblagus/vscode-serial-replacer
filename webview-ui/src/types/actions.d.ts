@@ -19,8 +19,8 @@ type FileFiltersAction =
   | {
       type: "SET_TREE_ITEM_VISIBILITY";
       payload: {
-        value: string;
-        visibility: 'expanded' | 'collapsed';
+        open: boolean;
+        path: string,
       };
     }  | {
       type: "SET_TREE_ITEM_VISIBILITY_RECURSIVELY";

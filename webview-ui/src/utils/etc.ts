@@ -54,14 +54,16 @@ export const removeAtIndex = <T>(array: T[], index: number): T[] => {
   return [...array.slice(0, index), ...array.slice(index + 1)];
 };
 
-const parentPath = (fullPath: string) => `${fullPath.split("/").slice(0, -1).join('/')}/`;
+const parentPath = (fullPath: string) => `${fullPath.split("/").slice(0, -1).join("/")}/`;
 
-const basename = (fullPath: string) => fullPath.split("/").filter(Boolean).pop() || "(error: file basename not parsed)";
+const basename = (fullPath: string) =>
+  fullPath.split("/").filter(Boolean).pop() || "(error: file basename not parsed)";
 
 const flatFilesToTree = (
   fileList: string[],
   startingPath: string,
   defaultItemProps: Partial<TreeItem>
+  // TODO: add current tree
 ): TreeItem[] => {
   const root: TreeItem[] = [];
 
@@ -86,6 +88,7 @@ const flatFilesToTree = (
           },
           label: part,
           value: absolutePath,
+          open: false, // TODO
           tooltip: absolutePath,
         };
         currentLevel.push(existing);
@@ -103,34 +106,39 @@ const flatFilesToTree = (
   return root;
 };
 
-export const parseFileTree = (files: Files): TreeItem[] => {
-  let output: TreeItem[] = [];
+export const updateFileTree = (files: Files, currentTree: TreeItem[] = []): TreeItem[] => {
+  let resultFilesTree: TreeItem[] = [];
 
   if (files.workspaces.length === 0) {
     for (const file of files.files) {
-      output.push({
+      resultFilesTree.push({
         ...treeItemConfig,
         label: basename(file),
         value: file,
         tooltip: file,
+        open: false, // TODO
       });
     }
-    return output;
+    return resultFilesTree;
   }
 
   for (const workspaceFolder of files.workspaces.filter((workspace) =>
     files.files.some((file) => file.startsWith(workspace))
   )) {
     const rePrefix = new RegExp(`^${workspaceFolder}`);
-    output.push({
+    resultFilesTree.push({
       ...treeItemConfig,
       ...{
         actions: [treeItemActionToggle, ...(treeItemConfig.actions ?? [])],
       },
       label: basename(workspaceFolder),
-      description: files.workspaces.filter(item => basename(item) === basename(workspaceFolder)).length > 1 ? basename(parentPath(workspaceFolder)) : undefined,
+      description:
+        files.workspaces.filter((item) => basename(item) === basename(workspaceFolder)).length > 1
+          ? basename(parentPath(workspaceFolder))
+          : undefined,
       value: workspaceFolder,
       tooltip: workspaceFolder,
+      open: false, // TODO
       subItems: flatFilesToTree(
         files.files.filter((item) => rePrefix.test(item)),
         workspaceFolder,
@@ -139,11 +147,9 @@ export const parseFileTree = (files: Files): TreeItem[] => {
     });
   }
   files.files
-    .filter(
-      (file) => !files.workspaces.some((workspaceFolder) => file.startsWith(workspaceFolder))
-    )
+    .filter((file) => !files.workspaces.some((workspaceFolder) => file.startsWith(workspaceFolder)))
     .map((fileOutsideWorkspaces) => {
-      output.push({
+      resultFilesTree.push({
         ...treeItemConfig,
         label: basename(fileOutsideWorkspaces),
         description: parentPath(fileOutsideWorkspaces),
@@ -151,5 +157,38 @@ export const parseFileTree = (files: Files): TreeItem[] => {
         tooltip: fileOutsideWorkspaces,
       });
     });
-  return output;
+
+  const rootTree: TreeItem[] = [
+    {
+      icons: {
+        ...treeItemConfig.icons,
+        branch: "root-folder",
+        open: "root-folder-opened",
+      },
+      label:
+        files.files.length === 1
+          ? t("One file")
+          : t(
+              '{0} files',
+              files.files.length.toString()
+            ),
+      open: false,  // TODO // currentTree[0] && currentTree[0].open,
+      actions: [treeItemActionToggle, treeItemActionRefresh],
+      subItems: resultFilesTree,
+    },
+  ];
+
+  return rootTree;
 };
+
+export const mergeOpenState = (oldItems: TreeItem[], newItems: TreeItem[]): TreeItem[] =>
+  newItems.map((newItem, index) => {
+    const oldItem = oldItems[index];
+    return {
+      ...newItem,
+      open: oldItem?.open ?? newItem.open, // preserve old 'open' if exists
+      subItems: newItem.subItems
+        ? mergeOpenState(oldItem?.subItems ?? [], newItem.subItems)
+        : undefined,
+    };
+  });

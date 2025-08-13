@@ -54,16 +54,6 @@ export function safeStringify(obj: any) {
   );
 }
 
-export function normalizePatterns(patterns: string[]): string[] {
-  return patterns.map((pattern) => {
-    // If pattern looks like a folder or file name, convert to glob
-    if (!pattern.includes("**") && !pattern.includes("/")) {
-      return `**/${pattern}/**`;
-    }
-    return pattern;
-  });
-}
-
 export function filterFileByLists(
   filePath: string,
   includeFilesList: string[],
