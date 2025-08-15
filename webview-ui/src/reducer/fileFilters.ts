@@ -1,7 +1,7 @@
 import type { SerialReplacement } from "../types/replacers";
 import type { AppAction } from "../types/actions";
-import { TreeItem } from "../types/tree";
-import { mergeOpenState } from "../utils/etc";
+import { setTreeItemOpen } from "../utils/etc";
+import prefs from "../prefs.json";
 
 export function fileFilterReducer(state: SerialReplacement, action: AppAction): SerialReplacement {
   switch (action.type) {
@@ -36,33 +36,27 @@ export function fileFilterReducer(state: SerialReplacement, action: AppAction): 
     case "SET_FILE_TREE": {
       return {
         ...state,
-        results: mergeOpenState(state.results, action.payload.tree),
+        results: action.payload.tree,
         resultsTotalFiles: action.payload.quantity,
       };
     }
 
     case "SET_TREE_ITEM_VISIBILITY": {
-      const indexes = action.payload.path.split("/").map(Number);
-
-      const newResults = [...state.results];
-      let current: TreeItem[] = newResults;
-
-      for (let i = 0; i < indexes.length; i++) {
-        const idx = indexes[i];
-        current[idx] = { ...current[idx] }; // shallow copy the item
-        if (i === indexes.length - 1) {
-          current[idx].open = action.payload.open;
-        } else if (current[idx].subItems) {
-          current[idx].subItems = [...current[idx].subItems!];
-          current = current[idx].subItems!;
-        } else {
-          break;
-        }
-      }
-
       return {
         ...state,
-        results: newResults,
+        results: setTreeItemOpen(state.results, action.payload.path, action.payload.open),
+      };
+    }
+
+    case "SET_TREE_ITEM_VISIBILITY_RECURSIVELY": {
+      return {
+        ...state,
+        results: setTreeItemOpen(
+          state.results,
+          action.payload.path,
+          !action.payload.open,
+          state.resultsTotalFiles <= prefs.maxRecursivellyExpandTree
+        ),
       };
     }
 

@@ -1,6 +1,6 @@
 import { KeyboardEventHandler, MouseEventHandler, MutableRefObject, RefObject } from "react";
 import type { VscCollapsibleToggleEvent } from "@vscode-elements/elements/dist/vscode-collapsible/vscode-collapsible";
-import type { VscTreeActionEvent, VscTreeSelectEvent, TreeItemAction } from "./tree";
+import type { VscTreeActionEvent, VscTreeSelectEvent, TreeItemAction, VscTree } from "./tree";
 import type { VscodeIcon as VscodeIconConstructor } from "@vscode-elements/elements/dist/vscode-icon/vscode-icon";
 import type { VscodeTextfield as VscodeTextfieldConstructor } from "@vscode-elements/elements/dist/vscode-textfield/vscode-textfield";
 import type { VscodeTextarea as VscodeTextareaConstructor } from "@vscode-elements/elements/dist/vscode-textarea/vscode-textarea";
@@ -30,6 +30,7 @@ export type VscodeButtonMouseEventHandler = MouseEventHandler<VscodeButton>;
 export type VscodeIconMouseEventHandler = MouseEventHandler<VscodeIconConstructor>;
 export type VscTreeActionMouseEventHandler = (ev: VscTreeActionEvent) => void;
 export type VscTreeSelectMouseEventHandler = (ev: VscTreeSelectEvent) => void;
+export type VscTreeMouseEventHandler = MouseEventHandler<VscTree>;
 export type VscodeCollapsibleToggleEventHandler = (
   this: HTMLElement,
   ev: VscCollapsibleToggleEvent

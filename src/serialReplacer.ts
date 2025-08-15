@@ -10,8 +10,9 @@ import {
 } from "vscode";
 import { join } from "path";
 import { filterFileByLists, splitOutsideCurlyBraces } from "./aux";
+import prefs from "./prefs.json";
 import type { FileFilters } from "webview-ui/src/types/replacers";
-import type { WebviewMessage, ExtensionMessage, Files } from "./types";
+import type { WebviewMessage, ExtensionMessage, WorkspacesAndFiles } from "./types";
 
 const { bundle } = l10n;
 
@@ -24,6 +25,8 @@ enum LogLevel {
   debug = 5,
   trace = 6,
 }
+
+type LogLevels = keyof typeof LogLevel;
 
 export class SerialReplacer {
   private readonly _context: ExtensionContext;
@@ -45,23 +48,28 @@ export class SerialReplacer {
     this._fileFilters = null;
 
     this._log(LogLevel.info, `Serial Replacer ${tag} initialized`);
+
+    /*
+    this._log(LogLevel.silent, 'silent');
+    this._log(LogLevel.fatal, 'fatal');
+    this._log(LogLevel.error, 'error');
+    this._log(LogLevel.warn, 'warn');
+    this._log(LogLevel.info, 'info');
+    this._log(LogLevel.debug, 'debug');
+    this._log(LogLevel.trace, 'trace');
+    */
   }
 
   private _log(level: LogLevel, message: string) {
-    const configLevel = LogLevel["trace"]; // TODO: put in User Preference
-    const maxLogMessageSize = Infinity; // 1024;
-    if (
-      configLevel < level ||
-      (configLevel as LogLevel) === LogLevel.silent ||
-      level === LogLevel.silent
-    ) {
+    const preferenceLevel = LogLevel[prefs.extensionLogLevel as LogLevels];
+    if (preferenceLevel < level || preferenceLevel === LogLevel.silent || level === 0) {
       return;
     }
     this._outputChannel.appendLine(
       `[${new Date().toISOString()}] ${LogLevel[level].toUpperCase()} ${((msg, maxSize) =>
         msg.length > maxSize ? `${msg.slice(0, maxSize)}… (truncated)` : msg)(
         message,
-        maxLogMessageSize
+        prefs.maxLogMessageSize
       )}\n`
     );
   }
@@ -73,7 +81,7 @@ export class SerialReplacer {
       return;
     }
 
-    const selectedFiles: Files = {
+    const selectedFiles: WorkspacesAndFiles = {
       workspaces: [],
       files: [],
     };
@@ -84,18 +92,14 @@ export class SerialReplacer {
 
     const subFolderGlobRegExp = new RegExp("\\*\\*|\\/");
 
-    const includeFilesList = splitOutsideCurlyBraces(this._fileFilters?.includeFiles).map(
-      (includePattern) =>
-        // '**' or '/'
-        subFolderGlobRegExp.test(includePattern) ? includePattern : `**/${includePattern}`
-    );
+    const formatSinglePattern = (p: string) => (subFolderGlobRegExp.test(p) ? p : `**/${p}`); // '**' or '/'
 
-    const userExcludeFilesList: string[] = splitOutsideCurlyBraces(
-      this._fileFilters?.excludeFiles
-    ).map((excludePattern) =>
-      // '**' or '/'
-      subFolderGlobRegExp.test(excludePattern) ? excludePattern : `**/${excludePattern}`
-    );
+    const formatFilesList = (patternsList: string): string[] =>
+      splitOutsideCurlyBraces(patternsList).map((pattern) => formatSinglePattern(pattern));
+
+    const includeFilesList = formatFilesList(this._fileFilters?.includeFiles);
+
+    const uiExcludeFilesList = formatFilesList(this._fileFilters?.excludeFiles);
 
     /*
     Includes:
@@ -143,8 +147,8 @@ export class SerialReplacer {
     const excludeFilesList = [
       ...globalExcludeList,
       ...workspaceFolderExcludeList,
-      ...userExcludeFilesList,
-    ];
+      ...uiExcludeFilesList,
+    ].map((pattern) => formatSinglePattern(pattern));
 
     this._log(
       LogLevel.trace,

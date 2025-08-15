@@ -11,11 +11,13 @@ export type WebviewMessage =
       payload: string;
     };
 
-export type Files = {
-  workspaces: string[];
-  files: string[];
+export type PathList = string[];
+
+export type WorkspacesAndFiles<T = PathList> = {
+  workspaces: T;
+  files: T;
 };
 
 export type ExtensionMessage =
   | { type: "SEND_LOG"; payload: any }
-  | { type: "SET_FILES"; payload: Files };
+  | { type: "SET_FILES"; payload: WorkspacesAndFiles };

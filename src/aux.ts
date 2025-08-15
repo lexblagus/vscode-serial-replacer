@@ -1,9 +1,7 @@
 import { Uri, Webview } from "vscode";
 import { existsSync } from "fs";
 import { isMatch } from "micromatch";
-import { basename } from "path";
-
-const MICROMATCH_OPTIONS = { dot: true, nocase: true };
+import prefs from './prefs.json';
 
 /**
  * A helper function that returns a unique alphanumeric identifier called a nonce.
@@ -64,13 +62,13 @@ export function filterFileByLists(
   }
 
   if(includeFilesList.length > 0){
-    if (!isMatch(filePath, includeFilesList, MICROMATCH_OPTIONS)) {
+    if (!isMatch(filePath, includeFilesList, prefs.micromatchOptions)) {
       return;
     }
   }
 
   if(excludeFilesList.length > 0){
-    if (isMatch(filePath, excludeFilesList, MICROMATCH_OPTIONS)) {
+    if (isMatch(filePath, excludeFilesList, prefs.micromatchOptions)) {
       return;
     }
   }

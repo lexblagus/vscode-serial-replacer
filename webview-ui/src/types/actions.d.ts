@@ -20,13 +20,13 @@ type FileFiltersAction =
       type: "SET_TREE_ITEM_VISIBILITY";
       payload: {
         open: boolean;
-        path: string,
+        path: number[],
       };
     }  | {
       type: "SET_TREE_ITEM_VISIBILITY_RECURSIVELY";
       payload: {
-        value: string;
-        visibility: 'expanded' | 'collapsed';
+        open: boolean;
+        path: number[],
       };
     };
 

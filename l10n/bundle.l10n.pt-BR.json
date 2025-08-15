@@ -16,6 +16,8 @@
   "refresh": "atualizar",
   "No files": "Nenhum arquivo",
   "Remove": "Remover",
+  "others": "outros",
+  "(not in workspace folders)": "(fora das pastas do espaço de trabalho)",
 
   "Step {0}": "Etapa {0}",
   "disabled": "desabilitado",

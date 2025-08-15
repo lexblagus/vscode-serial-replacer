@@ -1,4 +1,4 @@
-import { createContext, useReducer, useContext, ReactNode, useEffect } from "react";
+import { createContext, useReducer, useContext, ReactNode, useEffect, useRef } from "react";
 import { appStateReducer } from "./reducer";
 import { emptyStep, initialReplacement } from "./utils/data";
 import { vscode } from "./utils/vscode";
@@ -6,7 +6,7 @@ import type { SerialReplacement } from "./types/replacers";
 import type { AppAction } from "./types/actions";
 import type { ExtensionMessage } from "../../src/types";
 import { treeItemConfig } from "./utils/tree-config";
-import { updateFileTree } from "./utils/etc";
+import { setFileTree } from "./utils/etc";
 
 type AppContextType = {
   state: SerialReplacement;
@@ -21,12 +21,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     steps: data.steps.length > 0 ? data.steps : [emptyStep()],
   }));
 
+  const stateRef = useRef(state);
+
+  // Keep state up-to-date to be used in other hooks
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
   // receives messages from extension ("backend")
   useEffect(() => {
     const handleMessage = (event: MessageEvent<ExtensionMessage>) => {
-      console.log(`handleMessage event.data=${JSON.stringify(event.data)}`);
+      console.log(`▷ handleMessage event.data=${JSON.stringify(event.data)}`);
 
       const message = event.data;
+      const currentState = stateRef.current;
 
       switch (message.type) {
         case "SET_FILES":
@@ -34,8 +42,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
             type: "SET_FILE_TREE",
             payload: {
               quantity: message.payload.files.length,
-              tree: updateFileTree(message.payload, state.results),
-            }
+              tree: setFileTree(message.payload, currentState.results),
+            },
           });
           break;
 
@@ -62,7 +70,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   */
 
   useEffect(() => {
-    console.log('state', state);
+    console.log("state", state);
   }, [state]);
 
   useEffect(() => {

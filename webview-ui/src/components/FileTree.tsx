@@ -7,15 +7,17 @@ import type {
   VscodeButtonMouseEventHandler,
   VscTreeActionMouseEventHandler,
   VscTreeSelectMouseEventHandler,
+  VscTreeMouseEventHandler,
 } from "../types/events";
 
 const FileTree: FC = () => {
   console.log("▶ FileTree");
 
   const { state, dispatch } = useAppContext();
-  // const [rootOpen, setRootOpen] = useState(false);
 
-  const handleRefreshClick: VscodeButtonMouseEventHandler = (event) => {
+  const handleRefreshClick: VscodeButtonMouseEventHandler = () => {
+    console.log("▷ handleRefreshClick");
+
     vscode.postMessage({
       command: "GET_FILE_CHANGES",
       payload: {
@@ -28,17 +30,11 @@ const FileTree: FC = () => {
   };
 
   const handleTreeAction: VscTreeActionMouseEventHandler = (event) => {
-    // TODO: tree actions
-    console.log("handleTreeAction", event.detail);
-    console.log("event.detail.actionId", event.detail.actionId);
+    console.log("▷ handleTreeAction", "event.detail", event.detail);
 
     switch (event.detail.actionId) {
-      case "toggle": {
-        // TODO: expand all
-        console.log("toggle expand all");
-        break;
-      }
       case "refresh": {
+        console.log("○ Refresh");
         vscode.postMessage({
           command: "GET_FILE_CHANGES",
           payload: {
@@ -50,37 +46,67 @@ const FileTree: FC = () => {
         });
         break;
       }
+
+      case "toggle": {
+        console.log("○ toggle expand all", "event.detail.item", event.detail.item);
+        dispatch({
+          type: "SET_TREE_ITEM_VISIBILITY_RECURSIVELY",
+          payload: {
+            open: !!event.detail.item?.open,
+            path: event.detail.item?.path || [],
+          },
+        });
+        break;
+      }
+
       case "remove": {
-        // TODO: remove item
-        console.log("remove item", event.detail.value);
+        console.log("○ Remove item", "event.detail.item", event.detail.value);
+        const addToExclude = (event.detail.item?.subItems || []).length > 0 ? `${event.detail.value}/**` : event.detail.value;
+        const currentExclude = state.excludeFiles.length > 0 ? [state.excludeFiles] : [];
+        dispatch({
+          type: "SET_FILES_TO_EXCLUDE",
+          payload: [
+            ...currentExclude,
+            addToExclude,
+          ].join(", "),
+        });
         break;
       }
     }
   };
 
   const handleTreeSelect: VscTreeSelectMouseEventHandler = (event) => {
-    // TODO: toggle/preview folder/file
-    console.log("handleTreeSelect", event.detail);
+    console.log("▷ handleTreeSelect", "event.detail", event.detail);
 
-    if (event.detail.itemType === "branch") {
-      console.log("folder toggle");
-      console.log("event.detail", event.detail);
+    switch (event.detail.itemType) {
+      case "branch": {
+        console.log("○ folder toggle");
 
-      dispatch({
-        type: "SET_TREE_ITEM_VISIBILITY",
-        payload: {
-          open: event.detail.open,
-          path: event.detail.path,
-        },
-      });
+        dispatch({
+          type: "SET_TREE_ITEM_VISIBILITY",
+          payload: {
+            open: event.detail.open,
+            path: event.detail.path.split("/").map(Number),
+          },
+        });
 
-      return;
+        break;
+      }
+
+      case "leaf": {
+        console.log(
+          "○ File selected (not sure what to do)",
+          "event.detail.value",
+          event.detail.value
+        );
+        break;
+      }
     }
-    if (event.detail.itemType === "leaf") {
-      console.log("preview (?)");
-      console.log("event.detail.value", event.detail.value);
-      return;
-    }
+  };
+
+  const handleTreeDoubleClick: VscTreeMouseEventHandler = (event) => {
+    console.log("▷ handleTreeDoubleClick", event);
+    // TODO: preview
   };
 
   return (
@@ -105,9 +131,7 @@ const FileTree: FC = () => {
           data={state.results}
           onVscTreeAction={handleTreeAction}
           onVscTreeSelect={handleTreeSelect}
-          onDoubleClick={(event) => {
-            console.log("Double click!", event);
-          }}
+          onDoubleClick={handleTreeDoubleClick}
         />
       )}
     </div>

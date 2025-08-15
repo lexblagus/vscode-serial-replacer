@@ -27,3 +27,7 @@ vscode-icon[aria-pressed="true"] {
   border: 1px solid var(--vscode-inputOption-activeBorder);
   border-radius: 3px;
 }
+
+vscode-tree::part(description) {
+  color: var(--vscode-disabledForeground);
+}

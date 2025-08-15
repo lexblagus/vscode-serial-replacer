@@ -1,4 +1,5 @@
 import type {
+  VscodeTree,
   TreeItem as VscodeTreeItem,
   TreeItemIconConfig as VscodeTreeItemIconConfig,
   TreeItemAction as VscodeTreeItemAction,
@@ -27,3 +28,4 @@ export type TreeActionEvent = CustomEvent<{
 export type VscTreeSelectEvent = VscodeTreeSelectEvent;
 export type VscTreeActionEvent = VscodeTreeActionEvent;
 export type VscTreeItemAction = VscodeTreeItemAction;
+export type VscTree = VscodeTree;
