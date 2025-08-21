@@ -2,7 +2,7 @@ import { vscode } from "../utils/vscode";
 import { VscodeIcon, VscodeTree } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import type {
   VscodeButtonMouseEventHandler,
   VscTreeActionMouseEventHandler,
@@ -14,6 +14,7 @@ const FileTree: FC = () => {
   console.log("▶ FileTree");
 
   const { state, dispatch } = useAppContext();
+  const [selectedFile, setSelectedFile] = useState<string>();
 
   const handleRefreshClick: VscodeButtonMouseEventHandler = () => {
     console.log("▷ handleRefreshClick");
@@ -89,16 +90,16 @@ const FileTree: FC = () => {
             path: event.detail.path.split("/").map(Number),
           },
         });
-
         break;
       }
 
       case "leaf": {
         console.log(
-          "○ File selected (not sure what to do)",
+          "○ File selected",
           "event.detail.value",
           event.detail.value
         );
+        setSelectedFile(event.detail.value);
         break;
       }
     }
@@ -106,7 +107,15 @@ const FileTree: FC = () => {
 
   const handleTreeDoubleClick: VscTreeMouseEventHandler = (event) => {
     console.log("▷ handleTreeDoubleClick", event);
-    // TODO: preview
+    // TODO: Preview
+
+    console.log('selectedFile', selectedFile);
+    /*
+    dispatch({
+      type: "PREVIEW_FILE",
+      payload: ,
+    });
+    */
   };
 
   return (
@@ -124,15 +133,19 @@ const FileTree: FC = () => {
         </div>
       )}
       {state.resultsTotalFiles > 0 && (
-        <VscodeTree
-          arrows
-          indent={20}
-          indentGuides
-          data={state.results}
-          onVscTreeAction={handleTreeAction}
-          onVscTreeSelect={handleTreeSelect}
-          onDoubleClick={handleTreeDoubleClick}
-        />
+        <div className="file-tree-wrapper">
+          <div>
+            <VscodeTree
+              arrows
+              indent={22}
+              indentGuides
+              data={state.results}
+              onVscTreeAction={handleTreeAction}
+              onVscTreeSelect={handleTreeSelect}
+              onDoubleClick={handleTreeDoubleClick}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

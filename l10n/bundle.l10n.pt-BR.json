@@ -48,11 +48,14 @@
   "Replace": "Substituir",
   "replace": "substituir",
 
-  "preview…": "prévia…",
-
+  "no replacements": "nenhuma substituição",
   "Make replacements": "Executar substituições",
   "Serial Replace": "Substituir em série",
   "Save set…": "Salvar série…",
+
+  "{0} replacements made in {1} files": "{0} substituições em {1} arquivos",
+  "An error occurred while making replacements.": "Ocorreu um erro ao fazer as substituições",
+  "details…": "detalhes…",
 
   "reset": "redefinir",
   "about…": "sobre…",

@@ -31,3 +31,10 @@ vscode-icon[aria-pressed="true"] {
 vscode-tree::part(description) {
   color: var(--vscode-disabledForeground);
 }
+
+vscode-tree::part(caption-decoration) {
+  color: var(--vscode-disabledForeground);
+  font-weight: var(--vscode-font-weight);
+  margin-right: 7px;
+  white-space: nowrap;
+}

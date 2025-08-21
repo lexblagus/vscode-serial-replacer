@@ -5,6 +5,7 @@ import type {
   TreeItemAction as VscodeTreeItemAction,
   VscTreeSelectEvent as VscodeTreeSelectEvent,
   VscTreeActionEvent as VscodeTreeActionEvent,
+  TreeItemDecoration,
 } from "@vscode-elements/elements/dist/vscode-tree/vscode-tree";
 
 export type TreeItemActionId = "toggle" | "refresh" | "remove";
@@ -28,4 +29,5 @@ export type TreeActionEvent = CustomEvent<{
 export type VscTreeSelectEvent = VscodeTreeSelectEvent;
 export type VscTreeActionEvent = VscodeTreeActionEvent;
 export type VscTreeItemAction = VscodeTreeItemAction;
+export type VscTreeDecoration = TreeItemDecoration;
 export type VscTree = VscodeTree;

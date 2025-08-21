@@ -4,15 +4,19 @@ import {
   l10n,
   OutputChannel,
   TabInputText,
+  Uri,
   Webview,
   window,
   workspace,
+  WorkspaceEdit,
+  Range,
 } from "vscode";
 import { join } from "path";
 import { filterFileByLists, splitOutsideCurlyBraces } from "./aux";
 import prefs from "./prefs.json";
-import type { FileFilters } from "webview-ui/src/types/replacers";
+const { t } = l10n;
 import type { WebviewMessage, ExtensionMessage, WorkspacesAndFiles } from "./types";
+import type { FileFilters, Step } from "webview-ui/src/types/replacers";
 
 const { bundle } = l10n;
 
@@ -33,8 +37,13 @@ export class SerialReplacer {
   private readonly _webview: Webview;
   private readonly _tag: string;
   private readonly _outputChannel: OutputChannel;
-  private _fileFilters: FileFilters | null;
+  private _fileFilters: FileFilters | null = null;
+  private _workspacesAndFiles: WorkspacesAndFiles = {
+    files: [],
+    workspaces: [],
+  };
   private _subscriptions: Disposable[] = [];
+  private _steps: Step[] = [];
 
   constructor(
     private readonly extensionContext: ExtensionContext,
@@ -45,7 +54,6 @@ export class SerialReplacer {
     this._webview = webview;
     this._tag = tag;
     this._outputChannel = window.createOutputChannel(`Serial Replacer ${tag}`, "log");
-    this._fileFilters = null;
 
     this._log(LogLevel.info, `Serial Replacer ${tag} initialized`);
 
@@ -74,20 +82,80 @@ export class SerialReplacer {
     );
   }
 
+  private async _replaceAll() {
+    this._log(LogLevel.trace, `Replace all`);
+
+    const replacements: [RegExp, string][] = this._steps
+      .filter((step) => step.enabled)
+      .map((step) => {
+        this._log(LogLevel.trace, `step=${JSON.stringify(step)}`);
+
+        const { regExp, content, global, caseSensitive, multiline } = step.find;
+        const { content: replacement } = step.replace;
+        const regularExpression = new RegExp(
+          regExp ? content : content.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+          `${global ? "g" : ""}${caseSensitive ? "" : "i"}${multiline ? "m" : ""}`
+        );
+        return [regularExpression, replacement];
+      });
+
+    let totalReplacements = 0;
+    const errors = [];
+
+    for (const file of this._workspacesAndFiles.files) {
+      this._log(LogLevel.trace, `file=${file}`);
+
+      try {
+        const uri = Uri.file(file);
+
+        let text = Buffer.from(await workspace.fs.readFile(uri)).toString("utf8");
+
+        for (const [re, replacement] of replacements) {
+          const matches = text.match(re);
+          if (matches) {totalReplacements += matches.length;}
+          text = text.replace(re, replacement);
+        }
+
+        await workspace.fs.writeFile(uri, Buffer.from(text, "utf8"));
+      } catch (error) {
+        errors.push(error);
+      }
+    }
+
+    if (errors.length) {
+      this._log(LogLevel.error, `errors=${JSON.stringify(errors)}`);
+      const choice = await window.showErrorMessage(
+        t("An error occurred while making replacements."),
+        "details…"
+      );
+      if (choice === "details…") {
+        window.showInformationMessage(
+          errors.map((error) => `${JSON.stringify(error)};`).join("\n")
+        );
+      }
+      return;
+    }
+
+    const totalFiles = this._workspacesAndFiles.files.length;
+    window.showInformationMessage(
+      t(`{0} replacements made in {1} files`, totalReplacements, totalFiles)
+    );
+  }
+
   private async _setFiles() {
-    this._log(LogLevel.trace, `Set files: fileFilters=${JSON.stringify(this._fileFilters)}`);
+    this._log(LogLevel.trace, `Set files`);
 
     if (!this._fileFilters) {
       return;
     }
 
-    const selectedFiles: WorkspacesAndFiles = {
+    const workspacesAndFiles: WorkspacesAndFiles = {
       workspaces: [],
       files: [],
     };
 
     for (const workspaceFolder of workspace.workspaceFolders ?? []) {
-      selectedFiles.workspaces.push(workspaceFolder.uri.fsPath);
+      workspacesAndFiles.workspaces.push(workspaceFolder.uri.fsPath);
     }
 
     const subFolderGlobRegExp = new RegExp("\\*\\*|\\/");
@@ -144,18 +212,20 @@ export class SerialReplacer {
       }
     }
 
+    this._log(
+      LogLevel.debug,
+      `includeFilesList=${JSON.stringify(includeFilesList)}; globalExcludeList=${JSON.stringify(
+        globalExcludeList
+      )}; workspaceFolderExcludeList=${JSON.stringify(
+        workspaceFolderExcludeList
+      )}; uiExcludeFilesList=${JSON.stringify(uiExcludeFilesList)}`
+    );
+
     const excludeFilesList = [
       ...globalExcludeList,
       ...workspaceFolderExcludeList,
       ...uiExcludeFilesList,
     ].map((pattern) => formatSinglePattern(pattern));
-
-    this._log(
-      LogLevel.trace,
-      `File lists: includeFilesList=${JSON.stringify(
-        includeFilesList
-      )}; excludeFilesList=${JSON.stringify(excludeFilesList)}`
-    );
 
     if (this._fileFilters.useCurrentEditors) {
       for (const tabGroup of window.tabGroups.all) {
@@ -169,7 +239,7 @@ export class SerialReplacer {
             if (!currentFilePath) {
               continue;
             }
-            selectedFiles.files.push(currentFilePath);
+            workspacesAndFiles.files.push(currentFilePath);
           }
         }
       }
@@ -186,28 +256,25 @@ export class SerialReplacer {
         if (!currentFilePath) {
           continue;
         }
-        selectedFiles.files.push(currentFilePath);
+        workspacesAndFiles.files.push(currentFilePath);
       }
     }
 
-    this._log(LogLevel.debug, `Selected files: selectedFiles=${JSON.stringify(selectedFiles)}`);
-
+    this._log(LogLevel.debug, `workspacesAndFiles=${JSON.stringify(workspacesAndFiles)}`);
+    this._workspacesAndFiles = workspacesAndFiles;
     this.postMessage({
       type: "SET_FILES",
-      payload: selectedFiles,
+      payload: this._workspacesAndFiles,
     });
   }
 
   private _subscribeChanges() {
-    this._log(
-      LogLevel.trace,
-      `Subscribe to file changes: fileFilters=${JSON.stringify(this._fileFilters)}`
-    );
+    this._log(LogLevel.trace, "Subscribe changes");
 
     this.dispose();
 
     const changedFiles = (scope: string) => () => {
-      this._log(LogLevel.info, `File changes: scope=${JSON.stringify(scope)}`);
+      this._log(LogLevel.debug, `scope=${JSON.stringify(scope)}`);
       this._setFiles();
     };
 
@@ -257,8 +324,15 @@ export class SerialReplacer {
 
       case "GET_FILE_CHANGES":
         this._fileFilters = webviewMessage.payload;
+        this._log(LogLevel.debug, `fileFilters=${JSON.stringify(this._fileFilters)}`);
         this._subscribeChanges();
         this._setFiles();
+        return;
+
+      case "REPLACE_ALL":
+        this._steps = webviewMessage.payload;
+        this._log(LogLevel.debug, `steps=${JSON.stringify(this._steps)}`);
+        this._replaceAll();
         return;
     }
   }

@@ -65,6 +65,8 @@ const FileFilters: FC = () => {
   const handleFilesToIncludeKeyUp: TextfieldKeyboardEventHandler = (event) => debouncedInclude();
 
   const handleCurrentEditorsClick: VscodeIconMouseEventHandler = (event) => {
+    console.log("▷ handleCurrentEditorsClick");
+
     dispatch({
       type: "SET_USE_CURRENT_EDITORS",
       payload: !state.useCurrentEditors,
@@ -74,12 +76,15 @@ const FileFilters: FC = () => {
   const handleFilesToExcludeChange: TextfieldChangeEventHandler = (event) => debouncedExclude();
 
   const handleFilesToExcludeKeyDown: TextfieldKeyboardEventHandler = (event) => {
+    console.log("▷ handleFilesToExcludeKeyDown");
     // TODO: arrow history
   };
 
   const handleFilesToExcludeKeyUp: TextfieldKeyboardEventHandler = (event) => debouncedExclude();
 
   const handleExcludeSettingsAndIgnoreFilesClick: VscodeIconMouseEventHandler = (event) => {
+    console.log("▷ handleExcludeSettingsAndIgnoreFilesClick");
+
     dispatch({
       type: "SET_EXCLUDE_SETTINGS_AND_IGNORE_FILES",
       payload: !state.useExcludeSettingsAndIgnoreFiles,

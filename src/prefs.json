@@ -1,5 +1,5 @@
 {
-  "maxLogMessageSize": 1024,
   "extensionLogLevel": "trace",
+  "maxLogMessageSize": 1048576,
   "micromatchOptions": { "dot": true, "nocase": true }
 }

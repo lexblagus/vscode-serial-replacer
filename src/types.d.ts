@@ -1,10 +1,14 @@
 import { TreeItem } from "webview-ui/src/types/tree";
-import { FileFilters } from "webview-ui/src/types/replacers";
+import { FileFilters, Step } from "webview-ui/src/types/replacers";
 
 export type WebviewMessage =
   | {
       command: "GET_FILE_CHANGES";
       payload: FileFilters;
+    }
+  | {
+      command: "REPLACE_ALL";
+      payload: Step[]
     }
   | {
       command: "DISPLAY_INFORMATION_MESSAGE";

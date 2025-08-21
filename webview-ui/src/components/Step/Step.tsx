@@ -33,6 +33,8 @@ const Step: FC<{ index: number }> = ({ index }) => {
   const title = step.title ?? t("Step {0}", (index + 1).toString());
 
   const CollapsibleToggleEventHandler: VscodeCollapsibleToggleEventHandler = (event) => {
+    console.log("▷ CollapsibleToggleEventHandler");
+
     dispatch({
       type: "SET_STEP_EXPANDED",
       payload: {
@@ -43,6 +45,8 @@ const Step: FC<{ index: number }> = ({ index }) => {
   };
 
   const handleStepFindChange: TextareaChangeEventHandler = (event) => {
+    console.log("▷ handleStepFindChange");
+
     dispatch({
       type: "SET_STEP_FIND",
       payload: {
@@ -55,10 +59,14 @@ const Step: FC<{ index: number }> = ({ index }) => {
   };
 
   const handleStepFindKeyDown: TextareaKeyboardEventHandler = (event) => {
+    console.log("▷ handleStepFindKeyDown");
+
     // TODO: arrow history
   };
 
   const handleStepFindKeyUp: TextareaKeyboardEventHandler = (event) => {
+    console.log("▷ handleStepFindKeyUp");
+
     dispatch({
       type: "SET_STEP_FIND",
       payload: {
@@ -71,6 +79,8 @@ const Step: FC<{ index: number }> = ({ index }) => {
   };
 
   const handleStepReplaceChange: TextareaChangeEventHandler = (event) => {
+    console.log("▷ handleStepReplaceChange");
+
     dispatch({
       type: "SET_STEP_REPLACE",
       payload: {
@@ -83,11 +93,9 @@ const Step: FC<{ index: number }> = ({ index }) => {
   };
 
   const handleStepReplaceKeyDown: TextareaKeyboardEventHandler = (event) => {
-    // TODO: arrow history
-  };
+    console.log("▷ handleStepReplaceKeyDown");
 
-  const handleStepReplacePreviewClick: LinkMouseEventHandler = (event) => {
-    // TODO: preview
+    // TODO: arrow history
   };
 
   useEffect(() => {
@@ -200,12 +208,6 @@ const Step: FC<{ index: number }> = ({ index }) => {
               onChange={handleStepReplaceChange}
               onKeyDown={handleStepReplaceKeyDown}></VscodeTextarea>
           </VscodeFormGroup>
-          <div className="x-end text-discreet">
-            <a href="#" onClick={handleStepReplacePreviewClick}>
-              {t("preview…")}
-            </a>
-          </div>
-          <br />
         </div>
       </VscodeCollapsible>
     </div>

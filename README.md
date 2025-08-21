@@ -34,27 +34,37 @@
 
 ## Roadmap
 
-- ✓ Webview (frontend)
+- Webview (frontend)
   - ✓ UI (React)
   - ✓ Icons
-  - ✓ …
+  - ✓ File tree with actions
+  - Semi-persistent data (e.g.: when change panels)
+
 - Extension (backend)
-  - Bi-direction communication _(in progress)_
-    - From webview to extension
+  - ✓ Bi-direction communication
+    - ✓ From webview to extension
       - ✓ file filters
-      - make replacement
-      - preview
-      - about
-    - From extension to webview
+    - ✓ From extension to webview
       - ✓ file tree
+  - ✓ Make replacement
+  - Preview
+  - About
+  - Commands
+  - Settings
+
+- Integrated (frontend + backend)
   - ✓ Get files and folders
-  - Data persistance
+  - Rename step
+  - Sets: data persistance (save/load/rename)
+  - ✓ …
+
 - Docs
   - Final screenshot (animated)
   - Tutorial and features
-  - Extension commands
-  - Extension settings
-- __Future:__
+
+- Publish
+
+- **Future:**
   - Replacements preview (using treeview, panels and diff)
   - Multiple instances (panels)
 
