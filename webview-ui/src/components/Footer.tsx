@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
+import { vscode } from "../utils/vscode";
 import type { LinkMouseEventHandler } from "../types/events";
 
 export const Footer: FC = () => {
@@ -10,10 +11,10 @@ export const Footer: FC = () => {
     console.log("▷ handleResetClick");
 
     event.preventDefault();
-    // TODO: Are you sure?
-    dispatch({
-      type: "RESET",
+    vscode.postMessage({
+      command: "CONFIRM_RESET",
     });
+    
   };
 
   const handleAboutClick: LinkMouseEventHandler = (event) => {

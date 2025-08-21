@@ -8,11 +8,14 @@ export type WebviewMessage =
     }
   | {
       command: "REPLACE_ALL";
-      payload: Step[]
+      payload: Step[];
     }
   | {
       command: "DISPLAY_INFORMATION_MESSAGE";
       payload: string;
+    }
+  | {
+      command: "CONFIRM_RESET";
     };
 
 export type PathList = string[];
@@ -24,4 +27,5 @@ export type WorkspacesAndFiles<T = PathList> = {
 
 export type ExtensionMessage =
   | { type: "SEND_LOG"; payload: any }
-  | { type: "SET_FILES"; payload: WorkspacesAndFiles };
+  | { type: "SET_FILES"; payload: WorkspacesAndFiles }
+  | { type: "COMMIT_RESET" };

@@ -112,7 +112,9 @@ export class SerialReplacer {
 
         for (const [re, replacement] of replacements) {
           const matches = text.match(re);
-          if (matches) {totalReplacements += matches.length;}
+          if (matches) {
+            totalReplacements += matches.length;
+          }
           text = text.replace(re, replacement);
         }
 
@@ -310,7 +312,7 @@ export class SerialReplacer {
     }
   }
 
-  public receiveMessage(webviewMessage: WebviewMessage): void {
+  public async receiveMessage(webviewMessage: WebviewMessage): Promise<void> {
     this._log(LogLevel.trace, `Received message: webviewMessage=${JSON.stringify(webviewMessage)}`);
 
     switch (webviewMessage.command) {
@@ -320,6 +322,20 @@ export class SerialReplacer {
           type: "SEND_LOG",
           payload: webviewMessage.payload,
         });
+        return;
+
+      case "CONFIRM_RESET":
+        if (
+          (await window.showWarningMessage(
+            t("Are you sure you want to reset files and steps?"),
+            { modal: true },
+            t("Yes")
+          )) === t("Yes")
+        ) {
+          this.postMessage({
+            type: "COMMIT_RESET",
+          });
+        }
         return;
 
       case "GET_FILE_CHANGES":

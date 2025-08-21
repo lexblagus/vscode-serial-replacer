@@ -47,6 +47,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
           });
           break;
 
+        case "COMMIT_RESET":
+          dispatch({
+            type: "RESET",
+          });
+          break;
+
         case "SEND_LOG":
           console.log("Received message from extension:", message.payload);
           break;
