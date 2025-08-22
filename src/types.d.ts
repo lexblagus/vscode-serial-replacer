@@ -3,6 +3,10 @@ import { FileFilters, Step } from "webview-ui/src/types/replacers";
 
 export type WebviewMessage =
   | {
+      command: "SUBSCRIBE_CHANGES";
+      payload: boolean;
+    }
+  | {
       command: "GET_FILE_TREE";
       payload: FileFilters;
     }

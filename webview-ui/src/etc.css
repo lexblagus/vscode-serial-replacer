@@ -103,7 +103,7 @@
 
 .file-tree-wrapper { overflow: hidden; }
 .file-tree-wrapper > div {
-  position: relative;
+  /* position: relative;
   top: 0;
-  left: -10px;
+  left: -10px; */
 }

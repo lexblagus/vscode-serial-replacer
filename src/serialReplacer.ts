@@ -37,7 +37,12 @@ export class SerialReplacer {
   private readonly _webview: Webview;
   private readonly _tag: string;
   private readonly _outputChannel: OutputChannel;
-  private _fileFilters: FileFilters | null = null;
+  private _fileFilters: FileFilters = {
+    includeFiles: "",
+    useCurrentEditors: true,
+    excludeFiles: "",
+    useExcludeSettingsAndIgnoreFiles: true,
+  };
   private _workspacesAndFiles: WorkspacesAndFiles = {
     files: [],
     workspaces: [],
@@ -147,10 +152,6 @@ export class SerialReplacer {
   private async _setFiles() {
     this._log(LogLevel.trace, `Set files`);
 
-    if (!this._fileFilters) {
-      return;
-    }
-
     const workspacesAndFiles: WorkspacesAndFiles = {
       workspaces: [],
       files: [],
@@ -167,9 +168,9 @@ export class SerialReplacer {
     const formatFilesList = (patternsList: string): string[] =>
       splitOutsideCurlyBraces(patternsList).map((pattern) => formatSinglePattern(pattern));
 
-    const includeFilesList = formatFilesList(this._fileFilters?.includeFiles);
+    const includeFilesList = formatFilesList(this._fileFilters.includeFiles);
 
-    const uiExcludeFilesList = formatFilesList(this._fileFilters?.excludeFiles);
+    const uiExcludeFilesList = formatFilesList(this._fileFilters.excludeFiles);
 
     /*
     Includes:
@@ -190,7 +191,7 @@ export class SerialReplacer {
     */
     const workspaceFolderExcludeList: string[] = [];
 
-    if (this._fileFilters?.useExcludeSettingsAndIgnoreFiles) {
+    if (this._fileFilters.useExcludeSettingsAndIgnoreFiles) {
       const globalConfig = workspace.getConfiguration("search");
       const globalExclude = globalConfig.get<Record<string, boolean>>("exclude") ?? {};
       for (const [pattern, active] of Object.entries(globalExclude)) {
@@ -275,37 +276,31 @@ export class SerialReplacer {
 
     this.dispose();
 
-    const changedFiles = (scope: string) => () => {
-      this._log(LogLevel.debug, `scope=${JSON.stringify(scope)}`);
+    const subscriptionListener = (scope: string) => () => {
+      this._log(LogLevel.debug, `Subscription listener: scope=${JSON.stringify(scope)}`);
       this._setFiles();
     };
 
-    // Fired when any config value changes.
-    workspace.onDidChangeConfiguration(changedFiles("workspace.onDidChangeConfiguration"));
-    // Fired when files are renamed.
-    workspace.onDidRenameFiles(changedFiles("workspace.onDidRenameFiles"));
-    // Fired when files are deleted.
-    workspace.onDidDeleteFiles(changedFiles("workspace.onDidDeleteFiles"));
-    // Fired when new files are created.
-    workspace.onDidCreateFiles(changedFiles("workspace.onDidCreateFiles"));
-    // Fired when the window gains or loses focus.
-    // window.onDidChangeWindowState(changedFiles("window.onDidChangeWindowState")); // Maybe remove
+    workspace.onDidChangeConfiguration(subscriptionListener("workspace.onDidChangeConfiguration"));
+    workspace.onDidRenameFiles(subscriptionListener("workspace.onDidRenameFiles"));
+    workspace.onDidDeleteFiles(subscriptionListener("workspace.onDidDeleteFiles"));
+    workspace.onDidCreateFiles(subscriptionListener("workspace.onDidCreateFiles"));
+    workspace.onDidSaveTextDocument(subscriptionListener("workspace.onDidSaveTextDocument"));
 
-    if (this._fileFilters?.useCurrentEditors) {
-      // Fired when a text document is opened.
-      workspace.onDidOpenTextDocument(changedFiles("workspace.onDidOpenTextDocument"));
-      // Fired when a text document is closed.
-      workspace.onDidCloseTextDocument(changedFiles("workspace.onDidCloseTextDocument"));
-      // Fired when the list of visible editors changes (e.g., split view).
-      // window.onDidChangeVisibleTextEditors(changedFiles("window.onDidChangeVisibleTextEditors"));
-      //Fires when user switches to a different editor (tab)
-      // window.onDidChangeActiveTextEditor(changedFiles("window.onDidChangeActiveTextEditor"));
-
+    if (this._fileFilters.useCurrentEditors) {
+      workspace.onDidOpenTextDocument(subscriptionListener("workspace.onDidOpenTextDocument"));
+      workspace.onDidCloseTextDocument(subscriptionListener("workspace.onDidCloseTextDocument"));
       return;
     }
 
-    // Fired when folders are added/removed from the workspace.
-    workspace.onDidChangeWorkspaceFolders(changedFiles("workspace.onDidChangeWorkspaceFolders"));
+    workspace.onDidChangeWorkspaceFolders(
+      subscriptionListener("workspace.onDidChangeWorkspaceFolders")
+    );
+
+    const watcher = workspace.createFileSystemWatcher("**/*");
+    watcher.onDidCreate(subscriptionListener("watcher.onDidCreate"));
+    watcher.onDidDelete(subscriptionListener("watcher.onDidDelete"));
+    watcher.onDidChange(subscriptionListener("watcher.onDidChange"));
   }
 
   public async receiveMessage(webviewMessage: WebviewMessage): Promise<void> {
@@ -331,20 +326,22 @@ export class SerialReplacer {
             ". " +
             t("Leave empty to name it automatically, like '{0}'", autoTitle) +
             ". " +
-            t("If you explicitly name it '{0}', it will persist even when you change the step order", autoTitle) +
-            ". " +
-            t("Press 'Enter' to confirm or 'Escape' to cancel") +
+            t(
+              "If you explicitly name it '{0}', it will persist even when you change the step order",
+              autoTitle
+            ) +
             ".",
           value: title,
           ignoreFocusOut: false,
         });
-        if (newTitle !== undefined) { // if use did not cancel
+        if (newTitle !== undefined) {
+          // if use did not cancel
           this.postMessage({
             type: "COMMIT_RENAME",
             payload: {
               id,
-              title: newTitle || undefined // if user choosed auto title
-            }
+              title: newTitle || undefined, // if user choosed auto title
+            },
           });
         }
         return;
@@ -365,10 +362,15 @@ export class SerialReplacer {
         return;
       }
 
+      case "SUBSCRIBE_CHANGES": {
+        this._fileFilters.useCurrentEditors = webviewMessage.payload;
+        this._subscribeChanges();
+        return;
+      }
+
       case "GET_FILE_TREE": {
         this._fileFilters = webviewMessage.payload;
         this._log(LogLevel.debug, `fileFilters=${JSON.stringify(this._fileFilters)}`);
-        this._subscribeChanges();
         this._setFiles();
         return;
       }

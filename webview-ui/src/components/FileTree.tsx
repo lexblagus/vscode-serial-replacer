@@ -136,8 +136,7 @@ const FileTree: FC = () => {
         <div className="file-tree-wrapper">
           <div>
             <VscodeTree
-              arrows
-              indent={22}
+              indent={12}
               indentGuides
               data={state.results}
               onVscTreeAction={handleTreeAction}

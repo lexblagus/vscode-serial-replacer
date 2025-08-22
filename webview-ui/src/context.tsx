@@ -53,7 +53,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             payload: {
               id: message.payload.id,
               title: message.payload.title,
-            }
+            },
           });
           break;
 
@@ -72,6 +72,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, []);
+
+  // Subscribe to file/editor changes
+  useEffect(() => {
+    vscode.postMessage({
+      command: "SUBSCRIBE_CHANGES",
+      payload: state.useCurrentEditors,
+    });
+  }, [state.useCurrentEditors]);
 
   // Request new file tree
   useEffect(() => {

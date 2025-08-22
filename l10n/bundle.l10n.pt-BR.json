@@ -28,7 +28,6 @@
   "Enter new name": "Ente com o novo nome",
   "Leave empty to name it automatically, like '{0}'": "Deixe em branco para nomear automaticamente, como '{0}'",
   "If you explicitly name it '{0}', it will persist even when you change the step order": "Se você nomear explicitamente para '{0}', persistirá mesmo ao mudar a ordem das etapas",
-  "Press 'Enter' to confirm or 'Escape' to cancel": "Pressione 'Enter' para confirmar ou 'Espace' para cancelar",
   "move down":  "mover para baixo",
   "move up":  "mover para cima",
   "add step bellow":  "adicionar etapa abaixo",
