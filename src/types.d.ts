@@ -7,6 +7,14 @@ export type WebviewMessage =
       payload: FileFilters;
     }
   | {
+      command: "PROMPT_RENAME";
+      payload: {
+        id: string;
+        index: number;
+        title: string;
+      };
+    }
+  | {
       command: "REPLACE_ALL";
       payload: Step[];
     }
@@ -28,4 +36,11 @@ export type WorkspacesAndFiles<T = PathList> = {
 export type ExtensionMessage =
   | { type: "SEND_LOG"; payload: any }
   | { type: "SET_FILES"; payload: WorkspacesAndFiles }
+  | {
+      type: "COMMIT_RENAME";
+      payload: {
+        id: string;
+        title: string | undefined;
+      };
+    }
   | { type: "COMMIT_RESET" };

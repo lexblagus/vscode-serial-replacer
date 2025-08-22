@@ -47,6 +47,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
           });
           break;
 
+        case "COMMIT_RENAME":
+          dispatch({
+            type: "SET_STEP_TITLE",
+            payload: {
+              id: message.payload.id,
+              title: message.payload.title,
+            }
+          });
+          break;
+
         case "COMMIT_RESET":
           dispatch({
             type: "RESET",

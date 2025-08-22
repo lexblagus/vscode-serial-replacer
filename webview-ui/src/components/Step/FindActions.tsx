@@ -5,10 +5,13 @@ import { useAppContext } from "../../context";
 import type { VscodeIconMouseEventHandler } from "../../types/events";
 
 const FindActions: FC<{ index: number }> = ({ index }) => {
+  console.log("▶ FindActions");
+
   const { state, dispatch } = useAppContext();
   const step = state.steps[index];
 
   const handleStepFindRegExpClick: VscodeIconMouseEventHandler = (event) => {
+    console.log("▷ handleStepFindRegExpClick");
     dispatch({
       type: "SET_STEP_FIND_REGEXP",
       payload: {
@@ -21,6 +24,7 @@ const FindActions: FC<{ index: number }> = ({ index }) => {
   };
 
   const handleStepFindGlobalClick: VscodeIconMouseEventHandler = (event) => {
+    console.log("▷ handleStepFindGlobalClick");
     dispatch({
       type: "SET_STEP_FIND_GLOBAL",
       payload: {
@@ -33,6 +37,7 @@ const FindActions: FC<{ index: number }> = ({ index }) => {
   };
 
   const handleStepFindMultilineClick: VscodeIconMouseEventHandler = (event) => {
+    console.log("▷ handleStepFindMultilineClick");
     dispatch({
       type: "SET_STEP_FIND_MULTILINE",
       payload: {
@@ -45,6 +50,7 @@ const FindActions: FC<{ index: number }> = ({ index }) => {
   };
 
   const handleStepFindCaseSensitiveClick: VscodeIconMouseEventHandler = (event) => {
+    console.log("▷ handleStepFindCaseSensitiveClick");
     dispatch({
       type: "SET_STEP_FIND_CASE_SENSITIVE",
       payload: {
@@ -57,6 +63,7 @@ const FindActions: FC<{ index: number }> = ({ index }) => {
   };
 
   const handleStepFindWordWrapClick: VscodeIconMouseEventHandler = (event) => {
+    console.log("▷ handleStepFindWordWrapClick");
     dispatch({
       type: "SET_STEP_FIND_WORD_WRAP",
       payload: {

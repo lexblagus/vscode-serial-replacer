@@ -61,8 +61,8 @@ type StepContextualAction =
   | {
       type: "SET_STEP_TITLE";
       payload: {
-        index: number;
-        title: string;
+        id: string;
+        title: string | undefined;
       };
     }
   | {

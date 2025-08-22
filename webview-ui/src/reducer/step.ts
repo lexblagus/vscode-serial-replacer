@@ -21,14 +21,9 @@ export function stepReducer(state: SerialReplacement, action: AppAction): Serial
     case "SET_STEP_TITLE":
       return {
         ...state,
-        steps: state.steps.map((step, index) => ({
+        steps: state.steps.map((step) => ({
           ...step,
-          ...(index === action.payload.index
-            ? {
-                ...step,
-                title: action.payload.title,
-              }
-            : step),
+          title: action.payload.id === step.id ? action.payload.title : step.title
         })),
       };
 

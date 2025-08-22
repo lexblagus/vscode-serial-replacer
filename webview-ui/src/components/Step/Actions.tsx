@@ -3,6 +3,7 @@ import type { FC } from "react";
 import { VscodeIcon, VscodeContextMenu } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../../context";
+import { vscode } from "../../utils/vscode";
 import {
   Refs,
   VscodeIconRefObject,
@@ -25,6 +26,8 @@ function useClickEventListener(
 }
 
 const Actions: FC<{ index: number }> = ({ index }) => {
+  console.log("▶ Actions");
+
   const { state, dispatch } = useAppContext();
   const [confirmRemoval, setConfirmRemoval] = useState(false);
 
@@ -57,10 +60,19 @@ const Actions: FC<{ index: number }> = ({ index }) => {
 
   const handlers: Handlers = {
     rename: createHandler(() => {
-      // TODO: rename
-      // Not allow repeated names!
+      console.log("▷ handlers.rename");
+
+      vscode.postMessage({
+        command: "PROMPT_RENAME",
+        payload: {
+          id: step.id,
+          index,
+          title: step.title ?? "",
+        },
+      });
     }),
     moveDown: createHandler(() => {
+      console.log("▷ handlers.moveDown");
       dispatch({
         type: "SET_STEP_POSITION",
         payload: {
@@ -70,6 +82,7 @@ const Actions: FC<{ index: number }> = ({ index }) => {
       });
     }),
     moveUp: createHandler(() => {
+      console.log("▷ handlers.moveUp");
       dispatch({
         type: "SET_STEP_POSITION",
         payload: {
@@ -79,6 +92,7 @@ const Actions: FC<{ index: number }> = ({ index }) => {
       });
     }),
     addBelow: createHandler(() => {
+      console.log("▷ handlers.addBelow");
       dispatch({
         type: "ADD_STEP",
         payload: {
@@ -88,6 +102,7 @@ const Actions: FC<{ index: number }> = ({ index }) => {
       });
     }),
     addAbove: createHandler(() => {
+      console.log("▷ handlers.addAbove");
       dispatch({
         type: "ADD_STEP",
         payload: {
@@ -97,6 +112,7 @@ const Actions: FC<{ index: number }> = ({ index }) => {
       });
     }),
     disable: createHandler(() => {
+      console.log("▷ handlers.disable");
       dispatch({
         type: "SET_STEP_ENABLED",
         payload: {
@@ -106,13 +122,16 @@ const Actions: FC<{ index: number }> = ({ index }) => {
       });
     }),
     remove: createHandler(() => {
+      console.log("▷ remove");
       setConfirmRemoval(true);
       buttonRefs?.confirmRemoval?.current?.focus();
     }),
     cancelRemoval: createHandler(() => {
+      console.log("▷ cancelRemoval");
       setConfirmRemoval(false);
     }),
     confirmRemoval: createHandler(() => {
+      console.log("▷ confirmRemoval");
       dispatch({
         type: "REMOVE_STEP",
         payload: {

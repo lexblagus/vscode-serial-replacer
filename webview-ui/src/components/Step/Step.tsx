@@ -30,7 +30,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
   const textareaFindRef = useRef<VscodeTextareaConstructor | null>(null);
   const textareaReplaceRef = useRef<VscodeTextareaConstructor | null>(null);
   const step = state.steps[index];
-  const title = step.title ?? t("Step {0}", (index + 1).toString());
+  const title = step.title || t("Step {0}", (index + 1).toString());
 
   const CollapsibleToggleEventHandler: VscodeCollapsibleToggleEventHandler = (event) => {
     console.log("▷ CollapsibleToggleEventHandler");

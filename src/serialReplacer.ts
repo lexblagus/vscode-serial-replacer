@@ -316,15 +316,45 @@ export class SerialReplacer {
     this._log(LogLevel.trace, `Received message: webviewMessage=${JSON.stringify(webviewMessage)}`);
 
     switch (webviewMessage.command) {
-      case "DISPLAY_INFORMATION_MESSAGE":
+      case "DISPLAY_INFORMATION_MESSAGE": {
         window.showInformationMessage(webviewMessage.payload);
         this.postMessage({
           type: "SEND_LOG",
           payload: webviewMessage.payload,
         });
         return;
+      }
 
-      case "CONFIRM_RESET":
+      case "PROMPT_RENAME": {
+        const { id, index, title } = webviewMessage.payload;
+        const autoTitle = t("Step {0}", index + 1);
+        const newTitle = await window.showInputBox({
+          title: `${t("Rename")} '${title || autoTitle}'`,
+          prompt:
+            t("Enter new name") +
+            ". " +
+            t("Leave empty to name it automatically, like '{0}'", autoTitle) +
+            ". " +
+            t("If you explicitly name it '{0}', it will persist even when you change the step order", autoTitle) +
+            ". " +
+            t("Press 'Enter' to confirm or 'Escape' to cancel") +
+            ".",
+          value: title,
+          ignoreFocusOut: false,
+        });
+        if (newTitle !== undefined) { // if use did not cancel
+          this.postMessage({
+            type: "COMMIT_RENAME",
+            payload: {
+              id,
+              title: newTitle || undefined // if user choosed auto title
+            }
+          });
+        }
+        return;
+      }
+
+      case "CONFIRM_RESET": {
         if (
           (await window.showWarningMessage(
             t("Are you sure you want to reset files and steps?"),
@@ -337,19 +367,22 @@ export class SerialReplacer {
           });
         }
         return;
+      }
 
-      case "GET_FILE_CHANGES":
+      case "GET_FILE_CHANGES": {
         this._fileFilters = webviewMessage.payload;
         this._log(LogLevel.debug, `fileFilters=${JSON.stringify(this._fileFilters)}`);
         this._subscribeChanges();
         this._setFiles();
         return;
+      }
 
-      case "REPLACE_ALL":
+      case "REPLACE_ALL": {
         this._steps = webviewMessage.payload;
         this._log(LogLevel.debug, `steps=${JSON.stringify(this._steps)}`);
         this._replaceAll();
         return;
+      }
     }
   }
 

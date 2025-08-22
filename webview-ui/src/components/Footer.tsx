@@ -5,6 +5,8 @@ import { vscode } from "../utils/vscode";
 import type { LinkMouseEventHandler } from "../types/events";
 
 export const Footer: FC = () => {
+  console.log("▶ Footer");
+
   const { state, dispatch } = useAppContext();
 
   const handleResetClick: LinkMouseEventHandler = (event) => {
@@ -14,7 +16,6 @@ export const Footer: FC = () => {
     vscode.postMessage({
       command: "CONFIRM_RESET",
     });
-    
   };
 
   const handleAboutClick: LinkMouseEventHandler = (event) => {
