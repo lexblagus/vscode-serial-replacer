@@ -265,7 +265,7 @@ export class SerialReplacer {
     this._log(LogLevel.debug, `workspacesAndFiles=${JSON.stringify(workspacesAndFiles)}`);
     this._workspacesAndFiles = workspacesAndFiles;
     this.postMessage({
-      type: "SET_FILES",
+      type: "SET_WORKSPACES_FILES",
       payload: this._workspacesAndFiles,
     });
   }
@@ -304,12 +304,8 @@ export class SerialReplacer {
       return;
     }
 
-    if (!this._fileFilters?.useCurrentEditors) {
-      // Fired when folders are added/removed from the workspace.
-      workspace.onDidChangeWorkspaceFolders(changedFiles("workspace.onDidChangeWorkspaceFolders"));
-
-      return;
-    }
+    // Fired when folders are added/removed from the workspace.
+    workspace.onDidChangeWorkspaceFolders(changedFiles("workspace.onDidChangeWorkspaceFolders"));
   }
 
   public async receiveMessage(webviewMessage: WebviewMessage): Promise<void> {
@@ -369,7 +365,7 @@ export class SerialReplacer {
         return;
       }
 
-      case "GET_FILE_CHANGES": {
+      case "GET_FILE_TREE": {
         this._fileFilters = webviewMessage.payload;
         this._log(LogLevel.debug, `fileFilters=${JSON.stringify(this._fileFilters)}`);
         this._subscribeChanges();

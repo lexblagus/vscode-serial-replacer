@@ -3,7 +3,7 @@ import { FileFilters, Step } from "webview-ui/src/types/replacers";
 
 export type WebviewMessage =
   | {
-      command: "GET_FILE_CHANGES";
+      command: "GET_FILE_TREE";
       payload: FileFilters;
     }
   | {
@@ -35,7 +35,7 @@ export type WorkspacesAndFiles<T = PathList> = {
 
 export type ExtensionMessage =
   | { type: "SEND_LOG"; payload: any }
-  | { type: "SET_FILES"; payload: WorkspacesAndFiles }
+  | { type: "SET_WORKSPACES_FILES"; payload: WorkspacesAndFiles }
   | {
       type: "COMMIT_RENAME";
       payload: {

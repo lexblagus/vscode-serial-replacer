@@ -37,7 +37,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const currentState = stateRef.current;
 
       switch (message.type) {
-        case "SET_FILES":
+        case "SET_WORKSPACES_FILES":
           dispatch({
             type: "SET_FILE_TREE",
             payload: {
@@ -73,28 +73,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
-  // send initialization message to extension ("backend")
-  /*
+  // Request new file tree
   useEffect(() => {
     const { includeFiles, excludeFiles, useCurrentEditors, useExcludeSettingsAndIgnoreFiles } =
       state;
 
     vscode.postMessage({
-      command: "INIT",
-    });
-  }, []);
-  */
-
-  useEffect(() => {
-    console.log("state", state);
-  }, [state]);
-
-  useEffect(() => {
-    const { includeFiles, excludeFiles, useCurrentEditors, useExcludeSettingsAndIgnoreFiles } =
-      state;
-
-    vscode.postMessage({
-      command: "GET_FILE_CHANGES",
+      command: "GET_FILE_TREE",
       payload: {
         includeFiles,
         excludeFiles,
@@ -108,6 +93,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     state.useCurrentEditors,
     state.useExcludeSettingsAndIgnoreFiles,
   ]);
+
+  useEffect(() => {
+    console.log("state", state);
+  }, [state]);
 
   return <AppContext.Provider value={{ state, dispatch }}>{children}</AppContext.Provider>;
 }

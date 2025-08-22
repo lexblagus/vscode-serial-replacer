@@ -20,7 +20,7 @@ const FileTree: FC = () => {
     console.log("▷ handleRefreshClick");
 
     vscode.postMessage({
-      command: "GET_FILE_CHANGES",
+      command: "GET_FILE_TREE",
       payload: {
         includeFiles: state.includeFiles,
         excludeFiles: state.excludeFiles,
@@ -37,7 +37,7 @@ const FileTree: FC = () => {
       case "refresh": {
         console.log("○ Refresh");
         vscode.postMessage({
-          command: "GET_FILE_CHANGES",
+          command: "GET_FILE_TREE",
           payload: {
             includeFiles: state.includeFiles,
             excludeFiles: state.excludeFiles,

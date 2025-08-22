@@ -54,7 +54,7 @@
 
 - Integrated (frontend + backend)
   - ✓ Get files and folders
-  - Rename step
+  - ✓ Rename step
   - Sets: data persistance (save/load/rename)
   - ✓ …
 
