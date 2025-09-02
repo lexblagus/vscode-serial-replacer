@@ -19,13 +19,22 @@ const FileTree: FC = () => {
   const handleRefreshClick: VscodeButtonMouseEventHandler = () => {
     console.log("▷ handleRefreshClick");
 
+    const {
+      includeFiles,
+      excludeFiles,
+      useCurrentEditors,
+      useExcludeSettingsAndIgnoreFiles,
+      steps,
+    } = state;
+
     vscode.postMessage({
-      command: "GET_FILE_TREE",
+      command: "SET_REPLACEMENT PARAMETERS",
       payload: {
-        includeFiles: state.includeFiles,
-        excludeFiles: state.excludeFiles,
-        useCurrentEditors: state.useCurrentEditors,
-        useExcludeSettingsAndIgnoreFiles: state.useExcludeSettingsAndIgnoreFiles,
+        includeFiles,
+        excludeFiles,
+        useCurrentEditors,
+        useExcludeSettingsAndIgnoreFiles,
+        steps,
       },
     });
   };
@@ -33,16 +42,25 @@ const FileTree: FC = () => {
   const handleTreeAction: VscTreeActionMouseEventHandler = (event) => {
     console.log("▷ handleTreeAction", "event.detail", event.detail);
 
+    const {
+      includeFiles,
+      excludeFiles,
+      useCurrentEditors,
+      useExcludeSettingsAndIgnoreFiles,
+      steps,
+    } = state;
+
     switch (event.detail.actionId) {
       case "refresh": {
         console.log("○ Refresh");
         vscode.postMessage({
-          command: "GET_FILE_TREE",
+          command: "SET_REPLACEMENT PARAMETERS",
           payload: {
-            includeFiles: state.includeFiles,
-            excludeFiles: state.excludeFiles,
-            useCurrentEditors: state.useCurrentEditors,
-            useExcludeSettingsAndIgnoreFiles: state.useExcludeSettingsAndIgnoreFiles,
+            includeFiles,
+            excludeFiles,
+            useCurrentEditors,
+            useExcludeSettingsAndIgnoreFiles,
+            steps,
           },
         });
         break;
@@ -63,7 +81,7 @@ const FileTree: FC = () => {
       case "remove": {
         console.log("○ Remove item", "event.detail.item", event.detail.value);
         const addToExclude = (event.detail.item?.subItems || []).length > 0 ? `${event.detail.value}/**` : event.detail.value;
-        const currentExclude = state.excludeFiles.length > 0 ? [state.excludeFiles] : [];
+        const currentExclude = excludeFiles.length > 0 ? [excludeFiles] : [];
         dispatch({
           type: "SET_FILES_TO_EXCLUDE",
           payload: [

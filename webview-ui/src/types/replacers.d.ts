@@ -26,9 +26,12 @@ export interface FileFilters {
   useExcludeSettingsAndIgnoreFiles: boolean;
 }
 
-export interface SerialReplacement extends FileFilters {
+export interface ReplacementParameters extends FileFilters {
+  steps: Step[];
+}
+
+export interface SerialReplacement extends ReplacementParameters {
   id: string;
   results: TreeItem[];
   resultsTotalFiles: number;
-  steps: Step[];
 }

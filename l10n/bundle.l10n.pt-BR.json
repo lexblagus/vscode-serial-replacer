@@ -57,9 +57,10 @@
   "Serial Replace": "Substituir em série",
   "Save set…": "Salvar série…",
 
+  "No replacements": "Nenhuma substituição",
   "{0} replacements made in {1} files": "{0} substituições em {1} arquivos",
-  "An error occurred while making replacements.": "Ocorreu um erro ao fazer as substituições",
-  "details…": "detalhes…",
+  "and {0} errors": "e [0} errros",
+  "Details…": "Detalhes…",
 
   "reset": "redefinir",
   "Are you sure you want to reset files and steps?": "Você tem certeza de que deseja redefinir arquivos e etapas?",

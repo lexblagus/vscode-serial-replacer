@@ -15,8 +15,14 @@ import { join } from "path";
 import { filterFileByLists, splitOutsideCurlyBraces } from "./aux";
 import prefs from "./prefs.json";
 const { t } = l10n;
-import type { WebviewMessage, ExtensionMessage, WorkspacesAndFiles } from "./types";
-import type { FileFilters, Step } from "webview-ui/src/types/replacers";
+import type {
+  WebviewMessage,
+  ExtensionMessage,
+  WorkspacesAndFiles,
+  ReplacementResults,
+  FilePath,
+} from "./types";
+import type { ReplacementParameters, Step } from "webview-ui/src/types/replacers";
 
 const { bundle } = l10n;
 
@@ -32,23 +38,25 @@ enum LogLevel {
 
 type LogLevels = keyof typeof LogLevel;
 
+const s = "  "; // log space indent
+
 export class SerialReplacer {
   private readonly _context: ExtensionContext;
   private readonly _webview: Webview;
   private readonly _tag: string;
   private readonly _outputChannel: OutputChannel;
-  private _fileFilters: FileFilters = {
+  private _replacementParameters: ReplacementParameters = {
     includeFiles: "",
     useCurrentEditors: true,
     excludeFiles: "",
     useExcludeSettingsAndIgnoreFiles: true,
+    steps: [],
   };
   private _workspacesAndFiles: WorkspacesAndFiles = {
     files: [],
     workspaces: [],
   };
   private _subscriptions: Disposable[] = [];
-  private _steps: Step[] = [];
 
   constructor(
     private readonly extensionContext: ExtensionContext,
@@ -68,14 +76,14 @@ export class SerialReplacer {
     this._log(LogLevel.error, 'error');
     this._log(LogLevel.warn, 'warn');
     this._log(LogLevel.info, 'info');
-    this._log(LogLevel.debug, 'debug');
-    this._log(LogLevel.trace, 'trace');
+    this._log(LogLevel.debug, 'debug'); // usually constants/variables inside methods
+    this._log(LogLevel.trace, 'trace'); // usually method/function
     */
   }
 
-  private _log(level: LogLevel, message: string) {
+  private _log(level: LogLevel, message: string, force = false) {
     const preferenceLevel = LogLevel[prefs.extensionLogLevel as LogLevels];
-    if (preferenceLevel < level || preferenceLevel === LogLevel.silent || level === 0) {
+    if (!force && (preferenceLevel < level || preferenceLevel === LogLevel.silent || level === 0)) {
       return;
     }
     this._outputChannel.appendLine(
@@ -83,70 +91,137 @@ export class SerialReplacer {
         msg.length > maxSize ? `${msg.slice(0, maxSize)}… (truncated)` : msg)(
         message,
         prefs.maxLogMessageSize
-      )}\n`
+      )}`
     );
   }
 
-  private async _replaceAll() {
-    this._log(LogLevel.trace, `Replace all`);
+  private async _replace(commit = false): Promise<ReplacementResults> {
+    this._log(LogLevel.trace, `Replace commit=${JSON.stringify(commit)}`);
 
-    const replacements: [RegExp, string][] = this._steps
+    const replacementResults: ReplacementResults = {};
+
+    const replacements = this._replacementParameters.steps
       .filter((step) => step.enabled)
       .map((step) => {
-        this._log(LogLevel.trace, `step=${JSON.stringify(step)}`);
+        const {
+          id,
+          find: { regExp, content, global, caseSensitive, multiline },
+          replace: { content: replacement },
+        } = step;
 
-        const { regExp, content, global, caseSensitive, multiline } = step.find;
-        const { content: replacement } = step.replace;
-        const regularExpression = new RegExp(
-          regExp ? content : content.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+        const re = new RegExp(
+          content === ""
+            ? "(?!)" // empty find will look for nothing
+            : regExp // if regular expression toggled…
+            ? content // …literal regular expression given by user
+            : content.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), // …otherwise plain text escaped
           `${global ? "g" : ""}${caseSensitive ? "" : "i"}${multiline ? "m" : ""}`
         );
-        return [regularExpression, replacement];
+        return { id, re, replacement };
       });
 
-    let totalReplacements = 0;
-    const errors = [];
-
     for (const file of this._workspacesAndFiles.files) {
-      this._log(LogLevel.trace, `file=${file}`);
+      replacementResults[file] = { replacements: 0, errors: [] };
 
       try {
         const uri = Uri.file(file);
 
         let text = Buffer.from(await workspace.fs.readFile(uri)).toString("utf8");
 
-        for (const [re, replacement] of replacements) {
-          const matches = text.match(re);
+        for (const replacement of replacements) {
+          const matches = text.match(replacement.re);
           if (matches) {
-            totalReplacements += matches.length;
+            replacementResults[file].replacements =
+              replacementResults[file].replacements + matches.length;
           }
-          text = text.replace(re, replacement);
+          text = text.replace(replacement.re, replacement.replacement);
         }
 
-        await workspace.fs.writeFile(uri, Buffer.from(text, "utf8"));
-      } catch (error) {
-        errors.push(error);
+        if (commit) {
+          await workspace.fs.writeFile(uri, Buffer.from(text, "utf8"));
+        }
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          replacementResults[file].errors.push(error); // has .message, .stack, etc.
+        } else {
+          replacementResults[file].errors.push(new Error(String(error))); // wrap non-Error values
+        }
       }
     }
 
-    if (errors.length) {
-      this._log(LogLevel.error, `errors=${JSON.stringify(errors)}`);
-      const choice = await window.showErrorMessage(
-        t("An error occurred while making replacements."),
-        "details…"
-      );
-      if (choice === "details…") {
-        window.showInformationMessage(
-          errors.map((error) => `${JSON.stringify(error)};`).join("\n")
-        );
+    return replacementResults;
+  }
+
+  private async _previewCount() {
+    this._log(LogLevel.trace, `Preview count`);
+
+    const results = await this._replace(false);
+    this._log(LogLevel.debug, `results=${JSON.stringify(results)}`);
+    // ...
+  }
+
+  private async _replaceAll() {
+    this._log(LogLevel.trace, `Replace all`);
+
+    const results = await this._replace(true);
+    this._log(LogLevel.debug, `results=${JSON.stringify(results)}`);
+
+    const stats = Object.values(results).reduce(
+      (acc, result) => {
+        return {
+          totalFiles: acc.totalFiles + 1,
+          filesReplaced: acc.filesReplaced + (result.replacements ? 1 : 0),
+          replacementsMade: acc.replacementsMade + result.replacements,
+          errors: acc.errors + result.errors.length,
+        };
+      },
+      {
+        totalFiles: 0,
+        filesReplaced: 0,
+        replacementsMade: 0,
+        errors: 0,
       }
+    );
+    this._log(LogLevel.debug, `stats=${JSON.stringify(stats)}`);
+
+    const succesMessage = t(
+      `{0} replacements made in {1} files`,
+      stats.replacementsMade,
+      stats.filesReplaced
+    );
+
+    if (!stats.errors) {
+      if (stats.replacementsMade === 0) {
+        window.showInformationMessage(t("No replacements"));
+        return;
+      }
+
+      window.showInformationMessage(succesMessage);
       return;
     }
 
-    const totalFiles = this._workspacesAndFiles.files.length;
-    window.showInformationMessage(
-      t(`{0} replacements made in {1} files`, totalReplacements, totalFiles)
-    );
+    const errors: [FilePath, Error[]][] = Object.entries(results)
+      .filter(([, { errors }]) => errors.length > 0)
+      .map(([filePath, { errors }]) => [filePath, errors]);
+    this._log(LogLevel.error, `errors=${JSON.stringify(errors)}`);
+
+    const errorMessage = t(`and {0} errors`, stats.errors);
+
+    const choice = await window.showErrorMessage(`${succesMessage} ${errorMessage}`, t("Details…"));
+
+    if (choice === t("Details…")) {
+      const details = errors
+        .map(
+          (fileAndErrors) =>
+            `${s}${fileAndErrors[0]}:\n${fileAndErrors[1]
+              .map((e) => `${s}${s}${JSON.stringify(e)}`)
+              .join("\n")}`
+        )
+        .join("\n");
+      // This is part of UX, do not remove this log line
+      this._log(LogLevel.error, `Details:\n${details}`, true);
+      this._outputChannel.show(true);
+    }
   }
 
   private async _setFiles() {
@@ -168,9 +243,9 @@ export class SerialReplacer {
     const formatFilesList = (patternsList: string): string[] =>
       splitOutsideCurlyBraces(patternsList).map((pattern) => formatSinglePattern(pattern));
 
-    const includeFilesList = formatFilesList(this._fileFilters.includeFiles);
+    const includeFilesList = formatFilesList(this._replacementParameters.includeFiles);
 
-    const uiExcludeFilesList = formatFilesList(this._fileFilters.excludeFiles);
+    const uiExcludeFilesList = formatFilesList(this._replacementParameters.excludeFiles);
 
     /*
     Includes:
@@ -191,7 +266,7 @@ export class SerialReplacer {
     */
     const workspaceFolderExcludeList: string[] = [];
 
-    if (this._fileFilters.useExcludeSettingsAndIgnoreFiles) {
+    if (this._replacementParameters.useExcludeSettingsAndIgnoreFiles) {
       const globalConfig = workspace.getConfiguration("search");
       const globalExclude = globalConfig.get<Record<string, boolean>>("exclude") ?? {};
       for (const [pattern, active] of Object.entries(globalExclude)) {
@@ -230,7 +305,7 @@ export class SerialReplacer {
       ...uiExcludeFilesList,
     ].map((pattern) => formatSinglePattern(pattern));
 
-    if (this._fileFilters.useCurrentEditors) {
+    if (this._replacementParameters.useCurrentEditors) {
       for (const tabGroup of window.tabGroups.all) {
         for (const tab of tabGroup.tabs) {
           if (tab.input instanceof TabInputText) {
@@ -248,7 +323,7 @@ export class SerialReplacer {
       }
     }
 
-    if (!this._fileFilters.useCurrentEditors) {
+    if (!this._replacementParameters.useCurrentEditors) {
       const workspaceFiles = await workspace.findFiles("**/*");
       for (const workspaceFile of workspaceFiles) {
         const currentFilePath = filterFileByLists(
@@ -287,7 +362,7 @@ export class SerialReplacer {
     workspace.onDidCreateFiles(subscriptionListener("workspace.onDidCreateFiles"));
     workspace.onDidSaveTextDocument(subscriptionListener("workspace.onDidSaveTextDocument"));
 
-    if (this._fileFilters.useCurrentEditors) {
+    if (this._replacementParameters.useCurrentEditors) {
       workspace.onDidOpenTextDocument(subscriptionListener("workspace.onDidOpenTextDocument"));
       workspace.onDidCloseTextDocument(subscriptionListener("workspace.onDidCloseTextDocument"));
       return;
@@ -363,21 +438,31 @@ export class SerialReplacer {
       }
 
       case "SUBSCRIBE_CHANGES": {
-        this._fileFilters.useCurrentEditors = webviewMessage.payload;
+        this._replacementParameters.useCurrentEditors = webviewMessage.payload;
         this._subscribeChanges();
         return;
       }
 
-      case "GET_FILE_TREE": {
-        this._fileFilters = webviewMessage.payload;
-        this._log(LogLevel.debug, `fileFilters=${JSON.stringify(this._fileFilters)}`);
+      case "SET_REPLACEMENT PARAMETERS": {
+        this._replacementParameters = webviewMessage.payload;
+        this._log(
+          LogLevel.debug,
+          `replacementParameters=${JSON.stringify(this._replacementParameters)}`
+        );
         this._setFiles();
+        this._previewCount();
+        return;
+      }
+
+      case "GET_PREVIEW_COUNT": {
+        this._replacementParameters.steps = webviewMessage.payload;
+        this._log(LogLevel.debug, `steps=${JSON.stringify(this._replacementParameters.steps)}`);
+        this._previewCount();
         return;
       }
 
       case "REPLACE_ALL": {
-        this._steps = webviewMessage.payload;
-        this._log(LogLevel.debug, `steps=${JSON.stringify(this._steps)}`);
+        this._setFiles(); // update files prior replacement; avoid deleted files to throw error
         this._replaceAll();
         return;
       }

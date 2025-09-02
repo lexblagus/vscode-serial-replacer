@@ -25,11 +25,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Keep state up-to-date to be used in other hooks
   useEffect(() => {
+    console.log("● context/useEffect for state reference");
     stateRef.current = state;
   }, [state]);
 
   // receives messages from extension ("backend")
   useEffect(() => {
+    console.log("● context/useEffect for backend messages");
+
     const handleMessage = (event: MessageEvent<ExtensionMessage>) => {
       console.log(`▷ handleMessage event.data=${JSON.stringify(event.data)}`);
 
@@ -75,24 +78,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Subscribe to file/editor changes
   useEffect(() => {
+    console.log("● context/useEffect for subscribe changes");
     vscode.postMessage({
       command: "SUBSCRIBE_CHANGES",
       payload: state.useCurrentEditors,
     });
   }, [state.useCurrentEditors]);
 
-  // Request new file tree
+  // Get file tree when replacement parameters change
   useEffect(() => {
-    const { includeFiles, excludeFiles, useCurrentEditors, useExcludeSettingsAndIgnoreFiles } =
-      state;
+    console.log("● context/useEffect for request file tree");
+
+    const {
+      includeFiles,
+      excludeFiles,
+      useCurrentEditors,
+      useExcludeSettingsAndIgnoreFiles,
+      steps,
+    } = state;
 
     vscode.postMessage({
-      command: "GET_FILE_TREE",
+      command: "SET_REPLACEMENT PARAMETERS",
       payload: {
         includeFiles,
         excludeFiles,
         useCurrentEditors,
         useExcludeSettingsAndIgnoreFiles,
+        steps,
       },
     });
   }, [
@@ -100,8 +112,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     state.excludeFiles,
     state.useCurrentEditors,
     state.useExcludeSettingsAndIgnoreFiles,
+    // state.steps on preview bellow
   ]);
 
+  // Update preview when steps change
+  useEffect(() => {
+    console.log("● context/useEffect for update preview");
+
+    vscode.postMessage({
+      command: "GET_PREVIEW_COUNT",
+      payload: state.steps,
+    });
+  }, [state.steps]);
+
+  // Debug state
   useEffect(() => {
     console.log("state", state);
   }, [state]);
