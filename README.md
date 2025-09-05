@@ -11,7 +11,7 @@
   - Files to exclude (using patterns)
 
 - Multiple steps
-  - Add step above and bellow
+  - Add step above and below
   - Move steps up and down
   - Disable and delete
   - Rename step title

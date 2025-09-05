@@ -15,7 +15,6 @@ import ReplaceActions from "./ReplaceActions";
 import { text } from "../../utils/etc";
 import type { FC } from "react";
 import type {
-  LinkMouseEventHandler,
   TextareaChangeEventHandler,
   TextareaKeyboardEventHandler,
   VscodeCollapsibleToggleEventHandler,
@@ -128,9 +127,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
       if (step.find.regExp) {
         new RegExp(
           step.find.content,
-          ["g", !step.find.caseSensitive && "i", "m"]
-            .filter(Boolean)
-            .join("")
+          ["g", !step.find.caseSensitive && "i", "m"].filter(Boolean).join("")
         );
       }
     } catch (err) {
@@ -149,7 +146,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
     <div className="thin-bottom-margin">
       <VscodeCollapsible
         style={{
-          opacity: step.enabled ? 1 : 0.5
+          opacity: step.enabled ? 1 : 0.5,
         }}
         title={title}
         description={!step.enabled ? `(${t("disabled")})` : undefined}

@@ -5,7 +5,6 @@ import {
   WebviewViewResolveContext,
   CancellationToken,
   Webview,
-  window,
   l10n,
   ExtensionContext,
 } from "vscode";
@@ -33,13 +32,12 @@ export class SerialReplacerSidebarProvider implements WebviewViewProvider {
       localResourceRoots: [this._context.extensionUri],
     };
 
-    webviewView.webview.html = this._getWebviewContent(webviewView.webview, this._context.extensionUri);
-
-    const messageExchange = new SerialReplacer(
-      this._context,
-      this._view.webview,
-      'sidebar'
+    webviewView.webview.html = this._getWebviewContent(
+      webviewView.webview,
+      this._context.extensionUri
     );
+
+    const messageExchange = new SerialReplacer(this._context, this._view.webview, "sidebar");
     webviewView.webview.onDidReceiveMessage(messageExchange.receiveMessage.bind(messageExchange));
   }
 

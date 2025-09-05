@@ -8,13 +8,10 @@ import {
   Webview,
   window,
   workspace,
-  WorkspaceEdit,
-  Range,
 } from "vscode";
 import { join } from "path";
 import { filterFileByLists, getStats, splitOutsideCurlyBraces } from "./aux";
 import prefs from "./prefs.json";
-const { t } = l10n;
 import type {
   WebviewMessage,
   ExtensionMessage,
@@ -22,7 +19,8 @@ import type {
   ReplacementResults,
   FilePath,
 } from "./types";
-import type { ReplacementParameters, Step } from "webview-ui/src/types/replacers";
+import type { ReplacementParameters } from "webview-ui/src/types/replacers";
+const { t } = l10n;
 
 const { bundle } = l10n;
 
@@ -121,9 +119,7 @@ export class SerialReplacer {
       });
     this._log(
       LogLevel.debug,
-      `replacements=${JSON.stringify(
-        replacements.map((r) => ({ ...r, re: r.re.toString() }))
-      )}`
+      `replacements=${JSON.stringify(replacements.map((r) => ({ ...r, re: r.re.toString() })))}`
     );
 
     for (const file of this._workspacesAndFiles.files) {

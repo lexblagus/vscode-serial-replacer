@@ -12,7 +12,7 @@ if (import.meta.env.DEV) {
 }
 
 export const Main: FC = () => {
-  console.log('▶ Main');
+  console.log("▶ Main");
 
   const { state, dispatch } = useAppContext();
 

@@ -23,7 +23,6 @@ const FindActions: FC<{ index: number }> = ({ index }) => {
     });
   };
 
-
   const handleStepFindCaseSensitiveClick: VscodeIconMouseEventHandler = (event) => {
     console.log("▷ handleStepFindCaseSensitiveClick");
     dispatch({

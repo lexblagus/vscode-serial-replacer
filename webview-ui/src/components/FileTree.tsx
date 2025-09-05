@@ -128,12 +128,7 @@ const FileTree: FC = () => {
     // TODO: Preview
 
     console.log('selectedFile', selectedFile);
-    /*
-    dispatch({
-      type: "PREVIEW_FILE",
-      payload: ,
-    });
-    */
+    //...
   };
 
   return (

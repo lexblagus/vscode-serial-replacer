@@ -1,4 +1,4 @@
-import { window, commands, ExtensionContext, Uri, l10n } from "vscode";
+import { window, commands, ExtensionContext } from "vscode";
 import { SerialReplacerPanel } from "./panel";
 import { SerialReplacerSidebarProvider } from "./sidebar";
 

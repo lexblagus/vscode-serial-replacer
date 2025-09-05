@@ -1,4 +1,13 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, l10n, ExtensionContext } from "vscode";
+import {
+  Disposable,
+  Webview,
+  WebviewPanel,
+  window,
+  Uri,
+  ViewColumn,
+  l10n,
+  ExtensionContext,
+} from "vscode";
 import { getWebviewContent } from "./webview";
 import SerialReplacer from "./serialReplacer";
 
@@ -26,7 +35,10 @@ export class SerialReplacerPanel {
     );
     this._panel = panel;
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-    this._panel.webview.html = this._getWebviewContent(this._panel.webview, this._context.extensionUri);
+    this._panel.webview.html = this._getWebviewContent(
+      this._panel.webview,
+      this._context.extensionUri
+    );
     this._setWebviewMessageListener(this._panel.webview);
     this._serialReplacer = null;
   }
@@ -47,11 +59,7 @@ export class SerialReplacerPanel {
   }
 
   private _setWebviewMessageListener(webview: Webview) {
-    this._serialReplacer = new SerialReplacer(
-      this._context,
-      webview,
-      'panel',
-    );
+    this._serialReplacer = new SerialReplacer(this._context, webview, "panel");
     webview.onDidReceiveMessage(this._serialReplacer.receiveMessage.bind(this._serialReplacer));
   }
 }

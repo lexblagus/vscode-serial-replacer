@@ -1,5 +1,5 @@
 import type { TreeItem } from "../types/tree";
-import type { ReplacementResults } from '../../../src/types';
+import type { ReplacementResults } from "../../../src/types";
 
 type MainAction = {
   type: "RESET";
@@ -25,13 +25,14 @@ type FileFiltersAction =
       type: "SET_TREE_ITEM_VISIBILITY";
       payload: {
         open: boolean;
-        path: number[],
+        path: number[];
       };
-    }  | {
+    }
+  | {
       type: "SET_TREE_ITEM_VISIBILITY_RECURSIVELY";
       payload: {
         open: boolean;
-        path: number[],
+        path: number[];
       };
     };
 

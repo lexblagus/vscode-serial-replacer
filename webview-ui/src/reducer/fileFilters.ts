@@ -36,7 +36,7 @@ export function fileFilterReducer(state: SerialReplacement, action: AppAction): 
     case "SET_TREE_PREVIEW": {
       return {
         ...state,
-        results: setTreePreview(state.results, action.payload)
+        results: setTreePreview(state.results, action.payload),
       };
     }
 

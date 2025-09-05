@@ -23,7 +23,7 @@ export function stepReducer(state: SerialReplacement, action: AppAction): Serial
         ...state,
         steps: state.steps.map((step) => ({
           ...step,
-          title: action.payload.id === step.id ? action.payload.title : step.title
+          title: action.payload.id === step.id ? action.payload.title : step.title,
         })),
       };
 

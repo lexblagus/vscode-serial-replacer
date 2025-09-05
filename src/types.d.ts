@@ -1,5 +1,4 @@
-import { TreeItem } from "webview-ui/src/types/tree";
-import type { ReplacementParameters, FileFilters, Step } from "webview-ui/src/types/replacers";
+import type { ReplacementParameters, Step } from "webview-ui/src/types/replacers";
 
 type FilePath = string;
 

@@ -5,7 +5,6 @@ import { vscode } from "./utils/vscode";
 import type { SerialReplacement } from "./types/replacers";
 import type { AppAction } from "./types/actions";
 import type { ExtensionMessage } from "../../src/types";
-import { treeItemConfig } from "./utils/tree-config";
 import { setFileTree } from "./utils/etc";
 
 type AppContextType = {
@@ -119,18 +118,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     state.excludeFiles,
     state.useCurrentEditors,
     state.useExcludeSettingsAndIgnoreFiles,
-    // state.steps on preview bellow
+    state.steps,
   ]);
-
-  // Update preview when steps change
-  useEffect(() => {
-    console.log("● context/useEffect for update preview");
-
-    vscode.postMessage({
-      command: "GET_PREVIEW_COUNT",
-      payload: state.steps,
-    });
-  }, [state.steps]);
 
   // Debug state
   useEffect(() => {

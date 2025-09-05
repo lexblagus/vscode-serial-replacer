@@ -21,20 +21,20 @@
   gap: 2px;
 }
 
-.stepActionIcons{
+.stepActionIcons {
   display: none;
 }
 
-.stepActionsMenu{
+.stepActionsMenu {
   display: block;
 }
 
 @media (min-width: 300px) {
-  .stepActionIcons{
+  .stepActionIcons {
     display: block;
   }
 
-  .stepActionsMenu{
+  .stepActionsMenu {
     display: none;
   }
 }

@@ -54,11 +54,11 @@
   display: block;
 }
 
-.gap-em{
+.gap-em {
   gap: 1em;
 }
 
-.x-end{
+.x-end {
   display: flex;
   justify-content: flex-end;
 }
@@ -81,7 +81,7 @@
   gap: 2px;
 }
 
-.button-group-grow{
+.button-group-grow {
   flex-grow: 1;
 }
 
@@ -101,9 +101,6 @@
   line-height: 11px;
 }
 
-.file-tree-wrapper { overflow: hidden; }
-.file-tree-wrapper > div {
-  /* position: relative;
-  top: 0;
-  left: -10px; */
+.file-tree-wrapper {
+  overflow: hidden;
 }

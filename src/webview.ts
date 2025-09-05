@@ -3,24 +3,24 @@ import { getUri, getNonce } from "./aux";
 
 const { bundle, uri } = l10n;
 
-  /**
-   * Actual HTML content for the webview (index.html)
-   *
-   * @param webview A reference to the extension webview
-   * @param extensionUri The URI of the directory containing the extension
-   * @param title Document title in HTML head tag
-   */
-  export function getWebviewContent(webview: Webview, extensionUri: Uri, title: String) {
+/**
+ * Actual HTML content for the webview (index.html)
+ *
+ * @param webview A reference to the extension webview
+ * @param extensionUri The URI of the directory containing the extension
+ * @param title Document title in HTML head tag
+ */
+export function getWebviewContent(webview: Webview, extensionUri: Uri, title: String) {
   const stylesUri = getUri(webview, extensionUri, ["webview-ui", "build", "index.css"]);
   const scriptUri = getUri(webview, extensionUri, ["webview-ui", "build", "index.js"]);
   const fontUri = getUri(webview, extensionUri, ["webview-ui", "build", "codicon.ttf"]);
-  
+
   const nonce = getNonce();
 
   const cspContent = [
     ["default-src", "'none'"],
     ["style-src", `'nonce-${nonce}' ${webview.cspSource}`],
-    ["font-src", 'https:'],
+    ["font-src", "https:"],
     ["script-src", `'nonce-${nonce}'`],
   ]
     .map((pair) => pair.join(" "))

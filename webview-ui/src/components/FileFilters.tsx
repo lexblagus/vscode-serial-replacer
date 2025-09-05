@@ -40,7 +40,7 @@ function useDebouncedDispatch(
 }
 
 const FileFilters: FC = () => {
-  console.log('▶ FileFilters');
+  console.log("▶ FileFilters");
 
   const { state, dispatch } = useAppContext();
   const inputFilesToIncludeRef = useRef<VscodeTextfieldConstructor>(null);

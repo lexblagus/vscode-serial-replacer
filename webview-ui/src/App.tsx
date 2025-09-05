@@ -4,7 +4,7 @@ import "./App.css";
 import "./etc.css";
 
 function App() {
-  console.log('▶ App');
+  console.log("▶ App");
   return (
     <>
       <Main />
