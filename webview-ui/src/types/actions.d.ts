@@ -1,4 +1,5 @@
 import type { TreeItem } from "../types/tree";
+import type { ReplacementResults } from '../../../src/types';
 
 type MainAction = {
   type: "RESET";
@@ -9,6 +10,10 @@ type FileFiltersAction =
   | { type: "SET_FILES_TO_EXCLUDE"; payload: string }
   | { type: "SET_USE_CURRENT_EDITORS"; payload: boolean }
   | { type: "SET_EXCLUDE_SETTINGS_AND_IGNORE_FILES"; payload: boolean }
+  | {
+      type: "SET_TREE_PREVIEW";
+      payload: ReplacementResults;
+    }
   | {
       type: "SET_FILE_TREE";
       payload: {

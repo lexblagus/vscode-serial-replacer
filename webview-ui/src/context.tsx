@@ -40,6 +40,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const currentState = stateRef.current;
 
       switch (message.type) {
+        case "SET_PREVIEW":
+          dispatch({
+            type: "SET_TREE_PREVIEW",
+            payload: message.payload,
+          });
+          break;
+
         case "SET_WORKSPACES_FILES":
           dispatch({
             type: "SET_FILE_TREE",

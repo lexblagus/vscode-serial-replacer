@@ -16,12 +16,12 @@ mkdir -p "$ROOT_PATH"
 rm -rf "$ROOT_PATH"/*
 
 # ==== CONSTANTS ====
-MAX_FOLDERS=10             # Max top-level folders
-MAX_SUBFOLDERS=10           # Max subfolders per folder
-MAX_DEPTH=4                # Max depth of folder tree
-MAX_FILES_PER_FOLDER=10    # Max files per folder
-MAX_LINES_PER_FILE=10      # Max lines per file
-MAX_WORDS_PER_LINE=10      # Max words per line
+MAX_FOLDERS=5             # Max top-level folders
+MAX_SUBFOLDERS=3           # Max subfolders per folder
+MAX_DEPTH=3                # Max depth of folder tree
+MAX_FILES_PER_FOLDER=5    # Max files per folder
+MAX_LINES_PER_FILE=5      # Max lines per file
+MAX_WORDS_PER_LINE=30      # Max words per line
 EXTENSIONS=("txt" "md" "log" "rst")   # Allowed file extensions
 
 # Latin Lorem Ipsum words

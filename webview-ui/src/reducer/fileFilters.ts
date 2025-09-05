@@ -1,6 +1,6 @@
 import type { SerialReplacement } from "../types/replacers";
 import type { AppAction } from "../types/actions";
-import { setTreeItemOpen } from "../utils/etc";
+import { setTreeItemOpen, setTreePreview } from "../utils/etc";
 import prefs from "../prefs.json";
 
 export function fileFilterReducer(state: SerialReplacement, action: AppAction): SerialReplacement {
@@ -30,6 +30,13 @@ export function fileFilterReducer(state: SerialReplacement, action: AppAction): 
       return {
         ...state,
         useExcludeSettingsAndIgnoreFiles: action.payload,
+      };
+    }
+
+    case "SET_TREE_PREVIEW": {
+      return {
+        ...state,
+        results: setTreePreview(state.results, action.payload)
       };
     }
 

@@ -12,7 +12,7 @@ import {
   Range,
 } from "vscode";
 import { join } from "path";
-import { filterFileByLists, splitOutsideCurlyBraces } from "./aux";
+import { filterFileByLists, getStats, splitOutsideCurlyBraces } from "./aux";
 import prefs from "./prefs.json";
 const { t } = l10n;
 import type {
@@ -142,9 +142,15 @@ export class SerialReplacer {
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
-          replacementResults[file].errors.push(error); // has .message, .stack, etc.
+          replacementResults[file].errors.push(
+            JSON.stringify({
+              name: error.name,
+              message: error.message,
+              stack: error.stack,
+            })
+          );
         } else {
-          replacementResults[file].errors.push(new Error(String(error))); // wrap non-Error values
+          replacementResults[file].errors.push(String(error)); // wrap non-Error values
         }
       }
     }
@@ -157,7 +163,11 @@ export class SerialReplacer {
 
     const results = await this._replace(false);
     this._log(LogLevel.debug, `results=${JSON.stringify(results)}`);
-    // ...
+
+    this.postMessage({
+      type: "SET_PREVIEW",
+      payload: results,
+    });
   }
 
   private async _replaceAll() {
@@ -166,29 +176,13 @@ export class SerialReplacer {
     const results = await this._replace(true);
     this._log(LogLevel.debug, `results=${JSON.stringify(results)}`);
 
-    const stats = Object.values(results).reduce(
-      (acc, result) => {
-        return {
-          totalFiles: acc.totalFiles + 1,
-          filesReplaced: acc.filesReplaced + (result.replacements ? 1 : 0),
-          replacementsMade: acc.replacementsMade + result.replacements,
-          errors: acc.errors + result.errors.length,
-        };
-      },
-      {
-        totalFiles: 0,
-        filesReplaced: 0,
-        replacementsMade: 0,
-        errors: 0,
-      }
-    );
+    const stats = getStats(results);
     this._log(LogLevel.debug, `stats=${JSON.stringify(stats)}`);
 
-    const succesMessage = t(
-      `{0} replacements made in {1} files`,
-      stats.replacementsMade,
+    const succesMessage = `${t("{0} replacements", stats.replacementsMade)} ${t(
+      "made in {0} files",
       stats.filesReplaced
-    );
+    )}`;
 
     if (!stats.errors) {
       if (stats.replacementsMade === 0) {
@@ -200,7 +194,7 @@ export class SerialReplacer {
       return;
     }
 
-    const errors: [FilePath, Error[]][] = Object.entries(results)
+    const errors: [FilePath, string[]][] = Object.entries(results)
       .filter(([, { errors }]) => errors.length > 0)
       .map(([filePath, { errors }]) => [filePath, errors]);
     this._log(LogLevel.error, `errors=${JSON.stringify(errors)}`);
@@ -354,6 +348,7 @@ export class SerialReplacer {
     const subscriptionListener = (scope: string) => () => {
       this._log(LogLevel.debug, `Subscription listener: scope=${JSON.stringify(scope)}`);
       this._setFiles();
+      this._previewCount();
     };
 
     workspace.onDidChangeConfiguration(subscriptionListener("workspace.onDidChangeConfiguration"));
@@ -464,6 +459,7 @@ export class SerialReplacer {
       case "REPLACE_ALL": {
         this._setFiles(); // update files prior replacement; avoid deleted files to throw error
         this._replaceAll();
+        this._previewCount();
         return;
       }
     }

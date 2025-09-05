@@ -2,7 +2,12 @@ import { treeItemConfig } from "./tree-config";
 import { t } from "@vscode/l10n";
 import type { CombineSequentialReducers } from "../types/reducers";
 import type { TreeItem, TreeItemAction, VscTreeDecoration } from "../types/tree";
-import type { PathList, WorkspacesAndFiles } from "../../../src/types";
+import type {
+  FilePath,
+  PathList,
+  ReplacementResults,
+  WorkspacesAndFiles,
+} from "../../../src/types";
 
 export const text: Record<string, string> = {
   "sample-file-pattern": "*.ts, src/**/include",
@@ -15,19 +20,9 @@ export const treeItemActionToggle: TreeItemAction = {
   tooltip: t("expand all"),
 };
 
-const decorations = (quantity: number, isFile: boolean): VscTreeDecoration[] => {
-  if (!quantity) return [];
-  return [
-    {
-      content: `${quantity}`,
-      appearance: isFile ? "counter-badge" : "text",
-    },
-  ];
-};
-
 const values = {
-  root: "//root",
-  others: "//others",
+  root: "root://",
+  others: "others://",
 };
 
 export const treeItemActionRefresh: TreeItemAction = {
@@ -136,7 +131,6 @@ const fileListToTreeItem = (
           value: absolutePath,
           open: false,
           tooltip: absolutePath,
-          decorations: decorations(Math.random() < 0.5 ? 0 : 888, isFile), // TODO: replacement preview badge
         };
         currentLevel.push(existing);
       }
@@ -245,7 +239,6 @@ export const setFileTree = (
         description: parentPath(file),
         tooltip: file,
         open: false,
-        decorations: decorations(Math.random() < 0.5 ? 0 : 777, true), // TODO: replacement preview badge
       });
     }
   }
@@ -274,7 +267,6 @@ export const setFileTree = (
           workspaceFolder,
           treeItemConfig
         ),
-        decorations: decorations(Math.random() < 0.5 ? 0 : 666, false), // TODO: replacement preview badge
       });
     }
 
@@ -290,7 +282,6 @@ export const setFileTree = (
           description: parentPath(fileOutsideWorkspaces),
           value: fileOutsideWorkspaces,
           tooltip: fileOutsideWorkspaces,
-          decorations: decorations(Math.random() < 0.5 ? 0 : 555, true), // TODO: replacement preview badge
         });
       });
     if (outsideWorkspaceFiles.length > 0) {
@@ -322,13 +313,6 @@ export const setFileTree = (
       open: false,
       actions: [treeItemActionToggle, treeItemActionRefresh],
       subItems: resultFilesTree,
-      decorations: [
-        // TODO: replacement preview badge
-        {
-          content: Math.random() < 0.5 ? t("no replacements") : `${999} replacements`,
-          appearance: "text",
-        },
-      ],
     },
   ];
 
@@ -338,3 +322,128 @@ export const setFileTree = (
 
   return resultTree;
 };
+
+const traverseTreeItem = (
+  treeItem: TreeItem,
+  callback: (treeItem: TreeItem) => TreeItem
+): TreeItem => {
+  const subItems = treeItem.subItems;
+
+  if (subItems) {
+    subItems.forEach((subItem, index) => {
+      subItems[index] = traverseTreeItem(subItem, callback);
+    });
+  }
+
+  return callback(treeItem);
+};
+
+export const setTreePreview = (
+  rootFileTree: TreeItem[],
+  previewResults: ReplacementResults
+): TreeItem[] => {
+  console.log("□ setTreePreview");
+
+  const tree: TreeItem[] = structuredClone(rootFileTree);
+
+  const setCountBadge = (treeItem: TreeItem): TreeItem => {
+    if (treeItem.value === values.root) {
+      // root (top) folder
+      const stats = getStats(previewResults);
+      return {
+        ...treeItem,
+        decorations: [
+          {
+            content:
+              stats.replacementsMade === 0
+                ? t("no replacements")
+                : stats.replacementsMade === 1
+                ? t("One replacement")
+                : t("{0} replacements", stats.replacementsMade),
+            appearance: "text",
+          },
+        ],
+      };
+    }
+
+    if (
+      "value" in treeItem &&
+      treeItem.value &&
+      treeItem.value in previewResults &&
+      "replacements" in previewResults[treeItem.value]
+    ) {
+      const replacements = previewResults[treeItem.value].replacements;
+
+      if (replacements > 0) {
+        // replacements in file
+        return {
+          ...treeItem,
+          decorations: [
+            previewResults[treeItem.value].errors.length
+              ? {
+                  content: "",
+                  appearance: "filled-circle",
+                  color: "var(--vscode-editorError-foreground)",
+                }
+              : {},
+            {
+              content: replacements.toString(),
+              appearance: treeItem.icons?.leaf === "file" ? "counter-badge" : "text",
+            },
+          ],
+        };
+      }
+
+      // No replacements in file
+      return {
+        ...treeItem,
+        decorations: [],
+      };
+    }
+
+    // Non-root folder
+    return {
+      ...treeItem,
+      decorations: [
+        // Count child items
+        {
+          content: String(
+            treeItem.subItems?.reduce((accItem, item) => {
+              const count =
+                item.decorations?.reduce((accDecoration, decoration) => {
+                  return accDecoration + Number(decoration.content ?? 0);
+                }, 0) ?? 0;
+              return accItem + count;
+            }, 0) || ""
+          ),
+          appearance: "text",
+        },
+      ],
+    };
+  };
+
+  tree.forEach((item, index) => {
+    tree[index] = traverseTreeItem(item, setCountBadge);
+  });
+
+  return tree;
+};
+
+// TODO: make it common/shared
+export const getStats = (results: ReplacementResults) =>
+  Object.values(results).reduce(
+    (acc, result) => {
+      return {
+        totalFiles: acc.totalFiles + 1,
+        filesReplaced: acc.filesReplaced + (result.replacements ? 1 : 0),
+        replacementsMade: acc.replacementsMade + result.replacements,
+        errors: acc.errors + result.errors.length,
+      };
+    },
+    {
+      totalFiles: 0,
+      filesReplaced: 0,
+      replacementsMade: 0,
+      errors: 0,
+    }
+  );

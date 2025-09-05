@@ -1,6 +1,23 @@
 import { TreeItem } from "webview-ui/src/types/tree";
 import type { ReplacementParameters, FileFilters, Step } from "webview-ui/src/types/replacers";
 
+type FilePath = string;
+
+export type PathList = FilePath[];
+
+export type WorkspacesAndFiles<T = PathList> = {
+  workspaces: T;
+  files: T;
+};
+
+export type ReplacementResults = Record<
+  FilePath,
+  {
+    errors: string[];
+    replacements: number;
+  }
+>;
+
 export type WebviewMessage =
   | {
       command: "SUBSCRIBE_CHANGES";
@@ -34,18 +51,10 @@ export type WebviewMessage =
       command: "CONFIRM_RESET";
     };
 
-  type FilePath = string;
-
-  export type PathList = FilePath[];
-
-export type WorkspacesAndFiles<T = PathList> = {
-  workspaces: T;
-  files: T;
-};
-
 export type ExtensionMessage =
   | { type: "SEND_LOG"; payload: any }
   | { type: "SET_WORKSPACES_FILES"; payload: WorkspacesAndFiles }
+  | { type: "SET_PREVIEW"; payload: ReplacementResults }
   | {
       type: "COMMIT_RENAME";
       payload: {
@@ -54,8 +63,3 @@ export type ExtensionMessage =
       };
     }
   | { type: "COMMIT_RESET" };
-
-export type ReplacementResults = Record<FilePath, {
-  errors: Error[];
-  replacements: number
-}>;

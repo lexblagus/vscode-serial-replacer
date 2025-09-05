@@ -58,7 +58,9 @@
   "Save set…": "Salvar série…",
 
   "No replacements": "Nenhuma substituição",
-  "{0} replacements made in {1} files": "{0} substituições em {1} arquivos",
+  "One replacement": "Uma substituição",
+  "{0} replacements": "{0} substituições",
+  "made in {0} files": "em {0} arquivos",
   "and {0} errors": "e [0} errros",
   "Details…": "Detalhes…",
 

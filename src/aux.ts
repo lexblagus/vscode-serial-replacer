@@ -1,7 +1,8 @@
 import { Uri, Webview } from "vscode";
 import { existsSync } from "fs";
 import { isMatch } from "micromatch";
-import prefs from './prefs.json';
+import prefs from "./prefs.json";
+import type { ReplacementResults } from "./types";
 
 /**
  * A helper function that returns a unique alphanumeric identifier called a nonce.
@@ -61,13 +62,13 @@ export function filterFileByLists(
     return;
   }
 
-  if(includeFilesList.length > 0){
+  if (includeFilesList.length > 0) {
     if (!isMatch(filePath, includeFilesList, prefs.micromatchOptions)) {
       return;
     }
   }
 
-  if(excludeFilesList.length > 0){
+  if (excludeFilesList.length > 0) {
     if (isMatch(filePath, excludeFilesList, prefs.micromatchOptions)) {
       return;
     }
@@ -78,22 +79,22 @@ export function filterFileByLists(
 
 export function splitOutsideCurlyBraces(input: string): string[] {
   const result: string[] = [];
-  let current = '';
+  let current = "";
   let depth = 0; // Track curly brace nesting
   let skipSpace = false;
 
   for (const char of input) {
-    if (char === '{') {
+    if (char === "{") {
       depth++;
       current += char;
-    } else if (char === '}') {
+    } else if (char === "}") {
       depth--;
       current += char;
-    } else if (char === ',' && depth === 0) {
+    } else if (char === "," && depth === 0) {
       result.push(current.trim());
-      current = '';
+      current = "";
       skipSpace = true; // Skip spaces immediately after comma
-    } else if (skipSpace && char === ' ') {
+    } else if (skipSpace && char === " ") {
       continue; // Ignore spaces after comma
     } else {
       skipSpace = false;
@@ -107,3 +108,22 @@ export function splitOutsideCurlyBraces(input: string): string[] {
 
   return result;
 }
+
+// TODO: make it common/shared
+export const getStats = (results: ReplacementResults) =>
+  Object.values(results).reduce(
+    (acc, result) => {
+      return {
+        totalFiles: acc.totalFiles + 1,
+        filesReplaced: acc.filesReplaced + (result.replacements ? 1 : 0),
+        replacementsMade: acc.replacementsMade + result.replacements,
+        errors: acc.errors + result.errors.length,
+      };
+    },
+    {
+      totalFiles: 0,
+      filesReplaced: 0,
+      replacementsMade: 0,
+      errors: 0,
+    }
+  );

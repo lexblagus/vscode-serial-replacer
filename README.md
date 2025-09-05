@@ -29,8 +29,9 @@
 ## Bugs
 
 - Performance when working with a large set of files
-- files to include/exclude hangs (because of the controlled component)
+- ✓ files to include/exclude hangs (because of the controlled component)
 - when moving panels loses context (like file filters)
+- Multiline does not work; does it make sense? remove it?
 
 ## Roadmap
 
