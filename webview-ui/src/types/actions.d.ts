@@ -109,24 +109,6 @@ type StepFindContextualAction =
       };
     }
   | {
-      type: "SET_STEP_FIND_GLOBAL";
-      payload: {
-        index: number;
-        find: {
-          global: boolean;
-        };
-      };
-    }
-  | {
-      type: "SET_STEP_FIND_MULTILINE";
-      payload: {
-        index: number;
-        find: {
-          multiline: boolean;
-        };
-      };
-    }
-  | {
       type: "SET_STEP_FIND_CASE_SENSITIVE";
       payload: {
         index: number;

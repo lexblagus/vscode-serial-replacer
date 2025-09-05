@@ -8,8 +8,6 @@ export interface Step {
   find: {
     content: string;
     regExp: boolean;
-    global: boolean;
-    multiline: boolean;
     caseSensitive: boolean;
     wordWrap: boolean;
   };

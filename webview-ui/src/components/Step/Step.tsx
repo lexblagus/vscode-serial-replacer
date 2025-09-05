@@ -128,7 +128,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
       if (step.find.regExp) {
         new RegExp(
           step.find.content,
-          [step.find.global && "g", !step.find.caseSensitive && "i", step.find.multiline && "m"]
+          ["g", !step.find.caseSensitive && "i", "m"]
             .filter(Boolean)
             .join("")
         );

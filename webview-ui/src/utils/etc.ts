@@ -1,4 +1,4 @@
-import { treeItemConfig } from "./tree-config";
+import { treeItemActionToggle, treeItemConfig, values } from "./tree-config";
 import { t } from "@vscode/l10n";
 import type { CombineSequentialReducers } from "../types/reducers";
 import type { TreeItem, TreeItemAction, VscTreeDecoration } from "../types/tree";
@@ -12,17 +12,6 @@ import type {
 export const text: Record<string, string> = {
   "sample-file-pattern": "*.ts, src/**/include",
   "arrow-up-and-down": "\u21C5",
-};
-
-export const treeItemActionToggle: TreeItemAction = {
-  icon: "expand-all",
-  actionId: "toggle",
-  tooltip: t("expand all"),
-};
-
-const values = {
-  root: "root://",
-  others: "others://",
 };
 
 export const treeItemActionRefresh: TreeItemAction = {

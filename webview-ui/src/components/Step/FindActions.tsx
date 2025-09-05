@@ -23,31 +23,6 @@ const FindActions: FC<{ index: number }> = ({ index }) => {
     });
   };
 
-  const handleStepFindGlobalClick: VscodeIconMouseEventHandler = (event) => {
-    console.log("▷ handleStepFindGlobalClick");
-    dispatch({
-      type: "SET_STEP_FIND_GLOBAL",
-      payload: {
-        index,
-        find: {
-          global: !step.find.global,
-        },
-      },
-    });
-  };
-
-  const handleStepFindMultilineClick: VscodeIconMouseEventHandler = (event) => {
-    console.log("▷ handleStepFindMultilineClick");
-    dispatch({
-      type: "SET_STEP_FIND_MULTILINE",
-      payload: {
-        index,
-        find: {
-          multiline: !step.find.multiline,
-        },
-      },
-    });
-  };
 
   const handleStepFindCaseSensitiveClick: VscodeIconMouseEventHandler = (event) => {
     console.log("▷ handleStepFindCaseSensitiveClick");
@@ -84,18 +59,6 @@ const FindActions: FC<{ index: number }> = ({ index }) => {
         onClick={handleStepFindRegExpClick}
         aria-pressed={step.find.regExp}></VscodeIcon>
       <VscodeIcon
-        name="globe"
-        title={t("Find all occurrences (global)")}
-        action-icon
-        onClick={handleStepFindGlobalClick}
-        aria-pressed={step.find.global}></VscodeIcon>
-      <VscodeIcon
-        name="newline"
-        title={t("Search across lines (multiline)")}
-        action-icon
-        onClick={handleStepFindMultilineClick}
-        aria-pressed={step.find.multiline}></VscodeIcon>
-      <VscodeIcon
         name="case-sensitive"
         title={t("Case sensitive")}
         action-icon
@@ -103,7 +66,7 @@ const FindActions: FC<{ index: number }> = ({ index }) => {
         aria-pressed={step.find.caseSensitive}></VscodeIcon>
       <VscodeIcon
         name="word-wrap"
-        title={t("Word wrap: won't affect find/replace behaviour, it's just for visual aid")}
+        title={t("Word wrap")}
         action-icon
         onClick={handleStepFindWordWrapClick}
         aria-pressed={step.find.wordWrap}></VscodeIcon>

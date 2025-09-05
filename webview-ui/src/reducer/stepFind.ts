@@ -37,40 +37,6 @@ export function stepFindReducer(state: SerialReplacement, action: AppAction): Se
         })),
       };
 
-    case "SET_STEP_FIND_GLOBAL":
-      return {
-        ...state,
-        steps: state.steps.map((step, index) => ({
-          ...step,
-          ...(index === action.payload.index
-            ? {
-                ...step,
-                find: {
-                  ...step.find,
-                  global: action.payload.find.global,
-                },
-              }
-            : step),
-        })),
-      };
-
-    case "SET_STEP_FIND_MULTILINE":
-      return {
-        ...state,
-        steps: state.steps.map((step, index) => ({
-          ...step,
-          ...(index === action.payload.index
-            ? {
-                ...step,
-                find: {
-                  ...step.find,
-                  multiline: action.payload.find.multiline,
-                },
-              }
-            : step),
-        })),
-      };
-
     case "SET_STEP_FIND_CASE_SENSITIVE":
       return {
         ...state,

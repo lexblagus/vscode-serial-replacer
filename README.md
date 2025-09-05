@@ -19,8 +19,6 @@
 
 - Find
   - Use regular expression
-  - Find all occurrences (global)
-  - Search across lines (multiline)
   - Case sensitive
 
 - Internationalization
@@ -32,6 +30,7 @@
 - ✓ files to include/exclude hangs (because of the controlled component)
 - when moving panels loses context (like file filters)
 - Multiline does not work; does it make sense? remove it?
+- Preview is not always updated (requires refresh sometimes)
 
 ## Roadmap
 
@@ -48,7 +47,6 @@
     - ✓ From extension to webview
       - ✓ file tree
   - ✓ Make replacement
-  - Preview
   - About
   - Commands
   - Settings
@@ -57,7 +55,12 @@
   - ✓ Get files and folders
   - ✓ Rename step
   - Sets: data persistance (save/load/rename)
-  - ✓ …
+  - Preview
+    - ✓ Tree
+    - ✓ Count badges
+    - Open
+  - Shared
+  - …
 
 - Docs
   - Final screenshot (animated)

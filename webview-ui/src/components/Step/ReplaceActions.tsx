@@ -27,7 +27,7 @@ const ReplaceActions: FC<{ index: number }> = ({ index }) => {
     <>
       <VscodeIcon
         name="word-wrap"
-        title={t("Word wrap: won't affect find/replace behaviour, it's just for visual aid")}
+        title={t("Word wrap")}
         action-icon
         onClick={handleStepReplaceWordWrapClick}
         aria-pressed={step.replace.wordWrap}></VscodeIcon>

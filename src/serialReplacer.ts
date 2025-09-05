@@ -105,7 +105,7 @@ export class SerialReplacer {
       .map((step) => {
         const {
           id,
-          find: { regExp, content, global, caseSensitive, multiline },
+          find: { regExp, content, caseSensitive },
           replace: { content: replacement },
         } = step;
 
@@ -115,10 +115,16 @@ export class SerialReplacer {
             : regExp // if regular expression toggled…
             ? content // …literal regular expression given by user
             : content.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), // …otherwise plain text escaped
-          `${global ? "g" : ""}${caseSensitive ? "" : "i"}${multiline ? "m" : ""}`
+          `gm${caseSensitive ? "" : "i"}`
         );
         return { id, re, replacement };
       });
+    this._log(
+      LogLevel.debug,
+      `replacements=${JSON.stringify(
+        replacements.map((r) => ({ ...r, re: r.re.toString() }))
+      )}`
+    );
 
     for (const file of this._workspacesAndFiles.files) {
       replacementResults[file] = { replacements: 0, errors: [] };
@@ -338,6 +344,8 @@ export class SerialReplacer {
       type: "SET_WORKSPACES_FILES",
       payload: this._workspacesAndFiles,
     });
+
+    this._previewCount();
   }
 
   private _subscribeChanges() {
@@ -445,7 +453,6 @@ export class SerialReplacer {
           `replacementParameters=${JSON.stringify(this._replacementParameters)}`
         );
         this._setFiles();
-        this._previewCount();
         return;
       }
 
@@ -459,7 +466,6 @@ export class SerialReplacer {
       case "REPLACE_ALL": {
         this._setFiles(); // update files prior replacement; avoid deleted files to throw error
         this._replaceAll();
-        this._previewCount();
         return;
       }
     }

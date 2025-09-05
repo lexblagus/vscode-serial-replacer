@@ -51,8 +51,6 @@ export const sampleReplacement: () => SerialReplacement = () => ({
     find: {
       content: "",
       regExp: Math.random() < 0.25,
-      global: Math.random() < 0.75,
-      multiline: Math.random() < 0.75,
       caseSensitive: Math.random() < 0.75,
       wordWrap: Math.random() < 0.75,
     },
@@ -82,8 +80,6 @@ export const emptyStep: () => Step = () => ({
   find: {
     content: "",
     regExp: false,
-    global: true,
-    multiline: true,
     caseSensitive: false,
     wordWrap: true,
   },
