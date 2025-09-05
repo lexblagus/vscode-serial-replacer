@@ -27,6 +27,7 @@ export class SerialReplacerPanel {
       ViewColumn.One,
       {
         enableScripts: true,
+        retainContextWhenHidden: true,
         localResourceRoots: [
           Uri.joinPath(extensionContext.extensionUri, "out"),
           Uri.joinPath(extensionContext.extensionUri, "webview-ui/build"),

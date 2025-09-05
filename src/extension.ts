@@ -10,6 +10,10 @@ export async function activate(context: ExtensionContext) {
 
   const sidebarProvider = new SerialReplacerSidebarProvider(context);
   context.subscriptions.push(
-    window.registerWebviewViewProvider(SerialReplacerSidebarProvider.viewType, sidebarProvider)
+    window.registerWebviewViewProvider(SerialReplacerSidebarProvider.viewType, sidebarProvider, {
+      webviewOptions: {
+        retainContextWhenHidden: true,
+      },
+    })
   );
 }

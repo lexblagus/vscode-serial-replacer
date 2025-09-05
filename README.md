@@ -28,9 +28,9 @@
 
 - Performance when working with a large set of files
 - ✓ files to include/exclude hangs (because of the controlled component)
-- when moving panels loses context (like file filters)
-- Multiline does not work; does it make sense? remove it?
-- Preview is not always updated (requires refresh sometimes)
+- ✓ when moving panels loses context (like file filters)
+- ✓ Multiline does not work; does it make sense? remove it?
+- ✓ Preview is not always updated (requires refresh sometimes)
 
 ## Roadmap
 
@@ -38,7 +38,7 @@
   - ✓ UI (React)
   - ✓ Icons
   - ✓ File tree with actions
-  - Semi-persistent data (e.g.: when change panels)
+  - ✓ Semi-persistent data (e.g.: when change panels)
 
 - Extension (backend)
   - ✓ Bi-direction communication
