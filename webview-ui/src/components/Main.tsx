@@ -23,10 +23,6 @@ export const Main: FC = () => {
     });
   };
 
-  const handleSaveSetClick: VscodeButtonMouseEventHandler = (event) => {
-    // TODO: save set
-  };
-
   return (
     <main>
       <VscodeFormContainer className="no-max-width">
@@ -45,10 +41,6 @@ export const Main: FC = () => {
             title={t("Make replacements")}>
             {t("Serial Replace")}
           </VscodeButton>
-          <VscodeButton
-            icon="save"
-            title={t("Save set…")}
-            onClick={handleSaveSetClick}></VscodeButton>
         </div>
       </VscodeFormContainer>
 
