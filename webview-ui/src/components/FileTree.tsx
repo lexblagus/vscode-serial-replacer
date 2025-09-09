@@ -28,7 +28,7 @@ const FileTree: FC = () => {
     } = state;
 
     vscode.postMessage({
-      command: "SET_REPLACEMENT PARAMETERS",
+      command: "SET_REPLACEMENT_PARAMETERS",
       payload: {
         includeFiles,
         excludeFiles,
@@ -54,7 +54,7 @@ const FileTree: FC = () => {
       case "refresh": {
         console.log("○ Refresh");
         vscode.postMessage({
-          command: "SET_REPLACEMENT PARAMETERS",
+          command: "SET_REPLACEMENT_PARAMETERS",
           payload: {
             includeFiles,
             excludeFiles,
@@ -108,6 +108,7 @@ const FileTree: FC = () => {
             path: event.detail.path.split("/").map(Number),
           },
         });
+        setSelectedFile(undefined);
         break;
       }
 
@@ -125,10 +126,12 @@ const FileTree: FC = () => {
 
   const handleTreeDoubleClick: VscTreeMouseEventHandler = (event) => {
     console.log("▷ handleTreeDoubleClick", event);
-    // TODO: Preview
-
-    console.log('selectedFile', selectedFile);
-    //...
+    if(selectedFile && selectedFile !== ''){
+      vscode.postMessage({
+        command: "OPEN_PREVIEW",
+        payload: selectedFile,
+      });
+    }
   };
 
   return (

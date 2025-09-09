@@ -31,6 +31,7 @@
 - ✓ when moving panels loses context (like file filters)
 - ✓ Multiline does not work; does it make sense? remove it?
 - ✓ Preview is not always updated (requires refresh sometimes)
+- Eval inputs that still need debouce (like find and replace fields)
 
 ## Roadmap
 

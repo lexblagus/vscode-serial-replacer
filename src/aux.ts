@@ -1,5 +1,6 @@
 import { Uri, Webview } from "vscode";
 import { existsSync } from "fs";
+import { basename, dirname, extname, join } from "path";
 import { isMatch } from "micromatch";
 import prefs from "./prefs.json";
 import type { ReplacementResults } from "./types";
@@ -127,3 +128,11 @@ export const getStats = (results: ReplacementResults) =>
       errors: 0,
     }
   );
+
+export const makePreviewUri = (filePath: string): Uri => {
+  const base = basename(filePath, extname(filePath)); // e.g. forty-eight
+  const ext = extname(filePath); // e.g. .log
+  const preExt = ''; // '.replaced';
+  const previewName = `${base}${preExt}${ext}`; // forty-eight.preview.log
+  return Uri.parse(`untitled:${join(dirname(filePath), previewName)}`);
+};

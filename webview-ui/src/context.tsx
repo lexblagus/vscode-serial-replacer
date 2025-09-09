@@ -104,7 +104,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } = state;
 
     vscode.postMessage({
-      command: "SET_REPLACEMENT PARAMETERS",
+      command: "SET_REPLACEMENT_PARAMETERS",
       payload: {
         includeFiles,
         excludeFiles,

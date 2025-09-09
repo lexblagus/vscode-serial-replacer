@@ -23,8 +23,12 @@ export type WebviewMessage =
       payload: boolean;
     }
   | {
-      command: "SET_REPLACEMENT PARAMETERS";
+      command: "SET_REPLACEMENT_PARAMETERS";
       payload: ReplacementParameters;
+    }
+  | {
+      command: "OPEN_PREVIEW";
+      payload: FilePath;
     }
   | {
       command: "PROMPT_RENAME";
