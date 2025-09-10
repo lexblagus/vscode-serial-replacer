@@ -2,7 +2,7 @@
 
 > Visual Studio Code extension that provides a powerful find-and-replace solution. It allows you to perform consecutive replacements by defining steps with search patterns — either regular expressions or plain text — and substitution text. It works across open editors, multiple folders, or entire workspaces.
 
-![screenshot](./docs/screenshot.png)
+![screenshot](./docs/screenshot.svg)
 
 ## Features
 
@@ -26,13 +26,13 @@
 
 ## Bugs
 
-- PREVIEW: opens tabs without asking while changing find & replace. Must refactor good part of serialReplacer.ts
+- ✓ Preview: opens tabs without asking while changing find & replace. Must refactor good part of serialReplacer.ts
 - Performance when working with a large set of files
 - ✓ files to include/exclude hangs (because of the controlled component)
 - ✓ when moving panels loses context (like file filters)
 - ✓ Multiline does not work; does it make sense? remove it?
 - ✓ Preview is not always updated (requires refresh sometimes)
-- Eval inputs that still need debouce (like find and replace fields)
+- ✓ Eval inputs that still need debouce (like find and replace fields)
 
 ## Roadmap
 
@@ -57,10 +57,10 @@
   - ✓ Get files and folders
   - ✓ Rename step
   - Sets: data persistance (save/load/rename)
-  - Preview
+  - ✓ Preview
     - ✓ Tree
     - ✓ Count badges
-    - Open
+    - ✓ Open
   - Shared
   - …
 
@@ -71,7 +71,7 @@
 - Publish
 
 - **Future:**
-  - Replacements preview (using treeview, panels and diff)
+  - ✓ Replacements preview (using treeview, panels and diff)
   - Multiple instances (panels)
 
 ## More info

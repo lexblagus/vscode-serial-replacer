@@ -9,7 +9,7 @@ import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
 import FileTree from "./FileTree";
 import { text } from "../utils/etc";
-import prefs from "../prefs.json";
+import prefs from "../config.json";
 import type { Dispatch, FC, RefObject } from "react";
 import type {
   TextfieldChangeEventHandler,

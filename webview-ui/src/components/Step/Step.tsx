@@ -13,7 +13,7 @@ import Actions from "./Actions";
 import FindActions from "./FindActions";
 import ReplaceActions from "./ReplaceActions";
 import { text } from "../../utils/etc";
-import prefs from "../../prefs.json";
+import prefs from "../../config.json";
 import type { Dispatch, FC, RefObject } from "react";
 import type {
   TextareaKeyboardEventHandler,

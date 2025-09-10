@@ -14,7 +14,7 @@ import {
 } from "vscode";
 import { basename, join } from "path";
 import { filterFileByLists, getStats, splitOutsideCurlyBraces } from "./aux";
-import prefs from "./prefs.json";
+import prefs from "./config.json";
 import type {
   WebviewMessage,
   ExtensionMessage,

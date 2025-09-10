@@ -2,7 +2,7 @@ import { Uri, Webview } from "vscode";
 import { existsSync } from "fs";
 import { basename, dirname, extname, join } from "path";
 import { isMatch } from "micromatch";
-import prefs from "./prefs.json";
+import prefs from "./config.json";
 import type { ReplacementResults } from "./types";
 
 /**
