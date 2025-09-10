@@ -9,6 +9,7 @@ import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
 import FileTree from "./FileTree";
 import { text } from "../utils/etc";
+import prefs from "../prefs.json";
 import type { Dispatch, FC, RefObject } from "react";
 import type {
   TextfieldChangeEventHandler,
@@ -18,19 +19,18 @@ import type {
 } from "../types/events";
 import type { AppAction } from "../types/actions";
 
-const DEBOUNCE_DELAY = 500;
-
 function useDebouncedDispatch(
   ref: RefObject<VscodeTextfieldConstructor>,
   type: "SET_FILES_TO_INCLUDE" | "SET_FILES_TO_EXCLUDE",
   dispatch: Dispatch<AppAction>,
-  delay = DEBOUNCE_DELAY
+  delay = prefs.debounceDelay
 ) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   return () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
+      console.log("○ debounce callback");
       dispatch({
         type,
         payload: ref.current?.value ?? "",

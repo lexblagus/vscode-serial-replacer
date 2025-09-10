@@ -13,14 +13,56 @@ import Actions from "./Actions";
 import FindActions from "./FindActions";
 import ReplaceActions from "./ReplaceActions";
 import { text } from "../../utils/etc";
-import type { FC } from "react";
+import prefs from "../../prefs.json";
+import type { Dispatch, FC, RefObject } from "react";
 import type {
-  TextareaChangeEventHandler,
   TextareaKeyboardEventHandler,
+  TextfieldChangeEventHandler,
+  TextfieldKeyboardEventHandler,
   VscodeCollapsibleToggleEventHandler,
 } from "../../types/events";
+import type { AppAction } from "../../types/actions";
 import type { VscodeCollapsible as VscodeCollapsibleConstructor } from "@vscode-elements/elements/dist/vscode-collapsible/vscode-collapsible";
 import type { VscodeTextarea as VscodeTextareaConstructor } from "@vscode-elements/elements/dist/vscode-textarea/vscode-textarea";
+
+function useDebouncedDispatch(
+  ref: RefObject<VscodeTextareaConstructor>,
+  type: "SET_STEP_FIND" | "SET_STEP_REPLACE",
+  dispatch: Dispatch<AppAction>,
+  index: number,
+  delay = prefs.debounceDelay,
+) {
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  return () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      console.log("○ debounce callback");
+      if(type === 'SET_STEP_FIND'){
+        dispatch({
+          type,
+          payload: {
+            index,
+            find: {
+              content: ref.current?.value ?? '',
+            },
+          },
+        });
+      }
+      if(type === 'SET_STEP_REPLACE'){
+        dispatch({
+          type,
+          payload: {
+            index,
+            replace: {
+              content: ref.current?.value ?? '',
+            },
+          },
+        });
+      }
+    }, delay);
+  };
+}
 
 const Step: FC<{ index: number }> = ({ index }) => {
   const { state, dispatch } = useAppContext();
@@ -28,6 +70,20 @@ const Step: FC<{ index: number }> = ({ index }) => {
   const collapsibleRef = useRef<VscodeCollapsibleConstructor | null>(null);
   const textareaFindRef = useRef<VscodeTextareaConstructor | null>(null);
   const textareaReplaceRef = useRef<VscodeTextareaConstructor | null>(null);
+
+  const debouncedFind = useDebouncedDispatch(
+    textareaFindRef,
+    "SET_STEP_FIND",
+    dispatch,
+    index,
+  );
+  const debouncedReplace = useDebouncedDispatch(
+    textareaReplaceRef,
+    "SET_STEP_REPLACE",
+    dispatch,
+    index,
+  );
+
   const step = state.steps[index];
   const title = step.title || t("Step {0}", (index + 1).toString());
 
@@ -43,19 +99,9 @@ const Step: FC<{ index: number }> = ({ index }) => {
     });
   };
 
-  const handleStepFindChange: TextareaChangeEventHandler = (event) => {
-    console.log("▷ handleStepFindChange");
+  const handleStepFindChange: TextfieldChangeEventHandler = (event) => debouncedFind();
 
-    dispatch({
-      type: "SET_STEP_FIND",
-      payload: {
-        index,
-        find: {
-          content: (event.target as HTMLInputElement).value,
-        },
-      },
-    });
-  };
+  const handleStepFindKeyUp: TextareaKeyboardEventHandler = (event) => debouncedFind();
 
   const handleStepFindKeyDown: TextareaKeyboardEventHandler = (event) => {
     console.log("▷ handleStepFindKeyDown");
@@ -63,33 +109,9 @@ const Step: FC<{ index: number }> = ({ index }) => {
     // TODO: arrow history
   };
 
-  const handleStepFindKeyUp: TextareaKeyboardEventHandler = (event) => {
-    console.log("▷ handleStepFindKeyUp");
+  const handleStepReplaceChange: TextfieldChangeEventHandler = (event) => debouncedReplace();
 
-    dispatch({
-      type: "SET_STEP_FIND",
-      payload: {
-        index,
-        find: {
-          content: (event.target as HTMLInputElement).value,
-        },
-      },
-    });
-  };
-
-  const handleStepReplaceChange: TextareaChangeEventHandler = (event) => {
-    console.log("▷ handleStepReplaceChange");
-
-    dispatch({
-      type: "SET_STEP_REPLACE",
-      payload: {
-        index,
-        replace: {
-          content: (event.target as HTMLInputElement).value,
-        },
-      },
-    });
-  };
+  const handleStepReplaceKeyUp: TextareaKeyboardEventHandler = (event) => debouncedReplace();
 
   const handleStepReplaceKeyDown: TextareaKeyboardEventHandler = (event) => {
     console.log("▷ handleStepReplaceKeyDown");
@@ -203,7 +225,8 @@ const Step: FC<{ index: number }> = ({ index }) => {
               resize="vertical"
               value={step.replace.content}
               onChange={handleStepReplaceChange}
-              onKeyDown={handleStepReplaceKeyDown}></VscodeTextarea>
+              onKeyDown={handleStepReplaceKeyDown}
+              onKeyUp={handleStepReplaceKeyUp}></VscodeTextarea>
           </VscodeFormGroup>
         </div>
       </VscodeCollapsible>

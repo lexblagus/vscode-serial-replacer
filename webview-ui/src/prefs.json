@@ -1,3 +1,4 @@
 {
-  "maxRecursivellyExpandTree": 10000
+  "maxRecursivellyExpandTree": 10000,
+  "debounceDelay": 500
 }
