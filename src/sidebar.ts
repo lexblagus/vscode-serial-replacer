@@ -37,7 +37,7 @@ export class SerialReplacerSidebarProvider implements WebviewViewProvider {
       this._context.extensionUri
     );
 
-    const messageExchange = new SerialReplacer(this._context, this._view.webview, "sidebar");
+    const messageExchange = new SerialReplacer(this._context, this._view.webview, t('sidebar'));
     webviewView.webview.onDidReceiveMessage(messageExchange.receiveMessage.bind(messageExchange));
   }
 

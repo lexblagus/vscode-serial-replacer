@@ -3,6 +3,9 @@
   "Serial Replacer Sidebar": "Barra lateral do Substituidor Serial",
   "Serial Replacer Tab": "Aba do Substituidor Serial",
   "Serial Replacer Panel": "Painel do Substituidor Serial",
+  "sidebar": "barra lateral",
+  "tab": "aba",
+  "panel": "painel",
 
   "files to include": "arquivos a serem incluídos",
   "files to exclude": "arquivos a serem excluídos",

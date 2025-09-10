@@ -60,7 +60,7 @@ export class SerialReplacerPanel {
   }
 
   private _setWebviewMessageListener(webview: Webview) {
-    this._serialReplacer = new SerialReplacer(this._context, webview, "panel");
+    this._serialReplacer = new SerialReplacer(this._context, webview, t('panel'));
     webview.onDidReceiveMessage(this._serialReplacer.receiveMessage.bind(this._serialReplacer));
   }
 }

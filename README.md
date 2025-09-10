@@ -26,6 +26,7 @@
 
 ## Bugs
 
+- PREVIEW: opens tabs without asking while changing find & replace. Must refactor good part of serialReplacer.ts
 - Performance when working with a large set of files
 - ✓ files to include/exclude hangs (because of the controlled component)
 - ✓ when moving panels loses context (like file filters)

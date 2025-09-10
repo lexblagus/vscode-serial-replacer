@@ -43,10 +43,6 @@ export type WebviewMessage =
       payload: Step[];
     }
   | {
-      command: "GET_PREVIEW_COUNT";
-      payload: Step[];
-    }
-  | {
       command: "DISPLAY_INFORMATION_MESSAGE";
       payload: string;
     }
