@@ -1,7 +1,8 @@
-import type { FC } from "react";
 import { VscodeIcon } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../../context";
+
+import type { FC } from "react";
 import type { VscodeIconMouseEventHandler } from "../../types/events";
 
 const FindActions: FC<{ index: number }> = ({ index }) => {

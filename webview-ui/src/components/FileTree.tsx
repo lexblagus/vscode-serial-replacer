@@ -1,10 +1,11 @@
-import { vscode } from "../utils/vscode";
+import { useState, type FC } from "react";
 import { VscodeIcon, VscodeTree } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
+import { vscode } from "../utils/vscode";
 import { useAppContext } from "../context";
-import { useState, type FC } from "react";
+
 import type {
-  VscodeButtonMouseEventHandler,
+  VscodeIconMouseEventHandler,
   VscTreeActionMouseEventHandler,
   VscTreeSelectMouseEventHandler,
   VscTreeMouseEventHandler,
@@ -16,7 +17,7 @@ const FileTree: FC = () => {
   const { state, dispatch } = useAppContext();
   const [selectedFile, setSelectedFile] = useState<string>();
 
-  const handleRefreshClick: VscodeButtonMouseEventHandler = () => {
+  const handleRefreshClick: VscodeIconMouseEventHandler = () => {
     console.log("▷ handleRefreshClick");
 
     const {

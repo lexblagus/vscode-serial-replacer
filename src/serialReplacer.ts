@@ -15,6 +15,7 @@ import {
 import { basename, join } from "path";
 import { filterFileByLists, getStats, splitOutsideCurlyBraces } from "./aux";
 import prefs from "./config.json";
+
 import type {
   WebviewMessage,
   ExtensionMessage,
@@ -22,10 +23,9 @@ import type {
   ReplacementResults,
   FilePath,
 } from "./types";
-import type { ReplacementParameters } from "webview-ui/src/types/replacers";
-const { t } = l10n;
+import type { ReplacementParameters } from "../webview-ui/src/types/replacers";
 
-const { bundle } = l10n;
+const { t, bundle } = l10n;
 
 enum LogLevel {
   silent = 0,

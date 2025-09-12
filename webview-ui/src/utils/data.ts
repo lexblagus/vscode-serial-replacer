@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+
 import type { SerialReplacement, Step } from "../types/replacers";
 
 export const emptyReplacement: () => SerialReplacement = () => ({

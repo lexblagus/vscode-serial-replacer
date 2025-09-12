@@ -1,18 +1,21 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "module": "commonjs",
     "target": "es6",
     "outDir": "out",
-    "lib": ["es6", "dom"],
+    "lib": [
+      "es6",
+      "dom"
+    ],
     "sourceMap": true,
-    "rootDir": "src",
-    "strict": true,
-    "esModuleInterop": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
-    "paths": {
-      "*": ["*", "../*", "../../*"]
-    }
+    "rootDir": "src",
+    "esModuleInterop": true,
   },
-  "exclude": ["node_modules", ".vscode-test", "webview-ui"]
+  "exclude": [
+    "node_modules",
+    ".vscode-test",
+    "webview-ui"
+  ]
 }

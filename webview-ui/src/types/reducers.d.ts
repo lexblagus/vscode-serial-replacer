@@ -1,5 +1,5 @@
-import type { SerialReplacement } from "../types/replacers";
-import type { AppAction } from "../types/actions";
+import type { SerialReplacement } from "./replacers";
+import type { AppAction } from "./actions";
 
 export type AppReducer = (state: SerialReplacement, action: AppAction) => SerialReplacement;
 

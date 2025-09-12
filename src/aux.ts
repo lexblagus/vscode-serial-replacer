@@ -3,6 +3,7 @@ import { existsSync } from "fs";
 import { basename, dirname, extname, join } from "path";
 import { isMatch } from "micromatch";
 import prefs from "./config.json";
+
 import type { ReplacementResults } from "./types";
 
 /**

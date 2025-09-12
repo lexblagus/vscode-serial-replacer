@@ -7,13 +7,15 @@ import {
   VscodeTextarea,
 } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
-import { useAppContext } from "../../context";
-import "./Step.css";
 import Actions from "./Actions";
 import FindActions from "./FindActions";
 import ReplaceActions from "./ReplaceActions";
+import { useAppContext } from "../../context";
 import { text } from "../../utils/etc";
 import prefs from "../../config.json";
+
+import type { VscodeCollapsible as VscodeCollapsibleConstructor } from "@vscode-elements/elements/dist/vscode-collapsible/vscode-collapsible";
+import type { VscodeTextarea as VscodeTextareaConstructor } from "@vscode-elements/elements/dist/vscode-textarea/vscode-textarea";
 import type { Dispatch, FC, RefObject } from "react";
 import type {
   TextareaKeyboardEventHandler,
@@ -22,8 +24,8 @@ import type {
   VscodeCollapsibleToggleEventHandler,
 } from "../../types/events";
 import type { AppAction } from "../../types/actions";
-import type { VscodeCollapsible as VscodeCollapsibleConstructor } from "@vscode-elements/elements/dist/vscode-collapsible/vscode-collapsible";
-import type { VscodeTextarea as VscodeTextareaConstructor } from "@vscode-elements/elements/dist/vscode-textarea/vscode-textarea";
+
+import "./Step.css";
 
 function useDebouncedDispatch(
   ref: RefObject<VscodeTextareaConstructor>,

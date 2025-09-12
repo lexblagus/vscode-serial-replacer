@@ -1,10 +1,17 @@
-import { KeyboardEventHandler, MouseEventHandler, MutableRefObject, RefObject } from "react";
-import type { VscCollapsibleToggleEvent } from "@vscode-elements/elements/dist/vscode-collapsible/vscode-collapsible";
-import type { VscTreeActionEvent, VscTreeSelectEvent, VscTree } from "./tree";
-import type { VscodeIcon as VscodeIconConstructor } from "@vscode-elements/elements/dist/vscode-icon/vscode-icon";
-import type { VscodeTextfield as VscodeTextfieldConstructor } from "@vscode-elements/elements/dist/vscode-textfield/vscode-textfield";
-import type { VscodeTextarea as VscodeTextareaConstructor } from "@vscode-elements/elements/dist/vscode-textarea/vscode-textarea";
-import type { VscodeButton as VscodeButtonConstructor } from "@vscode-elements/elements/dist/vscode-button/vscode-button";
+import type {
+  KeyboardEventHandler,
+  MouseEventHandler,
+  MutableRefObject,
+  RefObject,
+  VscCollapsibleToggleEvent,
+  VscodeTreeActionEvent,
+  VscodeTreeSelectEvent,
+  VscodeTree,
+  VscodeIconConstructor,
+  VscodeTextfieldConstructor,
+  VscodeTextareaConstructor,
+  VscodeButtonConstructor,
+} from "./dependencies";
 
 // Actions
 
@@ -26,11 +33,11 @@ export type TextfieldChangeEventHandler = (ev: Event) => void;
 export type TextareaChangeEventHandler = (ev: Event) => void;
 export type TextfieldKeyboardEventHandler = KeyboardEventHandler<VscodeTextfieldConstructor>;
 export type TextareaKeyboardEventHandler = KeyboardEventHandler<VscodeTextareaConstructor>;
-export type VscodeButtonMouseEventHandler = MouseEventHandler<VscodeButton>;
+export type VscodeButtonMouseEventHandler = MouseEventHandler<VscodeButtonConstructor>;
 export type VscodeIconMouseEventHandler = MouseEventHandler<VscodeIconConstructor>;
-export type VscTreeActionMouseEventHandler = (ev: VscTreeActionEvent) => void;
-export type VscTreeSelectMouseEventHandler = (ev: VscTreeSelectEvent) => void;
-export type VscTreeMouseEventHandler = MouseEventHandler<VscTree>;
+export type VscTreeActionMouseEventHandler = (ev: VscodeTreeActionEvent) => void;
+export type VscTreeSelectMouseEventHandler = (ev: VscodeTreeSelectEvent) => void;
+export type VscTreeMouseEventHandler = MouseEventHandler<VscodeTree>;
 export type VscodeCollapsibleToggleEventHandler = (
   this: HTMLElement,
   ev: VscCollapsibleToggleEvent
@@ -63,5 +70,3 @@ export type StepActionIcon = {
   visible: boolean;
   ariaPressed?: boolean;
 };
-
-export type VscodeTextfieldConstructor = VscodeTextfieldConstructor;

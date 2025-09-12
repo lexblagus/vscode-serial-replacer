@@ -6,17 +6,18 @@ import {
   VscodeTextfield,
 } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
-import { useAppContext } from "../context";
 import FileTree from "./FileTree";
+import { useAppContext } from "../context";
 import { text } from "../utils/etc";
 import prefs from "../config.json";
+
 import type { Dispatch, FC, RefObject } from "react";
 import type {
   TextfieldChangeEventHandler,
   TextfieldKeyboardEventHandler,
   VscodeIconMouseEventHandler,
-  VscodeTextfieldConstructor,
 } from "../types/events";
+import type { VscodeTextfieldConstructor } from '../types/dependencies';
 import type { AppAction } from "../types/actions";
 
 function useDebouncedDispatch(

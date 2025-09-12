@@ -1,11 +1,12 @@
-import type { FC } from "react";
-import { t } from "@vscode/l10n";
 import { VscodeButton, VscodeFormContainer } from "@vscode-elements/react-elements";
-import { useAppContext } from "../context";
-import { VscodeButtonMouseEventHandler } from "../types/events";
+import { t } from "@vscode/l10n";
 import FileFilters from "./FileFilters";
 import Step from "./Step";
+import { useAppContext } from "../context";
+import { VscodeButtonMouseEventHandler } from "../types/events";
 import { vscode } from "../utils/vscode";
+
+import type { FC } from "react";
 
 if (import.meta.env.DEV) {
   await import("@vscode-elements/webview-playground");
