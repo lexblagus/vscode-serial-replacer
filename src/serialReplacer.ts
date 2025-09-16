@@ -13,7 +13,8 @@ import {
   commands,
 } from "vscode";
 import { basename, join } from "path";
-import { filterFileByLists, getStats, splitOutsideCurlyBraces } from "./aux";
+import { getStats } from "shared/common";
+import { filterFileByLists, splitOutsideCurlyBraces } from "./aux";
 // import  { emptyReplacementParameters } from "@webview/utils/data";
 import prefs from "./config.json";
 

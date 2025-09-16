@@ -1,24 +1,26 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
+    "jsx": "react-jsx",
     "useDefineForClassFields": true,
     "allowJs": false,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "node",
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
     "resolveJsonModule": true
   },
   "include": [
-    "./src"
+    "./src",
+    "../shared/**/*"
   ]
 }

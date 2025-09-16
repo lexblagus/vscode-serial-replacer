@@ -4,6 +4,7 @@ import { t } from "@vscode/l10n";
 import type { CombineSequentialReducers } from "../types/reducers";
 import type { TreeItem, TreeItemAction } from "../types/tree";
 import type { PathList, ReplacementResults, WorkspacesAndFiles } from "../../../src/types";
+import { getStats } from "../../../shared/common";
 
 export const text: Record<string, string> = {
   "sample-file-pattern": "*.ts, src/**/include",
@@ -415,7 +416,7 @@ export const setTreePreview = (
 };
 
 // TODO: make it common/shared
-export const getStats = (results: ReplacementResults) =>
+/* export const getStats = (results: ReplacementResults) =>
   Object.values(results).reduce(
     (acc, result) => {
       return {
@@ -431,7 +432,7 @@ export const getStats = (results: ReplacementResults) =>
       replacementsMade: 0,
       errors: 0,
     }
-  );
+  ); */
 
 export const debounce = <F extends (...args: any[]) => void>(fn: F, delay: number) => {
   let timer: ReturnType<typeof setTimeout>;

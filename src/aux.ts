@@ -111,8 +111,7 @@ export function splitOutsideCurlyBraces(input: string): string[] {
   return result;
 }
 
-// TODO: make it common/shared
-export const getStats = (results: ReplacementResults) =>
+/* export const getStats = (results: ReplacementResults) =>
   Object.values(results).reduce(
     (acc, result) => {
       return {
@@ -128,7 +127,7 @@ export const getStats = (results: ReplacementResults) =>
       replacementsMade: 0,
       errors: 0,
     }
-  );
+  ); */
 
 export const makePreviewUri = (filePath: string): Uri => {
   const base = basename(filePath, extname(filePath)); // e.g. forty-eight
