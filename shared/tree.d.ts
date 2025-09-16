@@ -2,7 +2,7 @@ import type {
   VscodeTreeItem,
   VscodeTreeItemIconConfig,
   VscodeTreeItemAction
-} from "./dependencies";
+} from "../webview-ui/src/types/dependencies";
 
 export type TreeItemActionId = "toggle" | "refresh" | "remove";
 

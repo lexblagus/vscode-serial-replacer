@@ -1,4 +1,4 @@
-import type { TreeItem } from "../types/tree";
+import type { TreeItem } from "./tree";
 
 export interface Step {
   id: string;

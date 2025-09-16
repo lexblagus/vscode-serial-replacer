@@ -1,5 +1,5 @@
-import type { TreeItem } from "./tree";
-import type { ReplacementResults } from "../../../src/types";
+import type { TreeItem } from "../../../shared/tree";
+import type { ReplacementResults } from "../../../shared/extension";
 
 type MainAction = {
   type: "RESET";

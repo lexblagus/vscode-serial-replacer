@@ -1,10 +1,10 @@
 import { treeItemActionToggle, treeItemConfig, values } from "./tree-config";
 import { t } from "@vscode/l10n";
+import { getStats } from "../../../shared/common";
 
 import type { CombineSequentialReducers } from "../types/reducers";
-import type { TreeItem, TreeItemAction } from "../types/tree";
-import type { PathList, ReplacementResults, WorkspacesAndFiles } from "../../../src/types";
-import { getStats } from "../../../shared/common";
+import type { TreeItem, TreeItemAction } from "../../../shared/tree";
+import type { PathList, ReplacementResults, WorkspacesAndFiles } from "../../../shared/extension";
 
 export const text: Record<string, string> = {
   "sample-file-pattern": "*.ts, src/**/include",

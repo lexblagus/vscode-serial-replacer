@@ -1,6 +1,6 @@
 import { t } from "@vscode/l10n";
 
-import type { TreeItem, TreeItemAction } from "../types/tree";
+import type { TreeItem, TreeItemAction } from "../../../shared/tree";
 
 export const treeItemConfig: Pick<TreeItem, "icons" | "actions"> = {
   icons: {

@@ -2,7 +2,7 @@ import type {
   ReplacementParameters,
   SerialReplacement,
   Step,
-} from "../webview-ui/src/types/replacers";
+} from "./replacers";
 
 type FilePath = string;
 

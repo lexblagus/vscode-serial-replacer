@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 
-import type { ReplacementParameters, SerialReplacement, Step } from "../types/replacers";
+import type { ReplacementParameters, SerialReplacement, Step } from "../../../shared/replacers";
 
 export const emptyReplacementParameters = ():ReplacementParameters => ({
   includeFiles: '',

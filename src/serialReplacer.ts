@@ -25,8 +25,8 @@ import type {
   ReplacementResults,
   FilePath,
   PersistentData,
-} from "./types";
-import type { ReplacementParameters } from "../webview-ui/src/types/replacers";
+} from "../shared/extension";
+import type { ReplacementParameters } from "shared/replacers";
 
 const { t, bundle } = l10n;
 
