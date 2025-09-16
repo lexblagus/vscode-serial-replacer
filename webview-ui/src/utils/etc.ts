@@ -415,25 +415,6 @@ export const setTreePreview = (
   return tree;
 };
 
-// TODO: make it common/shared
-/* export const getStats = (results: ReplacementResults) =>
-  Object.values(results).reduce(
-    (acc, result) => {
-      return {
-        totalFiles: acc.totalFiles + 1,
-        filesReplaced: acc.filesReplaced + (result.replacements ? 1 : 0),
-        replacementsMade: acc.replacementsMade + result.replacements,
-        errors: acc.errors + result.errors.length,
-      };
-    },
-    {
-      totalFiles: 0,
-      filesReplaced: 0,
-      replacementsMade: 0,
-      errors: 0,
-    }
-  ); */
-
 export const debounce = <F extends (...args: any[]) => void>(fn: F, delay: number) => {
   let timer: ReturnType<typeof setTimeout>;
   return (...args: Parameters<F>) => {

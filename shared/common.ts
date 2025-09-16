@@ -1,12 +1,4 @@
-// import type { ReplacementResults } from "../src/types";
-
-export type ReplacementResults = Record<
-  string,
-  {
-    errors: string[];
-    replacements: number;
-  }
->;
+import type { ReplacementResults } from "../src/types";
 
 export const getStats = (results: ReplacementResults) =>
   Object.values(results).reduce(

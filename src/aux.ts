@@ -4,8 +4,6 @@ import { basename, dirname, extname, join } from "path";
 import { isMatch } from "micromatch";
 import prefs from "./config.json";
 
-import type { ReplacementResults } from "./types";
-
 /**
  * A helper function that returns a unique alphanumeric identifier called a nonce.
  *
@@ -111,28 +109,10 @@ export function splitOutsideCurlyBraces(input: string): string[] {
   return result;
 }
 
-/* export const getStats = (results: ReplacementResults) =>
-  Object.values(results).reduce(
-    (acc, result) => {
-      return {
-        totalFiles: acc.totalFiles + 1,
-        filesReplaced: acc.filesReplaced + (result.replacements ? 1 : 0),
-        replacementsMade: acc.replacementsMade + result.replacements,
-        errors: acc.errors + result.errors.length,
-      };
-    },
-    {
-      totalFiles: 0,
-      filesReplaced: 0,
-      replacementsMade: 0,
-      errors: 0,
-    }
-  ); */
-
 export const makePreviewUri = (filePath: string): Uri => {
   const base = basename(filePath, extname(filePath)); // e.g. forty-eight
   const ext = extname(filePath); // e.g. .log
-  const preExt = ''; // '.replaced';
+  const preExt = ""; // '.replaced';
   const previewName = `${base}${preExt}${ext}`; // forty-eight.preview.log
   return Uri.parse(`untitled:${join(dirname(filePath), previewName)}`);
 };
