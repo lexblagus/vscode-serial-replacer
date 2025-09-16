@@ -33,3 +33,32 @@ export interface SerialReplacement extends ReplacementParameters {
   results: TreeItem[];
   resultsTotalFiles: number;
 }
+
+export type FilePath = string;
+
+export type PathList = FilePath[];
+
+export type WorkspacesAndFiles<T = PathList> = {
+  workspaces: T;
+  files: T;
+};
+
+export type ReplacementResults = Record<
+  FilePath,
+  {
+    errors: string[];
+    replacements: number;
+  }
+>;
+
+export type PersistentHistory = {
+    includeFiles: string[];
+    excludeFiles: string[];
+    findContent: string[];
+    replaceContent: string[];
+  };
+
+export type PersistentData = {
+  replacementParameters: ReplacementParameters;
+  history: PersistentHistory;
+};

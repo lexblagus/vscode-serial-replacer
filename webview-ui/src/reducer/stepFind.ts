@@ -1,4 +1,4 @@
-import type { SerialReplacement } from "../../../shared/replacers";
+import type { SerialReplacement } from "../../../shared/replacements";
 import type { AppAction } from "../types/actions";
 
 export function stepFindReducer(state: SerialReplacement, action: AppAction): SerialReplacement {

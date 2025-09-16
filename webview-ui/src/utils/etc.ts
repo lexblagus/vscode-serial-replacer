@@ -4,7 +4,7 @@ import { getStats } from "../../../shared/common";
 
 import type { CombineSequentialReducers } from "../types/reducers";
 import type { TreeItem, TreeItemAction } from "../../../shared/tree";
-import type { PathList, ReplacementResults, WorkspacesAndFiles } from "../../../shared/extension";
+import type { PathList, ReplacementResults, WorkspacesAndFiles } from "../../../shared/replacements";
 
 export const text: Record<string, string> = {
   "sample-file-pattern": "*.ts, src/**/include",

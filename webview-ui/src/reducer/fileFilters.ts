@@ -1,7 +1,7 @@
 import { setTreeItemOpen, setTreePreview } from "../utils/etc";
 import prefs from "../config.json";
 
-import type { SerialReplacement } from "../../../shared/replacers";
+import type { SerialReplacement } from "../../../shared/replacements";
 import type { AppAction } from "../types/actions";
 
 export function fileFilterReducer(state: SerialReplacement, action: AppAction): SerialReplacement {

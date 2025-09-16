@@ -1,6 +1,6 @@
-import { initialReplacement } from "../utils/data";
+import { initialReplacement } from "../../../shared/data";
 
-import type { SerialReplacement } from "../../../shared/replacers";
+import type { SerialReplacement } from "../../../shared/replacements";
 import type { AppAction } from "../types/actions";
 
 export function stepReplaceReducer(state: SerialReplacement, action: AppAction): SerialReplacement {

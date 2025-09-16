@@ -69,6 +69,7 @@
     "vscode-test": "^1.5.0"
   },
   "dependencies": {
-    "micromatch": "^4.0.8"
+    "micromatch": "^4.0.8",
+    "uuid": "^13.0.0"
   }
 }

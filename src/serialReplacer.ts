@@ -13,20 +13,20 @@ import {
   commands,
 } from "vscode";
 import { basename, join } from "path";
-import { getStats } from "shared/common";
 import { filterFileByLists, splitOutsideCurlyBraces } from "./aux";
-// import  { emptyReplacementParameters } from "@webview/utils/data";
+import { getStats } from "shared/common";
+import { emptyHistory, emptyPersistentData, emptyReplacementParameters } from "shared/data";
 import prefs from "./config.json";
 
+import type { WebviewMessage, ExtensionMessage } from "shared/messages";
 import type {
-  WebviewMessage,
-  ExtensionMessage,
   WorkspacesAndFiles,
   ReplacementResults,
   FilePath,
+  ReplacementParameters,
   PersistentData,
-} from "../shared/extension";
-import type { ReplacementParameters } from "shared/replacers";
+  PersistentHistory,
+} from "shared/replacements";
 
 const { t, bundle } = l10n;
 
@@ -494,18 +494,52 @@ export class SerialReplacer {
     }
   }
 
-  /* private _getPersistentData(): PersistentData {
-    return this._context.workspaceState.get<string[]>('replacementParameters', emptyReplacementParameters());
-  } */
+  private _getPersistentData(): PersistentData {
+    return this._context.workspaceState.get("data", emptyPersistentData());
+  }
 
-  /* private async _savePersistentData() {
+  private _savePersistentData(persistData: PersistentData) {
     this._log(LogLevel.trace, `Save persistent data`);
-    const persistentData:PersistentData = {
-      replacementParameters: this._replacementParameters,
-      // history: ...
-    };
-    this._context.workspaceState.update('main', null);
-  } */
+    this._context.workspaceState.update("data", persistData);
+  }
+
+  private _addToPersistentHistory(
+    includeFiles?: string,
+    excludeFiles?: string,
+    findContent?: string,
+    replaceContent?: string
+  ) {
+    this._log(LogLevel.trace, `Add to persistent history`);
+    this._log(LogLevel.debug, `includeFiles=${JSON.stringify(includeFiles)}`);
+    this._log(LogLevel.debug, `excludeFiles=${JSON.stringify(excludeFiles)}`);
+    this._log(LogLevel.debug, `findContent=${JSON.stringify(findContent)}`);
+    this._log(LogLevel.debug, `replaceContent=${JSON.stringify(replaceContent)}`);
+
+    const data = this._getPersistentData();
+    this._log(LogLevel.debug, `Original; data=${JSON.stringify(data)}`);
+
+    if (includeFiles) {
+      data.history.includeFiles.push(includeFiles);
+    }
+    if (excludeFiles) {
+      data.history.excludeFiles.push(excludeFiles);
+    }
+    if (findContent) {
+      data.history.findContent.push(findContent);
+    }
+    if (replaceContent) {
+      data.history.replaceContent.push(replaceContent);
+    }
+
+    this._log(LogLevel.debug, `Updated; data=${JSON.stringify(data)}`);
+    this._savePersistentData(data);
+  }
+
+  private _persistReplacementParameters(replacementParameters: ReplacementParameters) {
+    // const data = this._getPersistentData();
+    //...
+    // this._savePersistentData(data);
+  }
 
   private _subscribeChanges() {
     this._log(LogLevel.trace, "Subscribe changes");
@@ -571,7 +605,7 @@ export class SerialReplacer {
       }
 
       case "ADD_HISTORY_INCLUDE_FILES": {
-        //...
+        this._addToPersistentHistory(webviewMessage.payload);
         return;
       }
 

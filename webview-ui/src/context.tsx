@@ -1,12 +1,12 @@
 import { createContext, useReducer, useContext, ReactNode, useEffect, useRef } from "react";
 import { appStateReducer } from "./reducer";
-import { emptyStep, initialReplacement } from "./utils/data";
 import { vscode } from "./utils/vscode";
 import { setFileTree } from "./utils/etc";
+import { emptyStep, initialReplacement } from "../../shared/data";
 
-import type { SerialReplacement } from "../../shared/replacers";
+import type { SerialReplacement } from "../../shared/replacements";
 import type { AppAction } from "./types/actions";
-import type { ExtensionMessage } from "../../shared/extension";
+import type { ExtensionMessage } from "../../shared/messages";
 
 type AppContextType = {
   state: SerialReplacement;

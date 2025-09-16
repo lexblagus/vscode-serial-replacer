@@ -1,4 +1,4 @@
-import type { ReplacementResults } from "./extension";
+import type { ReplacementResults } from "./replacements";
 
 export const getStats = (results: ReplacementResults) =>
   Object.values(results).reduce(

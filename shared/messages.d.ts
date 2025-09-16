@@ -1,35 +1,10 @@
 import type {
-  ReplacementParameters,
-  SerialReplacement,
-  Step,
-} from "./replacers";
-
-type FilePath = string;
-
-export type PathList = FilePath[];
-
-export type WorkspacesAndFiles<T = PathList> = {
-  workspaces: T;
-  files: T;
-};
-
-export type ReplacementResults = Record<
   FilePath,
-  {
-    errors: string[];
-    replacements: number;
-  }
->;
-
-export type PersistentData = {
-  replacementParameters: ReplacementParameters;
-  history: {
-    includeFiles: string[];
-    excludeFiles: string[];
-    findContent: string[];
-    replaceContent: string[];
-  };
-};
+  ReplacementParameters,
+  ReplacementResults,
+  Step,
+  WorkspacesAndFiles,
+} from "./replacements";
 
 export type WebviewMessage =
   | {
