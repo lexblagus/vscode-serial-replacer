@@ -2,7 +2,7 @@ import { Uri, Webview } from "vscode";
 import { existsSync } from "fs";
 import { basename, dirname, extname, join } from "path";
 import { isMatch } from "micromatch";
-import prefs from "./config.json";
+import config from "./config.json";
 
 /**
  * A helper function that returns a unique alphanumeric identifier called a nonce.
@@ -63,13 +63,13 @@ export function filterFileByLists(
   }
 
   if (includeFilesList.length > 0) {
-    if (!isMatch(filePath, includeFilesList, prefs.micromatchOptions)) {
+    if (!isMatch(filePath, includeFilesList, config.micromatchOptions)) {
       return;
     }
   }
 
   if (excludeFilesList.length > 0) {
-    if (isMatch(filePath, excludeFilesList, prefs.micromatchOptions)) {
+    if (isMatch(filePath, excludeFilesList, config.micromatchOptions)) {
       return;
     }
   }

@@ -16,7 +16,7 @@ import { basename, join } from "path";
 import { filterFileByLists, splitOutsideCurlyBraces } from "./aux";
 import { getStats } from "shared/common";
 import { emptyHistory, emptyPersistentData, emptyReplacementParameters } from "shared/data";
-import prefs from "./config.json";
+import config from "./config.json";
 
 import type { WebviewMessage, ExtensionMessage } from "shared/messages";
 import type {
@@ -26,6 +26,7 @@ import type {
   ReplacementParameters,
   PersistentData,
   PersistentHistory,
+  HistoryAwareField,
 } from "shared/replacements";
 
 const { t, bundle } = l10n;
@@ -86,7 +87,7 @@ export class SerialReplacer {
   }
 
   private _log(level: LogLevel, message: string, force = false) {
-    const preferenceLevel = LogLevel[prefs.extensionLogLevel as LogLevels];
+    const preferenceLevel = LogLevel[config.extensionLogLevel as LogLevels];
     if (!force && (preferenceLevel < level || preferenceLevel === LogLevel.silent || level === 0)) {
       return;
     }
@@ -94,7 +95,7 @@ export class SerialReplacer {
       `[${new Date().toISOString()}] ${LogLevel[level].toUpperCase()} ${((msg, maxSize) =>
         msg.length > maxSize ? `${msg.slice(0, maxSize)}… (truncated)` : msg)(
         message,
-        prefs.maxLogMessageSize
+        config.maxLogMessageSize
       )}`
     );
   }
@@ -495,40 +496,32 @@ export class SerialReplacer {
   }
 
   private _getPersistentData(): PersistentData {
-    return this._context.workspaceState.get("data", emptyPersistentData());
+    return this._context.globalState.get("data", emptyPersistentData());
   }
 
   private _savePersistentData(persistData: PersistentData) {
     this._log(LogLevel.trace, `Save persistent data`);
-    this._context.workspaceState.update("data", persistData);
+    this._context.globalState.update("data", persistData);
   }
 
   private _addToPersistentHistory(
-    includeFiles?: string,
-    excludeFiles?: string,
-    findContent?: string,
-    replaceContent?: string
+    field: HistoryAwareField,
+    value: string,
   ) {
     this._log(LogLevel.trace, `Add to persistent history`);
-    this._log(LogLevel.debug, `includeFiles=${JSON.stringify(includeFiles)}`);
-    this._log(LogLevel.debug, `excludeFiles=${JSON.stringify(excludeFiles)}`);
-    this._log(LogLevel.debug, `findContent=${JSON.stringify(findContent)}`);
-    this._log(LogLevel.debug, `replaceContent=${JSON.stringify(replaceContent)}`);
+    this._log(LogLevel.debug, `field=${JSON.stringify(field)}`);
+    this._log(LogLevel.debug, `value=${JSON.stringify(value)}`);
 
     const data = this._getPersistentData();
     this._log(LogLevel.debug, `Original; data=${JSON.stringify(data)}`);
 
-    if (includeFiles) {
-      data.history.includeFiles.push(includeFiles);
-    }
-    if (excludeFiles) {
-      data.history.excludeFiles.push(excludeFiles);
-    }
-    if (findContent) {
-      data.history.findContent.push(findContent);
-    }
-    if (replaceContent) {
-      data.history.replaceContent.push(replaceContent);
+    const fieldHistory = data.history[field];
+    const maxFieldHistoryEntries = config.maxFieldHistoryEntries;
+    if (value !== '' && fieldHistory[fieldHistory.length - 1] !== value) {
+      fieldHistory.push(value);
+      if (fieldHistory.length > maxFieldHistoryEntries) {
+        fieldHistory.splice(0, fieldHistory.length - maxFieldHistoryEntries);
+      }
     }
 
     this._log(LogLevel.debug, `Updated; data=${JSON.stringify(data)}`);
@@ -536,6 +529,8 @@ export class SerialReplacer {
   }
 
   private _persistReplacementParameters(replacementParameters: ReplacementParameters) {
+    // TODO: save serial replacer parameters on UI so it can be restored at restart
+
     // const data = this._getPersistentData();
     //...
     // this._savePersistentData(data);
@@ -604,8 +599,15 @@ export class SerialReplacer {
         return;
       }
 
-      case "ADD_HISTORY_INCLUDE_FILES": {
-        this._addToPersistentHistory(webviewMessage.payload);
+      case "ADD_FIELD_HISTORY": {
+        this._addToPersistentHistory(
+          webviewMessage.payload.field,
+          webviewMessage.payload.value,
+        );
+
+        // TODO: post to webview updated history
+        //...
+
         return;
       }
 

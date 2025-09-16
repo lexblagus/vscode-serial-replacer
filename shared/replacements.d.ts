@@ -51,12 +51,9 @@ export type ReplacementResults = Record<
   }
 >;
 
-export type PersistentHistory = {
-    includeFiles: string[];
-    excludeFiles: string[];
-    findContent: string[];
-    replaceContent: string[];
-  };
+export type HistoryAwareField = 'includeFiles' | 'excludeFiles' | 'findContent' | 'replaceContent';
+
+export type PersistentHistory = Record<HistoryAwareField, string[]>;
 
 export type PersistentData = {
   replacementParameters: ReplacementParameters;

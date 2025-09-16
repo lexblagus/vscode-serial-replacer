@@ -1,10 +1,19 @@
-import { treeItemActionToggle, treeItemConfig, values } from "./tree-config";
+import { vscode } from "../utils/vscode";
 import { t } from "@vscode/l10n";
+import { treeItemActionToggle, treeItemConfig, values } from "./tree-config";
 import { getStats } from "../../../shared/common";
 
+import type { Dispatch } from "react";
+import type { AppAction } from "../types/actions";
 import type { CombineSequentialReducers } from "../types/reducers";
+import type { VscodeTextareaConstructor, VscodeTextfieldConstructor } from "../types/dependencies";
 import type { TreeItem, TreeItemAction } from "../../../shared/tree";
-import type { PathList, ReplacementResults, WorkspacesAndFiles } from "../../../shared/replacements";
+import type {
+  PathList,
+  ReplacementResults,
+  WorkspacesAndFiles,
+  HistoryAwareField,
+} from "../../../shared/replacements";
 
 export const text: Record<string, string> = {
   "sample-file-pattern": "*.ts, src/**/include",
@@ -37,7 +46,9 @@ export const changePosition = <T>(array: T[], fromIndex: number, toIndex: number
   const from = fromIndex < 0 ? length + fromIndex : fromIndex;
   const to = toIndex < 0 ? length + toIndex : toIndex;
 
-  if (from < 0 || from >= length || to < 0 || to > length) return copy;
+  if (from < 0 || from >= length || to < 0 || to > length) {
+    return copy;
+  }
 
   const [item] = copy.splice(from, 1);
   copy.splice(to, 0, item);
@@ -46,7 +57,9 @@ export const changePosition = <T>(array: T[], fromIndex: number, toIndex: number
 };
 
 export const removeAtIndex = <T>(array: T[], index: number): T[] => {
-  if (index < 0 || index >= array.length) return [...array];
+  if (index < 0 || index >= array.length) {
+    return [...array];
+  }
   return [...array.slice(0, index), ...array.slice(index + 1)];
 };
 
@@ -60,20 +73,32 @@ const sortTreeItems = (treeItem: TreeItem[]) => {
     // Folders before files
     const aIsFolder = !!a.subItems;
     const bIsFolder = !!b.subItems;
-    if (aIsFolder && !bIsFolder) return -1;
-    if (!aIsFolder && bIsFolder) return 1;
+    if (aIsFolder && !bIsFolder) {
+      return -1;
+    }
+    if (!aIsFolder && bIsFolder) {
+      return 1;
+    }
 
     // 'Others' folder last
     const aIsOthers = a.value === values.others;
     const bIsOthers = b.value === values.others;
-    if (!aIsOthers && bIsOthers) return -1;
-    if (aIsOthers && !bIsOthers) return 1;
+    if (!aIsOthers && bIsOthers) {
+      return -1;
+    }
+    if (aIsOthers && !bIsOthers) {
+      return 1;
+    }
 
     // Hidden files last
     const aIsHidden = a.label.startsWith(".");
     const bIsHidden = b.label.startsWith(".");
-    if (!aIsHidden && bIsHidden) return -1;
-    if (aIsHidden && !bIsHidden) return 1;
+    if (!aIsHidden && bIsHidden) {
+      return -1;
+    }
+    if (aIsHidden && !bIsHidden) {
+      return 1;
+    }
 
     // Alphabetical order (case-insensitive)
     return a.label.localeCompare(b.label, undefined, { sensitivity: "base" });
@@ -175,12 +200,16 @@ export const setTreeItemOpen = (
   open: boolean,
   recurseAll = false
 ): TreeItem[] => {
-  if (path.length === 0) return items;
+  if (path.length === 0) {
+    return items;
+  }
 
   const [idx, ...rest] = path;
 
   return items.map((item, i) => {
-    if (i !== idx) return item;
+    if (i !== idx) {
+      return item;
+    }
 
     // Update subItems along the path
     const updatedSubItems = item.subItems
@@ -421,4 +450,81 @@ export const debounce = <F extends (...args: any[]) => void>(fn: F, delay: numbe
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), delay);
   };
+};
+
+export const detectNavigationDirection = (
+  key: string,
+  field: VscodeTextfieldConstructor | VscodeTextareaConstructor
+): number => {
+  const selectionStart = field.wrappedElement.selectionStart;
+  const selectionEnd = field.wrappedElement.selectionEnd;
+  const length = field.value.length;
+
+  if (key === "ArrowUp" && selectionStart === 0) {
+    return -1;
+  }
+
+  if (key === "ArrowDown" && selectionEnd === length) {
+    return 1;
+  }
+
+  return 0;
+};
+
+export const setHistoricField = ({
+  dispatch,
+  field,
+  value,
+  index,
+}: {
+  dispatch: Dispatch<AppAction>;
+  field: HistoryAwareField;
+  value: string;
+  index?: number;
+}) => {
+  if (value !== "") {
+    vscode.postMessage({
+      command: "ADD_FIELD_HISTORY",
+      payload: {
+        field,
+        value,
+      },
+    });
+  }
+
+  if (field === "includeFiles") {
+    dispatch({ type: "SET_FILES_TO_INCLUDE", payload: value });
+    return;
+  }
+
+  if (field === "excludeFiles") {
+    dispatch({ type: "SET_FILES_TO_EXCLUDE", payload: value });
+    return;
+  }
+
+  if (field === "findContent") {
+    dispatch({
+      type: "SET_STEP_FIND",
+      payload: {
+        index,
+        find: {
+          content: value,
+        },
+      },
+    });
+    return;
+  }
+
+  if (field === "replaceContent") {
+    dispatch({
+      type: "SET_STEP_REPLACE",
+      payload: {
+        index,
+        replace: {
+          content: value,
+        },
+      },
+    });
+    return;
+  }
 };

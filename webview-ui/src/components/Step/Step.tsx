@@ -11,80 +11,22 @@ import Actions from "./Actions";
 import FindActions from "./FindActions";
 import ReplaceActions from "./ReplaceActions";
 import { useAppContext } from "../../context";
-import { text } from "../../utils/etc";
-import prefs from "../../config.json";
+import { debounce, detectNavigationDirection, setHistoricField, text } from "../../utils/etc";
+import { vscode } from "../../utils/vscode";
+import config from "../../config.json";
 
-import type { VscodeCollapsible as VscodeCollapsibleConstructor } from "@vscode-elements/elements/dist/vscode-collapsible/vscode-collapsible";
-import type { VscodeTextarea as VscodeTextareaConstructor } from "@vscode-elements/elements/dist/vscode-textarea/vscode-textarea";
-import type { Dispatch, FC, RefObject } from "react";
-import type {
-  TextareaKeyboardEventHandler,
-  TextfieldChangeEventHandler,
-  TextfieldKeyboardEventHandler,
-  VscodeCollapsibleToggleEventHandler,
-} from "../../types/events";
-import type { AppAction } from "../../types/actions";
+import type { FC } from "react";
+import type { VscodeCollapsibleToggleEventHandler } from "../../types/events";
+import type { VscodeCollapsibleConstructor, VscodeTextareaConstructor } from "../../types/dependencies";
 
 import "./Step.css";
-
-function useDebouncedDispatch(
-  ref: RefObject<VscodeTextareaConstructor>,
-  type: "SET_STEP_FIND" | "SET_STEP_REPLACE",
-  dispatch: Dispatch<AppAction>,
-  index: number,
-  delay = prefs.debounceDelay,
-) {
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  return () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      console.log("○ debounce callback");
-      if(type === 'SET_STEP_FIND'){
-        dispatch({
-          type,
-          payload: {
-            index,
-            find: {
-              content: ref.current?.value ?? '',
-            },
-          },
-        });
-      }
-      if(type === 'SET_STEP_REPLACE'){
-        dispatch({
-          type,
-          payload: {
-            index,
-            replace: {
-              content: ref.current?.value ?? '',
-            },
-          },
-        });
-      }
-    }, delay);
-  };
-}
 
 const Step: FC<{ index: number }> = ({ index }) => {
   const { state, dispatch } = useAppContext();
   const [findErrorMessage, setFindErrorMessage] = useState<string | null>(null);
-  const collapsibleRef = useRef<VscodeCollapsibleConstructor | null>(null);
-  const textareaFindRef = useRef<VscodeTextareaConstructor | null>(null);
-  const textareaReplaceRef = useRef<VscodeTextareaConstructor | null>(null);
-
-  const debouncedFind = useDebouncedDispatch(
-    textareaFindRef,
-    "SET_STEP_FIND",
-    dispatch,
-    index,
-  );
-  const debouncedReplace = useDebouncedDispatch(
-    textareaReplaceRef,
-    "SET_STEP_REPLACE",
-    dispatch,
-    index,
-  );
+  const collapsibleRef = useRef<VscodeCollapsibleConstructor>(null);
+  const textareaFindRef = useRef<VscodeTextareaConstructor>(null);
+  const textareaReplaceRef = useRef<VscodeTextareaConstructor>(null);
 
   const step = state.steps[index];
   const title = step.title || t("Step {0}", (index + 1).toString());
@@ -101,29 +43,86 @@ const Step: FC<{ index: number }> = ({ index }) => {
     });
   };
 
-  const handleStepFindChange: TextfieldChangeEventHandler = (event) => debouncedFind();
+  useEffect(() => {
+    // Find textfield handlers
+    const textfield = textareaFindRef.current;
+    if (!textfield) {
+      return;
+    }
 
-  const handleStepFindKeyUp: TextareaKeyboardEventHandler = (event) => debouncedFind();
+    const handleChange = (event: KeyboardEvent) => {
+      console.log("○ handleChange");
+      setHistoricField({ dispatch, field: "findContent", value: textfield.value, index });
+    };
 
-  const handleStepFindKeyDown: TextareaKeyboardEventHandler = (event) => {
-    console.log("▷ handleStepFindKeyDown");
+    const handleKeyUp = debounce((event: KeyboardEvent) => {
+      console.log("○ handleKeyUp");
+      setHistoricField({ dispatch, field: "findContent", value: textfield.value, index });
+    }, config.debounceDelay);
 
-    // TODO: arrow history
-  };
+    const handleKeyDown = debounce((event: KeyboardEvent) => {
+      console.log("○ handleKeyDown");
+      const direction = detectNavigationDirection(event.key, textfield);
+      console.log("direction", direction);
+      if (direction) {
+        // TODO: retrieve history
+        // ...
+      }
+    }, config.debounceDelay);
 
-  const handleStepReplaceChange: TextfieldChangeEventHandler = (event) => debouncedReplace();
+    textfield.addEventListener("keydown", handleKeyDown);
+    textfield.addEventListener("keyup", handleKeyUp);
+    textfield.addEventListener("change", handleChange);
 
-  const handleStepReplaceKeyUp: TextareaKeyboardEventHandler = (event) => debouncedReplace();
-
-  const handleStepReplaceKeyDown: TextareaKeyboardEventHandler = (event) => {
-    console.log("▷ handleStepReplaceKeyDown");
-
-    // TODO: arrow history
-  };
+    return () => {
+      textfield.removeEventListener("keydown", handleKeyDown);
+      textfield.removeEventListener("keyup", handleKeyUp);
+      textfield.removeEventListener("change", handleChange);
+    };
+  }, []);
 
   useEffect(() => {
+    // Replace textfield handlers
+    const textfield = textareaReplaceRef.current;
+    if (!textfield) {
+      return;
+    }
+
+    const handleChange = (event: KeyboardEvent) => {
+      console.log("○ handleChange");
+      setHistoricField({ dispatch, field: "replaceContent", value: textfield.value, index });
+    };
+
+    const handleKeyUp = debounce((event: KeyboardEvent) => {
+      console.log("○ handleKeyUp");
+      setHistoricField({ dispatch, field: "replaceContent", value: textfield.value, index });
+    }, config.debounceDelay);
+
+    const handleKeyDown = debounce((event: KeyboardEvent) => {
+      console.log("○ handleKeyDown");
+      const direction = detectNavigationDirection(event.key, textfield);
+      console.log("direction", direction);
+      if (direction) {
+        // TODO: retrieve history
+        // ...
+      }
+    }, config.debounceDelay);
+
+    textfield.addEventListener("keydown", handleKeyDown);
+    textfield.addEventListener("keyup", handleKeyUp);
+    textfield.addEventListener("change", handleChange);
+
+    return () => {
+      textfield.removeEventListener("keydown", handleKeyDown);
+      textfield.removeEventListener("keyup", handleKeyUp);
+      textfield.removeEventListener("change", handleChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Expand/collapse toggle
     const currentElement = collapsibleRef.current;
-    if (!currentElement) return;
+    if (!currentElement) {return;}
 
     currentElement.addEventListener("vsc-collapsible-toggle", CollapsibleToggleEventHandler);
 
@@ -133,20 +132,23 @@ const Step: FC<{ index: number }> = ({ index }) => {
   }, [collapsibleRef, CollapsibleToggleEventHandler]);
 
   useEffect(() => {
+    // Find event listeners
     const el = textareaFindRef.current;
-    if (!el) return;
+    if (!el) {return;}
 
     el.wrappedElement.setAttribute("wrap", step.find.wordWrap ? "soft" : "off");
   }, [step]);
 
   useEffect(() => {
+    // Replace event listeners
     const el = textareaReplaceRef.current;
-    if (!el) return;
+    if (!el) {return;}
 
     el.wrappedElement.setAttribute("wrap", step.replace.wordWrap ? "soft" : "off");
   }, [step]);
 
   useEffect(() => {
+    // Evaluate regular expression
     try {
       if (step.find.regExp) {
         new RegExp(
@@ -198,9 +200,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
               resize="vertical"
               value={step.find.content}
               invalid={findErrorMessage !== null}
-              onChange={handleStepFindChange}
-              onKeyDown={handleStepFindKeyDown}
-              onKeyUp={handleStepFindKeyUp}></VscodeTextarea>
+            ></VscodeTextarea>
             {findErrorMessage && (
               <VscodeFormHelper className="error-message">{findErrorMessage}</VscodeFormHelper>
             )}
@@ -226,9 +226,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
               placeholder={t("{0} for history", text["arrow-up-and-down"])}
               resize="vertical"
               value={step.replace.content}
-              onChange={handleStepReplaceChange}
-              onKeyDown={handleStepReplaceKeyDown}
-              onKeyUp={handleStepReplaceKeyUp}></VscodeTextarea>
+            ></VscodeTextarea>
           </VscodeFormGroup>
         </div>
       </VscodeCollapsible>

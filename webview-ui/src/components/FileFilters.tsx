@@ -8,89 +8,48 @@ import {
 import { t } from "@vscode/l10n";
 import FileTree from "./FileTree";
 import { useAppContext } from "../context";
-import { debounce, text } from "../utils/etc";
-import prefs from "../config.json";
-
-import type { Dispatch, FC, RefObject } from "react";
-import type {
-  TextfieldChangeEventHandler,
-  TextfieldKeyboardEventHandler,
-  VscodeIconMouseEventHandler,
-} from "../types/events";
-import type { VscodeTextfieldConstructor } from "../types/dependencies";
-import type { AppAction } from "../types/actions";
+import { debounce, detectNavigationDirection, setHistoricField, text } from "../utils/etc";
+import config from "../config.json";
 import { vscode } from "../utils/vscode";
 
-/* function useDebounce(fn: () => void) {
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  return () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      console.log("○ debounce callback");
-      fn();
-    }, prefs.debounceDelay);
-  };
-} */
-
-/* function useDebouncedDispatch(
-  ref: RefObject<VscodeTextfieldConstructor>,
-  type: "SET_FILES_TO_INCLUDE" | "SET_FILES_TO_EXCLUDE",
-  dispatch: Dispatch<AppAction>,
-  delay = prefs.debounceDelay
-) {
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  return () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      console.log("○ debounce callback");
-      dispatch({
-        type,
-        payload: ref.current?.value ?? "",
-      });
-    }, delay);
-  };
-} */
+import type { FC } from "react";
+import type { VscodeIconMouseEventHandler } from "../types/events";
+import type { VscodeTextfieldConstructor } from "../types/dependencies";
+import type { HistoryAwareField } from "../../../shared/replacements";
 
 const FileFilters: FC = () => {
   console.log("▶ FileFilters");
 
   const { state, dispatch } = useAppContext();
-  const inputFilesToIncludeRef = useRef<VscodeTextfieldConstructor>(null);
-  const inputFilesToExcludeRef = useRef<VscodeTextfieldConstructor>(null);
+  const textareaIncludeRef = useRef<VscodeTextfieldConstructor>(null);
+  const textareaExcludeRef = useRef<VscodeTextfieldConstructor>(null);
 
   useEffect(() => {
-    const textfield = inputFilesToIncludeRef.current;
-    if (!textfield) return;
-
-    const setIncludeFiles = (value: string) => {
-      vscode.postMessage({
-        command: "ADD_HISTORY_INCLUDE_FILES",
-        payload: value,
-      });
-      dispatch({
-        type: 'SET_FILES_TO_INCLUDE',
-        payload: value,
-      });
-    };
+    // Include files textfield handlers
+    const textfield = textareaIncludeRef.current;
+    if (!textfield) {
+      return;
+    }
 
     const handleChange = (event: KeyboardEvent) => {
       console.log("○ handleChange");
-      setIncludeFiles(textfield.value);
+      setHistoricField({ dispatch, field: "includeFiles", value: textfield.value });
     };
 
     const handleKeyUp = debounce((event: KeyboardEvent) => {
       console.log("○ handleKeyUp");
-      setIncludeFiles(textfield.value);
-    }, prefs.debounceDelay);
+      setHistoricField({ dispatch, field: "includeFiles", value: textfield.value });
+    }, config.debounceDelay);
 
     const handleKeyDown = debounce((event: KeyboardEvent) => {
       console.log("○ handleKeyDown");
-      console.log("event.key", event.key);
-      const key = event.key === "ArrowUp" ? '↑' : event.key === "ArrowDown" ? '↓': null;
-      console.log("key", key);
-      //...
-    }, prefs.debounceDelay);
+      const direction = detectNavigationDirection(event.key, textfield);
+      console.log("direction", direction);
+      if (direction) {
+        // TODO: retrieve history
+        // ...
+      }
+    }, config.debounceDelay);
 
     textfield.addEventListener("keydown", handleKeyDown);
     textfield.addEventListener("keyup", handleKeyUp);
@@ -103,47 +62,43 @@ const FileFilters: FC = () => {
     };
   }, []);
 
-  /* const debouncedInclude = useDebouncedDispatch(
-    inputFilesToIncludeRef,
-    "SET_FILES_TO_INCLUDE",
-    dispatch
-  ); */
-  /* const debouncedExclude = useDebouncedDispatch(
-    inputFilesToExcludeRef,
-    "SET_FILES_TO_EXCLUDE",
-    dispatch
-  ); */
-
-  // const handleFilesToIncludeChange: TextfieldChangeEventHandler = (event) => debouncedInclude();
-
-  // const handleFilesToIncludeKeyUp: TextfieldKeyboardEventHandler = (event) => debouncedInclude();
-
-  // const handleFilesToExcludeChange: TextfieldChangeEventHandler = (event) => debouncedExclude();
-
-  // const handleFilesToExcludeKeyUp: TextfieldKeyboardEventHandler = (event) => debouncedExclude();
-
-  /* const handleFilesToIncludeKeyDown: TextfieldKeyboardEventHandler = (event) => {
-    console.log("▷ handleFilesToIncludeKeyDown");
-    console.log("event.key", event.key);
-    const key = event.key === "ArrowUp" ? '↑' : event.key === "ArrowDown" ? '↓': null;
-    // TODO: arrow history
-    if (event.key === "ArrowUp") {
-      console.log("↑");
-    } else if (event.key === "ArrowDown") {
-      console.log("↓");
+  useEffect(() => {
+    // Exclude files textfield handlers
+    const textfield = textareaExcludeRef.current;
+    if (!textfield) {
+      return;
     }
-  };
 
-  const handleFilesToExcludeKeyDown: TextfieldKeyboardEventHandler = (event) => {
-    console.log("▷ handleFilesToExcludeKeyDown");
-    console.log("event.key", event.key);
-    // TODO: arrow history
-    if (event.key === "ArrowUp") {
-      console.log("↑");
-    } else if (event.key === "ArrowDown") {
-      console.log("↓");
-    }
-  }; */
+    const handleChange = (event: KeyboardEvent) => {
+      console.log("○ handleChange");
+      setHistoricField({ dispatch, field: "excludeFiles", value: textfield.value });
+    };
+
+    const handleKeyUp = debounce((event: KeyboardEvent) => {
+      console.log("○ handleKeyUp");
+      setHistoricField({ dispatch, field: "excludeFiles", value: textfield.value });
+    }, config.debounceDelay);
+
+    const handleKeyDown = debounce((event: KeyboardEvent) => {
+      console.log("○ handleKeyDown");
+      const direction = detectNavigationDirection(event.key, textfield);
+      console.log("direction", direction);
+      if (direction) {
+        // TODO: retrieve history
+        // ...
+      }
+    }, config.debounceDelay);
+
+    textfield.addEventListener("keydown", handleKeyDown);
+    textfield.addEventListener("keyup", handleKeyUp);
+    textfield.addEventListener("change", handleChange);
+
+    return () => {
+      textfield.removeEventListener("keydown", handleKeyDown);
+      textfield.removeEventListener("keyup", handleKeyUp);
+      textfield.removeEventListener("change", handleChange);
+    };
+  }, []);
 
   const handleCurrentEditorsClick: VscodeIconMouseEventHandler = (event) => {
     console.log("▷ handleCurrentEditorsClick");
@@ -171,6 +126,7 @@ const FileFilters: FC = () => {
         </VscodeLabel>
         <VscodeTextfield
           id="includeFiles"
+          ref={textareaIncludeRef}
           className="textfield-full"
           placeholder={`${t("e.g. {0}", text["sample-file-pattern"])} (${t(
             "{0} for history",
@@ -180,12 +136,7 @@ const FileFilters: FC = () => {
             "{0} for history",
             text["arrow-up-and-down"]
           )})`}
-          value={state.includeFiles}
-          ref={inputFilesToIncludeRef}
-          // onChange={handleFilesToIncludeChange}
-          // onKeyDown={handleFilesToIncludeKeyDown}
-          // onKeyUp={handleFilesToIncludeKeyUp}
-        >
+          value={state.includeFiles}>
           <VscodeIcon
             slot="content-after"
             name="book"
@@ -201,6 +152,7 @@ const FileFilters: FC = () => {
         </VscodeLabel>
         <VscodeTextfield
           id="excludeFiles"
+          ref={textareaExcludeRef}
           className="textfield-full"
           placeholder={`${t("e.g. {0}", text["sample-file-pattern"])} (${t(
             "{0} for history",
@@ -210,12 +162,7 @@ const FileFilters: FC = () => {
             "{0} for history",
             text["arrow-up-and-down"]
           )})`}
-          value={state.excludeFiles}
-          ref={inputFilesToExcludeRef}
-          // onChange={handleFilesToExcludeChange}
-          // onKeyDown={handleFilesToExcludeKeyDown}
-          // onKeyUp={handleFilesToExcludeKeyUp}
-        >
+          value={state.excludeFiles}>
           <VscodeIcon
             slot="content-after"
             name="exclude"
