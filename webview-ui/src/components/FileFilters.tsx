@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   VscodeFormGroup,
   VscodeIcon,
@@ -8,7 +8,7 @@ import {
 import { t } from "@vscode/l10n";
 import FileTree from "./FileTree";
 import { useAppContext } from "../context";
-import { text } from "../utils/etc";
+import { debounce, text } from "../utils/etc";
 import prefs from "../config.json";
 
 import type { Dispatch, FC, RefObject } from "react";
@@ -17,10 +17,22 @@ import type {
   TextfieldKeyboardEventHandler,
   VscodeIconMouseEventHandler,
 } from "../types/events";
-import type { VscodeTextfieldConstructor } from '../types/dependencies';
+import type { VscodeTextfieldConstructor } from "../types/dependencies";
 import type { AppAction } from "../types/actions";
+import { vscode } from "../utils/vscode";
 
-function useDebouncedDispatch(
+/* function useDebounce(fn: () => void) {
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  return () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      console.log("○ debounce callback");
+      fn();
+    }, prefs.debounceDelay);
+  };
+} */
+
+/* function useDebouncedDispatch(
   ref: RefObject<VscodeTextfieldConstructor>,
   type: "SET_FILES_TO_INCLUDE" | "SET_FILES_TO_EXCLUDE",
   dispatch: Dispatch<AppAction>,
@@ -38,7 +50,7 @@ function useDebouncedDispatch(
       });
     }, delay);
   };
-}
+} */
 
 const FileFilters: FC = () => {
   console.log("▶ FileFilters");
@@ -46,24 +58,92 @@ const FileFilters: FC = () => {
   const { state, dispatch } = useAppContext();
   const inputFilesToIncludeRef = useRef<VscodeTextfieldConstructor>(null);
   const inputFilesToExcludeRef = useRef<VscodeTextfieldConstructor>(null);
-  const debouncedInclude = useDebouncedDispatch(
+
+  useEffect(() => {
+    const textfield = inputFilesToIncludeRef.current;
+    if (!textfield) return;
+
+    const setIncludeFiles = (value: string) => {
+      vscode.postMessage({
+        command: "ADD_HISTORY_INCLUDE_FILES",
+        payload: value,
+      });
+      dispatch({
+        type: 'SET_FILES_TO_INCLUDE',
+        payload: value,
+      });
+    };
+
+    const handleChange = (event: KeyboardEvent) => {
+      console.log("○ handleChange");
+      setIncludeFiles(textfield.value);
+    };
+
+    const handleKeyUp = debounce((event: KeyboardEvent) => {
+      console.log("○ handleKeyUp");
+      setIncludeFiles(textfield.value);
+    }, prefs.debounceDelay);
+
+    const handleKeyDown = debounce((event: KeyboardEvent) => {
+      console.log("○ handleKeyDown");
+      console.log("event.key", event.key);
+      const key = event.key === "ArrowUp" ? '↑' : event.key === "ArrowDown" ? '↓': null;
+      console.log("key", key);
+      //...
+    }, prefs.debounceDelay);
+
+    textfield.addEventListener("keydown", handleKeyDown);
+    textfield.addEventListener("keyup", handleKeyUp);
+    textfield.addEventListener("change", handleChange);
+
+    return () => {
+      textfield.removeEventListener("keydown", handleKeyDown);
+      textfield.removeEventListener("keyup", handleKeyUp);
+      textfield.removeEventListener("change", handleChange);
+    };
+  }, []);
+
+  /* const debouncedInclude = useDebouncedDispatch(
     inputFilesToIncludeRef,
     "SET_FILES_TO_INCLUDE",
     dispatch
-  );
-  const debouncedExclude = useDebouncedDispatch(
+  ); */
+  /* const debouncedExclude = useDebouncedDispatch(
     inputFilesToExcludeRef,
     "SET_FILES_TO_EXCLUDE",
     dispatch
-  );
+  ); */
 
-  const handleFilesToIncludeChange: TextfieldChangeEventHandler = (event) => debouncedInclude();
+  // const handleFilesToIncludeChange: TextfieldChangeEventHandler = (event) => debouncedInclude();
 
-  const handleFilesToIncludeKeyDown: TextfieldKeyboardEventHandler = (event) => {
+  // const handleFilesToIncludeKeyUp: TextfieldKeyboardEventHandler = (event) => debouncedInclude();
+
+  // const handleFilesToExcludeChange: TextfieldChangeEventHandler = (event) => debouncedExclude();
+
+  // const handleFilesToExcludeKeyUp: TextfieldKeyboardEventHandler = (event) => debouncedExclude();
+
+  /* const handleFilesToIncludeKeyDown: TextfieldKeyboardEventHandler = (event) => {
+    console.log("▷ handleFilesToIncludeKeyDown");
+    console.log("event.key", event.key);
+    const key = event.key === "ArrowUp" ? '↑' : event.key === "ArrowDown" ? '↓': null;
     // TODO: arrow history
+    if (event.key === "ArrowUp") {
+      console.log("↑");
+    } else if (event.key === "ArrowDown") {
+      console.log("↓");
+    }
   };
 
-  const handleFilesToIncludeKeyUp: TextfieldKeyboardEventHandler = (event) => debouncedInclude();
+  const handleFilesToExcludeKeyDown: TextfieldKeyboardEventHandler = (event) => {
+    console.log("▷ handleFilesToExcludeKeyDown");
+    console.log("event.key", event.key);
+    // TODO: arrow history
+    if (event.key === "ArrowUp") {
+      console.log("↑");
+    } else if (event.key === "ArrowDown") {
+      console.log("↓");
+    }
+  }; */
 
   const handleCurrentEditorsClick: VscodeIconMouseEventHandler = (event) => {
     console.log("▷ handleCurrentEditorsClick");
@@ -73,15 +153,6 @@ const FileFilters: FC = () => {
       payload: !state.useCurrentEditors,
     });
   };
-
-  const handleFilesToExcludeChange: TextfieldChangeEventHandler = (event) => debouncedExclude();
-
-  const handleFilesToExcludeKeyDown: TextfieldKeyboardEventHandler = (event) => {
-    console.log("▷ handleFilesToExcludeKeyDown");
-    // TODO: arrow history
-  };
-
-  const handleFilesToExcludeKeyUp: TextfieldKeyboardEventHandler = (event) => debouncedExclude();
 
   const handleExcludeSettingsAndIgnoreFilesClick: VscodeIconMouseEventHandler = (event) => {
     console.log("▷ handleExcludeSettingsAndIgnoreFilesClick");
@@ -111,9 +182,10 @@ const FileFilters: FC = () => {
           )})`}
           value={state.includeFiles}
           ref={inputFilesToIncludeRef}
-          onChange={handleFilesToIncludeChange}
-          onKeyDown={handleFilesToIncludeKeyDown}
-          onKeyUp={handleFilesToIncludeKeyUp}>
+          // onChange={handleFilesToIncludeChange}
+          // onKeyDown={handleFilesToIncludeKeyDown}
+          // onKeyUp={handleFilesToIncludeKeyUp}
+        >
           <VscodeIcon
             slot="content-after"
             name="book"
@@ -140,9 +212,10 @@ const FileFilters: FC = () => {
           )})`}
           value={state.excludeFiles}
           ref={inputFilesToExcludeRef}
-          onChange={handleFilesToExcludeChange}
-          onKeyDown={handleFilesToExcludeKeyDown}
-          onKeyUp={handleFilesToExcludeKeyUp}>
+          // onChange={handleFilesToExcludeChange}
+          // onKeyDown={handleFilesToExcludeKeyDown}
+          // onKeyUp={handleFilesToExcludeKeyUp}
+        >
           <VscodeIcon
             slot="content-after"
             name="exclude"

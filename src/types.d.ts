@@ -1,4 +1,8 @@
-import type { ReplacementParameters, Step } from "../webview-ui/src/types/replacers";
+import type {
+  ReplacementParameters,
+  SerialReplacement,
+  Step,
+} from "../webview-ui/src/types/replacers";
 
 type FilePath = string;
 
@@ -16,6 +20,16 @@ export type ReplacementResults = Record<
     replacements: number;
   }
 >;
+
+export type PersistentData = {
+  replacementParameters: ReplacementParameters;
+  history: {
+    includeFiles: string[];
+    excludeFiles: string[];
+    findContent: string[];
+    replaceContent: string[];
+  };
+};
 
 export type WebviewMessage =
   | {
@@ -44,6 +58,10 @@ export type WebviewMessage =
     }
   | {
       command: "DISPLAY_INFORMATION_MESSAGE";
+      payload: string;
+    }
+  | {
+      command: "ADD_HISTORY_INCLUDE_FILES";
       payload: string;
     }
   | {

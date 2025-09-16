@@ -14,6 +14,7 @@ import {
 } from "vscode";
 import { basename, join } from "path";
 import { filterFileByLists, getStats, splitOutsideCurlyBraces } from "./aux";
+// import  { emptyReplacementParameters } from "@webview/utils/data";
 import prefs from "./config.json";
 
 import type {
@@ -22,6 +23,7 @@ import type {
   WorkspacesAndFiles,
   ReplacementResults,
   FilePath,
+  PersistentData,
 } from "./types";
 import type { ReplacementParameters } from "../webview-ui/src/types/replacers";
 
@@ -67,7 +69,7 @@ export class SerialReplacer {
   ) {
     this._context = extensionContext;
     this._webview = webview;
-    this._outputChannel = window.createOutputChannel(`${t('Serial Replacer')}: ${tag}`, "log");
+    this._outputChannel = window.createOutputChannel(`${t("Serial Replacer")}: ${tag}`, "log");
 
     this._log(LogLevel.info, `Serial Replacer ${tag} initialized`);
 
@@ -371,7 +373,7 @@ export class SerialReplacer {
     await this._updatePreviews();
   }
 
-  private async _openPreview(filePath: FilePath, updateOnly=false) {
+  private async _openPreview(filePath: FilePath, updateOnly = false) {
     this._log(LogLevel.trace, `Open preview filePath=${JSON.stringify(filePath)}`);
 
     if (filePath in this._replacementResults) {
@@ -395,7 +397,7 @@ export class SerialReplacer {
         this._log(LogLevel.debug, `openDiff=${JSON.stringify(openDiff)}`);
 
         if (!openDiff) {
-          if(!updateOnly){
+          if (!updateOnly) {
             this._log(LogLevel.trace, "Will create preview");
             const leftUri = Uri.file(filePath);
             const rightDoc = await workspace.openTextDocument({
@@ -403,7 +405,7 @@ export class SerialReplacer {
               language: "plaintext",
             });
             const rightUri = rightDoc.uri;
-  
+
             await commands.executeCommand(
               "vscode.diff",
               leftUri,
@@ -411,7 +413,7 @@ export class SerialReplacer {
               `Preview: ${basename(filePath)}`,
               { preview: false, preserveFocus: false }
             );
-  
+
             this._openDiffs.set(filePath, { left: leftUri, right: rightUri });
             this._log(LogLevel.trace, "Preview created");
           }
@@ -423,10 +425,7 @@ export class SerialReplacer {
         );
 
         if (!doc) {
-          this._log(
-            LogLevel.trace,
-            "Preview not found: remove from list"
-          );
+          this._log(LogLevel.trace, "Preview not found: remove from list");
           this._openDiffs.delete(filePath);
           return;
         }
@@ -439,8 +438,8 @@ export class SerialReplacer {
           previewContent
         );
         await workspace.applyEdit(edit);
-        
-        if(!updateOnly){
+
+        if (!updateOnly) {
           await commands.executeCommand(
             "vscode.diff",
             openDiff.left,
@@ -455,19 +454,19 @@ export class SerialReplacer {
       }
     }
 
-    if(!updateOnly){
+    if (!updateOnly) {
       this._log(LogLevel.trace, "Will show current file without replacements");
       const openEditor = window.visibleTextEditors.find((editor) => {
         return editor.document.uri.fsPath === filePath;
       });
-  
+
       if (openEditor) {
         this._log(LogLevel.trace, "File is open, just reveal it (focus)");
         await window.showTextDocument(openEditor.document, { preserveFocus: false });
         this._log(LogLevel.trace, "Opened document focused");
         return;
       }
-  
+
       try {
         this._log(LogLevel.trace, "Will open file in new editor tab");
         const document = await workspace.openTextDocument(Uri.file(filePath));
@@ -483,10 +482,9 @@ export class SerialReplacer {
         }
       }
     }
-
   }
 
-  private async _updatePreviews(){
+  private async _updatePreviews() {
     this._log(LogLevel.trace, `Update previews`);
 
     for (const [key] of this._openDiffs) {
@@ -494,6 +492,19 @@ export class SerialReplacer {
       this._openPreview(key, true);
     }
   }
+
+  /* private _getPersistentData(): PersistentData {
+    return this._context.workspaceState.get<string[]>('replacementParameters', emptyReplacementParameters());
+  } */
+
+  /* private async _savePersistentData() {
+    this._log(LogLevel.trace, `Save persistent data`);
+    const persistentData:PersistentData = {
+      replacementParameters: this._replacementParameters,
+      // history: ...
+    };
+    this._context.workspaceState.update('main', null);
+  } */
 
   private _subscribeChanges() {
     this._log(LogLevel.trace, "Subscribe changes");
@@ -540,7 +551,7 @@ export class SerialReplacer {
 
   public async receiveMessage(webviewMessage: WebviewMessage): Promise<void> {
     this._log(LogLevel.trace, `Received message: webviewMessage=${JSON.stringify(webviewMessage)}`);
-    
+
     switch (webviewMessage.command) {
       case "SUBSCRIBE_CHANGES": {
         this._replacementParameters.useCurrentEditors = webviewMessage.payload;
@@ -558,12 +569,8 @@ export class SerialReplacer {
         return;
       }
 
-      case "DISPLAY_INFORMATION_MESSAGE": {
-        window.showInformationMessage(webviewMessage.payload);
-        this.postMessage({
-          type: "SEND_LOG",
-          payload: webviewMessage.payload,
-        });
+      case "ADD_HISTORY_INCLUDE_FILES": {
+        //...
         return;
       }
 
@@ -620,6 +627,15 @@ export class SerialReplacer {
       case "REPLACE_ALL": {
         this._setFiles(); // update files prior replacement; avoid deleted files to throw error
         this._replaceAll();
+        return;
+      }
+
+      case "DISPLAY_INFORMATION_MESSAGE": {
+        window.showInformationMessage(webviewMessage.payload);
+        this.postMessage({
+          type: "SEND_LOG",
+          payload: webviewMessage.payload,
+        });
         return;
       }
     }

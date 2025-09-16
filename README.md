@@ -61,7 +61,8 @@
     - ✓ Tree
     - ✓ Count badges
     - ✓ Open
-  - Shared
+  - Shared libs
+  - Shared types
   - …
 
 - Docs

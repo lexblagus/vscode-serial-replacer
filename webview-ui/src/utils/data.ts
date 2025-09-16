@@ -1,16 +1,20 @@
 import { v4 as uuidv4 } from "uuid";
 
-import type { SerialReplacement, Step } from "../types/replacers";
+import type { ReplacementParameters, SerialReplacement, Step } from "../types/replacers";
+
+export const emptyReplacementParameters = ():ReplacementParameters => ({
+  includeFiles: '',
+  useCurrentEditors: true,
+  excludeFiles: '',
+  useExcludeSettingsAndIgnoreFiles: true,
+  steps: [],
+});
 
 export const emptyReplacement: () => SerialReplacement = () => ({
   id: uuidv4(),
-  includeFiles: "",
-  useCurrentEditors: true,
-  excludeFiles: "",
-  useExcludeSettingsAndIgnoreFiles: true,
   results: [],
   resultsTotalFiles: 0,
-  steps: [],
+  ...emptyReplacementParameters(),
 });
 
 export const emptyStep: () => Step = () => ({
