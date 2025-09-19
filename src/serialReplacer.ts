@@ -75,15 +75,7 @@ export class SerialReplacer {
 
     this._log(LogLevel.info, `Serial Replacer ${tag} initialized`);
 
-    /*
-    this._log(LogLevel.silent, 'silent');
-    this._log(LogLevel.fatal, 'fatal');
-    this._log(LogLevel.error, 'error');
-    this._log(LogLevel.warn, 'warn');
-    this._log(LogLevel.info, 'info');
-    this._log(LogLevel.debug, 'debug'); // usually constants/variables inside methods
-    this._log(LogLevel.trace, 'trace'); // usually method/function
-    */
+    this._logStates();
   }
 
   private _log(level: LogLevel, message: string, force = false) {
@@ -97,6 +89,28 @@ export class SerialReplacer {
         message,
         config.maxLogMessageSize
       )}`
+    );
+  }
+
+  private _logStates() {
+    this._log(
+      LogLevel.trace,
+      `Log states; states=${JSON.stringify({
+        workspaceState: this._context.workspaceState.keys().reduce(
+          (acc, key) => ({
+            ...acc,
+            [key]: this._context.workspaceState.get(key),
+          }),
+          {}
+        ),
+        globalState: this._context.globalState.keys().reduce(
+          (acc, key) => ({
+            ...acc,
+            [key]: this._context.globalState.get(key),
+          }),
+          {}
+        ),
+      })}`
     );
   }
 
@@ -305,11 +319,12 @@ export class SerialReplacer {
 
     this._log(
       LogLevel.debug,
-      `includeFilesList=${JSON.stringify(includeFilesList)}; globalExcludeList=${JSON.stringify(
-        globalExcludeList
-      )}; workspaceFolderExcludeList=${JSON.stringify(
-        workspaceFolderExcludeList
-      )}; uiExcludeFilesList=${JSON.stringify(uiExcludeFilesList)}`
+      `list=${JSON.stringify({
+        includeFilesList,
+        globalExcludeList,
+        workspaceFolderExcludeList,
+        uiExcludeFilesList,
+      })}`
     );
 
     const excludeFilesList = [
@@ -504,20 +519,15 @@ export class SerialReplacer {
     this._context.globalState.update("data", persistData);
   }
 
-  private _addToPersistentHistory(
-    field: HistoryAwareField,
-    value: string,
-  ) {
-    this._log(LogLevel.trace, `Add to persistent history`);
-    this._log(LogLevel.debug, `field=${JSON.stringify(field)}`);
-    this._log(LogLevel.debug, `value=${JSON.stringify(value)}`);
+  private _addToPersistentHistory(field: HistoryAwareField, value: string) {
+    this._log(LogLevel.trace, `Add to persistent history `);
 
     const data = this._getPersistentData();
-    this._log(LogLevel.debug, `Original; data=${JSON.stringify(data)}`);
+    this._log(LogLevel.debug, `parameters=${JSON.stringify({ field, value, data })}`);
 
     const fieldHistory = data.history[field];
     const maxFieldHistoryEntries = config.maxFieldHistoryEntries;
-    if (value !== '' && fieldHistory[fieldHistory.length - 1] !== value) {
+    if (value !== "" && fieldHistory[fieldHistory.length - 1] !== value) {
       fieldHistory.push(value);
       if (fieldHistory.length > maxFieldHistoryEntries) {
         fieldHistory.splice(0, fieldHistory.length - maxFieldHistoryEntries);
@@ -530,10 +540,34 @@ export class SerialReplacer {
 
   private _persistReplacementParameters(replacementParameters: ReplacementParameters) {
     // TODO: save serial replacer parameters on UI so it can be restored at restart
-
     // const data = this._getPersistentData();
     //...
     // this._savePersistentData(data);
+  }
+
+  private async _resetStates() {
+    for (const key of this._context.workspaceState.keys()) {
+      await this._context.workspaceState.update(key, undefined);
+    }
+
+    for (const key of this._context.globalState.keys()) {
+      await this._context.globalState.update(key, undefined);
+    }
+  }
+
+  private async _reset() {
+    if (
+      (await window.showWarningMessage(
+        t("Are you sure you want to reset files and steps?"),
+        { modal: true },
+        t("Yes")
+      )) === t("Yes")
+    ) {
+      await this._resetStates();
+      this.postMessage({
+        type: "COMMIT_RESET",
+      });
+    }
   }
 
   private _subscribeChanges() {
@@ -600,13 +634,7 @@ export class SerialReplacer {
       }
 
       case "ADD_FIELD_HISTORY": {
-        this._addToPersistentHistory(
-          webviewMessage.payload.field,
-          webviewMessage.payload.value,
-        );
-
-        // TODO: post to webview updated history
-        //...
+        this._addToPersistentHistory(webviewMessage.payload.field, webviewMessage.payload.value);
 
         return;
       }
@@ -642,17 +670,7 @@ export class SerialReplacer {
       }
 
       case "CONFIRM_RESET": {
-        if (
-          (await window.showWarningMessage(
-            t("Are you sure you want to reset files and steps?"),
-            { modal: true },
-            t("Yes")
-          )) === t("Yes")
-        ) {
-          this.postMessage({
-            type: "COMMIT_RESET",
-          });
-        }
+        await this._reset();
         return;
       }
 
