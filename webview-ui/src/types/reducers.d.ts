@@ -1,8 +1,8 @@
 import type { AppAction } from "./actions";
-import type { SerialReplacement } from "../../../shared/replacements";
+import type { WebviewState } from "../../../shared/replacements";
 
-export type AppReducer = (state: SerialReplacement, action: AppAction) => SerialReplacement;
+export type AppReducer = (state: WebviewState, action: AppAction) => WebviewState;
 
 export type CombineSequentialReducers = (
   ...r: AppReducer[]
-) => (state: SerialReplacement, action: AppAction) => SerialReplacement;
+) => (state: WebviewState, action: AppAction) => WebviewState;

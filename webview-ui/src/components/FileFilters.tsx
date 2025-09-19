@@ -10,17 +10,18 @@ import FileTree from "./FileTree";
 import { useAppContext } from "../context";
 import { debounce, detectNavigationDirection, setHistoricField, text } from "../utils/etc";
 import config from "../config.json";
-import { vscode } from "../utils/vscode";
 
 import type { FC } from "react";
 import type { VscodeIconMouseEventHandler } from "../types/events";
 import type { VscodeTextfieldConstructor } from "../types/dependencies";
-import type { HistoryAwareField } from "../../../shared/replacements";
 
 const FileFilters: FC = () => {
   console.log("▶ FileFilters");
 
-  const { state, dispatch } = useAppContext();
+  const {
+    state: { loaded },
+    dispatch,
+  } = useAppContext();
   const textareaIncludeRef = useRef<VscodeTextfieldConstructor>(null);
   const textareaExcludeRef = useRef<VscodeTextfieldConstructor>(null);
 
@@ -105,7 +106,7 @@ const FileFilters: FC = () => {
 
     dispatch({
       type: "SET_USE_CURRENT_EDITORS",
-      payload: !state.useCurrentEditors,
+      payload: !loaded.useCurrentEditors,
     });
   };
 
@@ -114,7 +115,7 @@ const FileFilters: FC = () => {
 
     dispatch({
       type: "SET_EXCLUDE_SETTINGS_AND_IGNORE_FILES",
-      payload: !state.useExcludeSettingsAndIgnoreFiles,
+      payload: !loaded.useExcludeSettingsAndIgnoreFiles,
     });
   };
 
@@ -136,14 +137,14 @@ const FileFilters: FC = () => {
             "{0} for history",
             text["arrow-up-and-down"]
           )})`}
-          value={state.includeFiles}>
+          value={loaded.includeFiles}>
           <VscodeIcon
             slot="content-after"
             name="book"
             title={t("Use open editors")}
             action-icon
             onClick={handleCurrentEditorsClick}
-            aria-pressed={state.useCurrentEditors}></VscodeIcon>
+            aria-pressed={loaded.useCurrentEditors}></VscodeIcon>
         </VscodeTextfield>
       </VscodeFormGroup>
       <VscodeFormGroup variant="vertical" className="no-top-margin">
@@ -162,14 +163,14 @@ const FileFilters: FC = () => {
             "{0} for history",
             text["arrow-up-and-down"]
           )})`}
-          value={state.excludeFiles}>
+          value={loaded.excludeFiles}>
           <VscodeIcon
             slot="content-after"
             name="exclude"
             title={t("Use exclude settings and ignore files")}
             action-icon
             onClick={handleExcludeSettingsAndIgnoreFilesClick}
-            aria-pressed={state.useExcludeSettingsAndIgnoreFiles}></VscodeIcon>
+            aria-pressed={loaded.useExcludeSettingsAndIgnoreFiles}></VscodeIcon>
         </VscodeTextfield>
       </VscodeFormGroup>
       <FileTree />

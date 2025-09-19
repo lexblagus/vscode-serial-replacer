@@ -5,7 +5,7 @@ import stepReducer from "./step";
 import stepFindReducer from "./stepFind";
 import stepReplaceReducer from "./stepReplace";
 
-import type { SerialReplacement } from "../../../shared/replacements";
+import type { WebviewState } from "../../../shared/replacements";
 import type { AppAction } from "../types/actions";
 
 const combinedReducer = combineSequentialReducers(
@@ -16,6 +16,6 @@ const combinedReducer = combineSequentialReducers(
   stepReplaceReducer
 );
 
-export function appStateReducer(state: SerialReplacement, action: AppAction): SerialReplacement {
+export function appStateReducer(state: WebviewState, action: AppAction): WebviewState {
   return combinedReducer(state, action);
 }

@@ -8,8 +8,11 @@ import type { VscodeIconMouseEventHandler } from "../../types/events";
 const FindActions: FC<{ index: number }> = ({ index }) => {
   console.log("▶ FindActions");
 
-  const { state, dispatch } = useAppContext();
-  const step = state.steps[index];
+  const {
+    state: { loaded },
+    dispatch,
+  } = useAppContext();
+  const step = loaded.steps[index];
 
   const handleStepFindRegExpClick: VscodeIconMouseEventHandler = (event) => {
     console.log("▷ handleStepFindRegExpClick");

@@ -1,12 +1,12 @@
-import { initialReplacement } from "../../../shared/data";
+import { emptyWebviewState } from "../../../shared/data";
 
-import type { SerialReplacement } from "../../../shared/replacements";
+import type { WebviewState } from "../../../shared/replacements";
 import type { AppAction } from "../types/actions";
 
-export function stepReplaceReducer(state: SerialReplacement, action: AppAction): SerialReplacement {
+export function stepReplaceReducer(state: WebviewState, action: AppAction): WebviewState {
   switch (action.type) {
     case "RESET":
-      return initialReplacement();
+      return emptyWebviewState();
 
     default:
       return state;

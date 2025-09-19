@@ -8,7 +8,7 @@ import type { LinkMouseEventHandler } from "../types/events";
 export const Footer: FC = () => {
   console.log("▶ Footer");
 
-  const { state, dispatch } = useAppContext();
+  const { state: { loaded }, dispatch } = useAppContext();
 
   const handleResetClick: LinkMouseEventHandler = (event) => {
     console.log("▷ handleResetClick");

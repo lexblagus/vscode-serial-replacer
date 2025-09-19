@@ -15,12 +15,15 @@ if (import.meta.env.DEV) {
 export const Main: FC = () => {
   console.log("▶ Main");
 
-  const { state, dispatch } = useAppContext();
+  const {
+    state: { loaded },
+    dispatch,
+  } = useAppContext();
 
   const handleSerialReplaceClick: VscodeButtonMouseEventHandler = (event) => {
     vscode.postMessage({
       command: "REPLACE_ALL",
-      payload: state.steps,
+      payload: loaded.steps,
     });
   };
 
@@ -29,7 +32,7 @@ export const Main: FC = () => {
       <VscodeFormContainer className="no-max-width">
         <FileFilters />
 
-        {state.steps.map((step, index) => (
+        {loaded.steps.map((step, index) => (
           <Step key={step.id} index={index} />
         ))}
 

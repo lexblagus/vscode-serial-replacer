@@ -17,18 +17,24 @@ import config from "../../config.json";
 
 import type { FC } from "react";
 import type { VscodeCollapsibleToggleEventHandler } from "../../types/events";
-import type { VscodeCollapsibleConstructor, VscodeTextareaConstructor } from "../../types/dependencies";
+import type {
+  VscodeCollapsibleConstructor,
+  VscodeTextareaConstructor,
+} from "../../types/dependencies";
 
 import "./Step.css";
 
 const Step: FC<{ index: number }> = ({ index }) => {
-  const { state, dispatch } = useAppContext();
+  const {
+    state: { loaded },
+    dispatch,
+  } = useAppContext();
   const [findErrorMessage, setFindErrorMessage] = useState<string | null>(null);
   const collapsibleRef = useRef<VscodeCollapsibleConstructor>(null);
   const textareaFindRef = useRef<VscodeTextareaConstructor>(null);
   const textareaReplaceRef = useRef<VscodeTextareaConstructor>(null);
 
-  const step = state.steps[index];
+  const step = loaded.steps[index];
   const title = step.title || t("Step {0}", (index + 1).toString());
 
   const CollapsibleToggleEventHandler: VscodeCollapsibleToggleEventHandler = (event) => {
@@ -122,7 +128,9 @@ const Step: FC<{ index: number }> = ({ index }) => {
   useEffect(() => {
     // Expand/collapse toggle
     const currentElement = collapsibleRef.current;
-    if (!currentElement) {return;}
+    if (!currentElement) {
+      return;
+    }
 
     currentElement.addEventListener("vsc-collapsible-toggle", CollapsibleToggleEventHandler);
 
@@ -134,7 +142,9 @@ const Step: FC<{ index: number }> = ({ index }) => {
   useEffect(() => {
     // Find event listeners
     const el = textareaFindRef.current;
-    if (!el) {return;}
+    if (!el) {
+      return;
+    }
 
     el.wrappedElement.setAttribute("wrap", step.find.wordWrap ? "soft" : "off");
   }, [step]);
@@ -142,7 +152,9 @@ const Step: FC<{ index: number }> = ({ index }) => {
   useEffect(() => {
     // Replace event listeners
     const el = textareaReplaceRef.current;
-    if (!el) {return;}
+    if (!el) {
+      return;
+    }
 
     el.wrappedElement.setAttribute("wrap", step.replace.wordWrap ? "soft" : "off");
   }, [step]);
@@ -199,8 +211,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
               placeholder={t("{0} for history", text["arrow-up-and-down"])}
               resize="vertical"
               value={step.find.content}
-              invalid={findErrorMessage !== null}
-            ></VscodeTextarea>
+              invalid={findErrorMessage !== null}></VscodeTextarea>
             {findErrorMessage && (
               <VscodeFormHelper className="error-message">{findErrorMessage}</VscodeFormHelper>
             )}
@@ -225,8 +236,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
               label={t("replace")}
               placeholder={t("{0} for history", text["arrow-up-and-down"])}
               resize="vertical"
-              value={step.replace.content}
-            ></VscodeTextarea>
+              value={step.replace.content}></VscodeTextarea>
           </VscodeFormGroup>
         </div>
       </VscodeCollapsible>

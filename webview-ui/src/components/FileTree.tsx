@@ -14,7 +14,7 @@ import type {
 const FileTree: FC = () => {
   console.log("▶ FileTree");
 
-  const { state, dispatch } = useAppContext();
+  const { state: { loaded } , dispatch } = useAppContext();
   const [selectedFile, setSelectedFile] = useState<string>();
 
   const handleRefreshClick: VscodeIconMouseEventHandler = () => {
@@ -26,7 +26,7 @@ const FileTree: FC = () => {
       useCurrentEditors,
       useExcludeSettingsAndIgnoreFiles,
       steps,
-    } = state;
+    } = loaded;
 
     vscode.postMessage({
       command: "SET_REPLACEMENT_PARAMETERS",
@@ -49,7 +49,7 @@ const FileTree: FC = () => {
       useCurrentEditors,
       useExcludeSettingsAndIgnoreFiles,
       steps,
-    } = state;
+    } = loaded;
 
     switch (event.detail.actionId) {
       case "refresh": {
@@ -137,7 +137,7 @@ const FileTree: FC = () => {
 
   return (
     <div className="thick-bottom-margin">
-      {state.resultsTotalFiles === 0 && (
+      {loaded.resultsTotalFiles === 0 && (
         <div className="button-group">
           <div className="button-group-grow">{t("No files")}</div>
           <div>
@@ -149,13 +149,13 @@ const FileTree: FC = () => {
           </div>
         </div>
       )}
-      {state.resultsTotalFiles > 0 && (
+      {loaded.resultsTotalFiles > 0 && (
         <div className="file-tree-wrapper">
           <div>
             <VscodeTree
               indent={12}
               indentGuides
-              data={state.results}
+              data={loaded.results}
               onVscTreeAction={handleTreeAction}
               onVscTreeSelect={handleTreeSelect}
               onDoubleClick={handleTreeDoubleClick}

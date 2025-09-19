@@ -6,6 +6,7 @@ import type {
   ReplacementParameters,
   SerialReplacement,
   Step,
+  WebviewState,
 } from "./replacements";
 
 export const emptyReplacementParameters = (): ReplacementParameters => ({
@@ -59,4 +60,9 @@ export const emptyHistory: () => PersistentHistory = () => ({
   excludeFiles: [],
   findContent: [],
   replaceContent: [],
+});
+
+export const emptyWebviewState: () => WebviewState = () => ({
+  loaded: initialReplacement(),
+  fieldHistory: emptyHistory(),
 });

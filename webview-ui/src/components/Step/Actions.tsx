@@ -19,7 +19,9 @@ function useClickEventListener(
 ) {
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     el.addEventListener("click", handler);
     return () => el.removeEventListener("click", handler);
   }, [ref, handler]);
@@ -28,11 +30,14 @@ function useClickEventListener(
 const Actions: FC<{ index: number }> = ({ index }) => {
   console.log("▶ Actions");
 
-  const { state, dispatch } = useAppContext();
+  const {
+    state: { loaded },
+    dispatch,
+  } = useAppContext();
   const [confirmRemoval, setConfirmRemoval] = useState(false);
 
-  const step = state.steps[index];
-  const length = state.steps.length;
+  const step = loaded.steps[index];
+  const length = loaded.steps.length;
 
   const iconRefs: Refs<VscodeIconRefObject> = {
     rename: useRef(null),

@@ -2,23 +2,27 @@ import { createContext, useReducer, useContext, ReactNode, useEffect, useRef } f
 import { appStateReducer } from "./reducer";
 import { vscode } from "./utils/vscode";
 import { setFileTree } from "./utils/etc";
-import { emptyStep, initialReplacement } from "../../shared/data";
+import { emptyStep, emptyWebviewState, initialReplacement } from "../../shared/data";
 
-import type { SerialReplacement } from "../../shared/replacements";
+import type { WebviewState } from "../../shared/replacements";
 import type { AppAction } from "./types/actions";
 import type { ExtensionMessage } from "../../shared/messages";
 
 type AppContextType = {
-  state: SerialReplacement;
+  state: WebviewState;
   dispatch: React.Dispatch<AppAction>;
 };
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(appStateReducer, initialReplacement(), (data) => ({
+  const [state, dispatch] = useReducer(appStateReducer, emptyWebviewState(), (data) => ({
     ...data,
-    steps: data.steps.length > 0 ? data.steps : [emptyStep()],
+    loaded: {
+      ...data.loaded,
+      // create first empty step
+      steps: data.loaded.steps.length > 0 ? data.loaded.steps : [emptyStep()],
+    },
   }));
 
   const stateRef = useRef(state);
@@ -52,7 +56,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             type: "SET_FILE_TREE",
             payload: {
               quantity: message.payload.files.length,
-              tree: setFileTree(message.payload, currentState.results),
+              tree: setFileTree(message.payload, currentState.loaded.results),
             },
           });
           break;
@@ -88,9 +92,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     console.log("● context/useEffect for subscribe changes");
     vscode.postMessage({
       command: "SUBSCRIBE_CHANGES",
-      payload: state.useCurrentEditors,
+      payload: state.loaded.useCurrentEditors,
     });
-  }, [state.useCurrentEditors]);
+  }, [state.loaded.useCurrentEditors]);
 
   // Get file tree when replacement parameters change
   useEffect(() => {
@@ -102,7 +106,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       useCurrentEditors,
       useExcludeSettingsAndIgnoreFiles,
       steps,
-    } = state;
+    } = state.loaded;
 
     vscode.postMessage({
       command: "SET_REPLACEMENT_PARAMETERS",
@@ -115,11 +119,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       },
     });
   }, [
-    state.includeFiles,
-    state.excludeFiles,
-    state.useCurrentEditors,
-    state.useExcludeSettingsAndIgnoreFiles,
-    state.steps,
+    state.loaded.includeFiles,
+    state.loaded.excludeFiles,
+    state.loaded.useCurrentEditors,
+    state.loaded.useExcludeSettingsAndIgnoreFiles,
+    state.loaded.steps,
   ]);
 
   // Debug state

@@ -8,8 +8,11 @@ import type { VscodeIconMouseEventHandler } from "../../types/events";
 const ReplaceActions: FC<{ index: number }> = ({ index }) => {
   console.log("▶ ReplaceActions");
 
-  const { state, dispatch } = useAppContext();
-  const step = state.steps[index];
+  const {
+    state: { loaded },
+    dispatch,
+  } = useAppContext();
+  const step = loaded.steps[index];
 
   const handleStepReplaceWordWrapClick: VscodeIconMouseEventHandler = (event) => {
     console.log("▷ handleStepReplaceWordWrapClick");

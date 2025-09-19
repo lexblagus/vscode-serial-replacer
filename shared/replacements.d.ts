@@ -59,3 +59,8 @@ export type PersistentData = {
   replacementParameters: ReplacementParameters;
   history: PersistentHistory;
 };
+
+export type WebviewState = {
+  loaded: SerialReplacement;
+  fieldHistory: PersistentHistory;
+};
