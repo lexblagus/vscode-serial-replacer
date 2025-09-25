@@ -10,6 +10,7 @@ import type {
 } from "./replacements";
 
 export const emptyReplacementParameters = (): ReplacementParameters => ({
+  id: uuidv4(),
   includeFiles: "",
   useCurrentEditors: true,
   excludeFiles: "",
@@ -18,7 +19,6 @@ export const emptyReplacementParameters = (): ReplacementParameters => ({
 });
 
 export const emptyReplacement: () => SerialReplacement = () => ({
-  id: uuidv4(),
   results: [],
   resultsTotalFiles: 0,
   ...emptyReplacementParameters(),

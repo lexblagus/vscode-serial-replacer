@@ -17,5 +17,7 @@ const combinedReducer = combineSequentialReducers(
 );
 
 export function appStateReducer(state: WebviewState, action: AppAction): WebviewState {
-  return combinedReducer(state, action);
+  const combined = combinedReducer(state, action);
+  console.log(`○ appStateReducer parameters=${JSON.stringify({ state, action, combined })}`);
+  return combined;
 }

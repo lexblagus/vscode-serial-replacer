@@ -61,8 +61,9 @@
     - ✓ Tree
     - ✓ Count badges
     - ✓ Open
-  - Shared libs
-  - Shared types
+  - ✓ Shared libs
+  - ✓ Shared types
+  - ✓ Data persistance on reload
   - …
 
 - Docs
@@ -80,3 +81,4 @@
 [Visual Studio Marketplace]()
 
 [Github](https://github.com/lexblagus/vscode-serial-replacer)
+					

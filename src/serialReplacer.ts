@@ -13,7 +13,7 @@ import {
   commands,
 } from "vscode";
 import { basename, join } from "path";
-import { filterFileByLists, splitOutsideCurlyBraces } from "./aux";
+import { deepMerge, filterFileByLists, splitOutsideCurlyBraces } from "./aux";
 import { getStats } from "shared/common";
 import { emptyHistory, emptyPersistentData, emptyReplacementParameters } from "shared/data";
 import config from "./config.json";
@@ -49,13 +49,7 @@ export class SerialReplacer {
   private readonly _context: ExtensionContext;
   private readonly _webview: Webview;
   private readonly _outputChannel: OutputChannel;
-  private _replacementParameters: ReplacementParameters = {
-    includeFiles: "",
-    useCurrentEditors: true,
-    excludeFiles: "",
-    useExcludeSettingsAndIgnoreFiles: true,
-    steps: [],
-  };
+  private _replacementParameters: ReplacementParameters = emptyReplacementParameters();
   private _workspacesAndFiles: WorkspacesAndFiles = {
     files: [],
     workspaces: [],
@@ -510,19 +504,20 @@ export class SerialReplacer {
     }
   }
 
-  private _getPersistentData(): PersistentData {
+  private _getPersistedData(): PersistentData {
     return this._context.globalState.get("data", emptyPersistentData());
   }
 
   private _savePersistentData(persistData: PersistentData) {
     this._log(LogLevel.trace, `Save persistent data`);
+    this._log(LogLevel.debug, `persistData=${JSON.stringify(persistData)}`);
     this._context.globalState.update("data", persistData);
   }
 
   private _addToPersistentHistory(field: HistoryAwareField, value: string) {
     this._log(LogLevel.trace, `Add to persistent history `);
 
-    const data = this._getPersistentData();
+    const data = this._getPersistedData();
     this._log(LogLevel.debug, `parameters=${JSON.stringify({ field, value, data })}`);
 
     const fieldHistory = data.history[field];
@@ -533,16 +528,14 @@ export class SerialReplacer {
         fieldHistory.splice(0, fieldHistory.length - maxFieldHistoryEntries);
       }
     }
-
-    this._log(LogLevel.debug, `Updated; data=${JSON.stringify(data)}`);
     this._savePersistentData(data);
   }
 
   private _persistReplacementParameters(replacementParameters: ReplacementParameters) {
-    // TODO: save serial replacer parameters on UI so it can be restored at restart
-    // const data = this._getPersistentData();
-    //...
-    // this._savePersistentData(data);
+    this._log(LogLevel.trace, `Persist replacement parameters`);
+    const data = this._getPersistedData();
+    data.replacementParameters = replacementParameters;
+    this._savePersistentData(data);
   }
 
   private async _resetStates() {
@@ -617,6 +610,15 @@ export class SerialReplacer {
     this._log(LogLevel.trace, `Received message: webviewMessage=${JSON.stringify(webviewMessage)}`);
 
     switch (webviewMessage.command) {
+      case "RETRIEVE_PERSISTED_DATA": {
+        const data = this._getPersistedData();
+        this.postMessage({
+          type: "SET_PERSISTED_DATA",
+          payload: data,
+        });
+        return;
+      }
+
       case "SUBSCRIBE_CHANGES": {
         this._replacementParameters.useCurrentEditors = webviewMessage.payload;
         this._subscribeChanges();
@@ -629,13 +631,13 @@ export class SerialReplacer {
           LogLevel.debug,
           `replacementParameters=${JSON.stringify(this._replacementParameters)}`
         );
+        this._persistReplacementParameters(this._replacementParameters);
         this._setFiles();
         return;
       }
 
       case "ADD_FIELD_HISTORY": {
         this._addToPersistentHistory(webviewMessage.payload.field, webviewMessage.payload.value);
-
         return;
       }
 

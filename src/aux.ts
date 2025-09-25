@@ -116,3 +116,29 @@ export const makePreviewUri = (filePath: string): Uri => {
   const previewName = `${base}${preExt}${ext}`; // forty-eight.preview.log
   return Uri.parse(`untitled:${join(dirname(filePath), previewName)}`);
 };
+
+type AnyObject = { [key: string]: any };
+
+export const deepMerge = <T extends AnyObject, U extends AnyObject>(
+  target: T,
+  source: U
+): T & U => {
+  Object.keys(source).forEach((key) => {
+    const srcVal = source[key];
+    const tgtVal = target[key];
+
+    if (
+      srcVal &&
+      typeof srcVal === "object" &&
+      !Array.isArray(srcVal)
+    ) {
+      if (!tgtVal || typeof tgtVal !== "object") {
+        (target as any)[key] = {};
+      }
+      deepMerge(tgtVal || {}, srcVal);
+    } else {
+      (target as any)[key] = srcVal;
+    }
+  });
+  return target as T & U;
+};

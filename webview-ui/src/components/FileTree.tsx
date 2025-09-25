@@ -21,6 +21,7 @@ const FileTree: FC = () => {
     console.log("▷ handleRefreshClick");
 
     const {
+      id,
       includeFiles,
       excludeFiles,
       useCurrentEditors,
@@ -31,6 +32,7 @@ const FileTree: FC = () => {
     vscode.postMessage({
       command: "SET_REPLACEMENT_PARAMETERS",
       payload: {
+        id,
         includeFiles,
         excludeFiles,
         useCurrentEditors,
@@ -44,6 +46,7 @@ const FileTree: FC = () => {
     console.log("▷ handleTreeAction", "event.detail", event.detail);
 
     const {
+      id,
       includeFiles,
       excludeFiles,
       useCurrentEditors,
@@ -57,6 +60,7 @@ const FileTree: FC = () => {
         vscode.postMessage({
           command: "SET_REPLACEMENT_PARAMETERS",
           payload: {
+            id,
             includeFiles,
             excludeFiles,
             useCurrentEditors,

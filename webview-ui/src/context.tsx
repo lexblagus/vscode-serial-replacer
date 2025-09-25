@@ -33,6 +33,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     stateRef.current = state;
   }, [state]);
 
+  // Get saved state
+  useEffect(() => {
+    console.log("● context/useEffect to get saved state");
+    vscode.postMessage({
+      command: "RETRIEVE_PERSISTED_DATA",
+    });
+  }, []);
+
   // receives messages from extension ("backend")
   useEffect(() => {
     console.log("● context/useEffect for backend messages");
@@ -44,6 +52,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const currentState = stateRef.current;
 
       switch (message.type) {
+        case "SET_PERSISTED_DATA":
+          dispatch({
+            type: message.type,
+            payload: message.payload
+          });
+          break;
+
         case "SET_PREVIEW":
           dispatch({
             type: "SET_TREE_PREVIEW",
@@ -101,6 +116,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     console.log("● context/useEffect for request file tree");
 
     const {
+      id,
       includeFiles,
       excludeFiles,
       useCurrentEditors,
@@ -111,6 +127,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     vscode.postMessage({
       command: "SET_REPLACEMENT_PARAMETERS",
       payload: {
+        id,
         includeFiles,
         excludeFiles,
         useCurrentEditors,
@@ -119,6 +136,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       },
     });
   }, [
+    state.loaded.id,
     state.loaded.includeFiles,
     state.loaded.excludeFiles,
     state.loaded.useCurrentEditors,

@@ -8,6 +8,16 @@ export function stepReplaceReducer(state: WebviewState, action: AppAction): Webv
     case "RESET":
       return emptyWebviewState();
 
+    case "SET_PERSISTED_DATA": 
+      return {
+        fieldHistory: action.payload.history,
+        loaded: {
+          ...action.payload.replacementParameters,
+          results: [],
+          resultsTotalFiles: 0,
+        }
+      };
+
     default:
       return state;
   }

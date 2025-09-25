@@ -58,12 +58,16 @@ const Step: FC<{ index: number }> = ({ index }) => {
 
     const handleChange = (event: KeyboardEvent) => {
       console.log("○ handleChange");
-      setHistoricField({ dispatch, field: "findContent", value: textfield.value, index });
+      if (loaded.steps[index].find.content !== textfield.value) {
+        setHistoricField({ dispatch, field: "findContent", value: textfield.value, index });
+      }
     };
 
     const handleKeyUp = debounce((event: KeyboardEvent) => {
       console.log("○ handleKeyUp");
-      setHistoricField({ dispatch, field: "findContent", value: textfield.value, index });
+      if (loaded.steps[index].find.content !== textfield.value) {
+        setHistoricField({ dispatch, field: "findContent", value: textfield.value, index });
+      }
     }, config.debounceDelay);
 
     const handleKeyDown = debounce((event: KeyboardEvent) => {
@@ -96,12 +100,16 @@ const Step: FC<{ index: number }> = ({ index }) => {
 
     const handleChange = (event: KeyboardEvent) => {
       console.log("○ handleChange");
-      setHistoricField({ dispatch, field: "replaceContent", value: textfield.value, index });
+      if (loaded.steps[index].replace.content !== textfield.value) {
+        setHistoricField({ dispatch, field: "replaceContent", value: textfield.value, index });
+      }
     };
 
     const handleKeyUp = debounce((event: KeyboardEvent) => {
       console.log("○ handleKeyUp");
-      setHistoricField({ dispatch, field: "replaceContent", value: textfield.value, index });
+      if (loaded.steps[index].replace.content !== textfield.value) {
+        setHistoricField({ dispatch, field: "replaceContent", value: textfield.value, index });
+      }
     }, config.debounceDelay);
 
     const handleKeyDown = debounce((event: KeyboardEvent) => {

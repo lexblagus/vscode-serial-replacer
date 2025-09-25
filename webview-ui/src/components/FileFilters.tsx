@@ -34,12 +34,16 @@ const FileFilters: FC = () => {
 
     const handleChange = (event: KeyboardEvent) => {
       console.log("○ handleChange");
-      setHistoricField({ dispatch, field: "includeFiles", value: textfield.value });
+      if (loaded.includeFiles !== textfield.value) {
+        setHistoricField({ dispatch, field: "includeFiles", value: textfield.value });
+      }
     };
 
     const handleKeyUp = debounce((event: KeyboardEvent) => {
       console.log("○ handleKeyUp");
-      setHistoricField({ dispatch, field: "includeFiles", value: textfield.value });
+      if (loaded.includeFiles !== textfield.value) {
+        setHistoricField({ dispatch, field: "includeFiles", value: textfield.value });
+      }
     }, config.debounceDelay);
 
     const handleKeyDown = debounce((event: KeyboardEvent) => {
@@ -72,12 +76,16 @@ const FileFilters: FC = () => {
 
     const handleChange = (event: KeyboardEvent) => {
       console.log("○ handleChange");
-      setHistoricField({ dispatch, field: "excludeFiles", value: textfield.value });
+      if (loaded.excludeFiles !== textfield.value) {
+        setHistoricField({ dispatch, field: "excludeFiles", value: textfield.value });
+      }
     };
 
     const handleKeyUp = debounce((event: KeyboardEvent) => {
       console.log("○ handleKeyUp");
-      setHistoricField({ dispatch, field: "excludeFiles", value: textfield.value });
+      if (loaded.excludeFiles !== textfield.value) {
+        setHistoricField({ dispatch, field: "excludeFiles", value: textfield.value });
+      }
     }, config.debounceDelay);
 
     const handleKeyDown = debounce((event: KeyboardEvent) => {

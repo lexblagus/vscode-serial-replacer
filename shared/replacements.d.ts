@@ -25,11 +25,11 @@ export interface FileFilters {
 }
 
 export interface ReplacementParameters extends FileFilters {
+  id: string;
   steps: Step[];
 }
 
 export interface SerialReplacement extends ReplacementParameters {
-  id: string;
   results: TreeItem[];
   resultsTotalFiles: number;
 }
