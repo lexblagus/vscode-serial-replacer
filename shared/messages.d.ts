@@ -2,6 +2,7 @@ import type {
   FilePath,
   HistoryAwareField,
   PersistentData,
+  PersistentHistory,
   ReplacementParameters,
   ReplacementResults,
   Step,
@@ -41,11 +42,8 @@ export type WebviewMessage =
       payload: string;
     }
   | {
-      command: "ADD_FIELD_HISTORY";
-      payload: {
-        field: HistoryAwareField;
-        value: string;
-      };
+      command: "PERSIST_FIELD_HISTORY";
+      payload: PersistentHistory;
     }
   | {
       command: "CONFIRM_RESET";

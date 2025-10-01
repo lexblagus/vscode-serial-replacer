@@ -1,13 +1,27 @@
 import type { TreeItem } from "../../../shared/tree";
-import type { PersistentData, ReplacementResults } from "../../../shared/replacements";
+import type { HistoryAwareField, PersistentData, ReplacementResults, TransientData, HistoryFieldIndexes } from "../../../shared/replacements";
 
 type MainAction =
   | {
       type: "RESET";
     }
   | {
+      type: "SET_TRANSIENT_DATA";
+      payload: {
+        historyFieldIndex: Partial<HistoryFieldIndexes>
+      };
+    }
+  | {
       type: "SET_PERSISTED_DATA";
       payload: PersistentData;
+    }
+  | {
+      type: "SET_FIELD_HISTORY";
+      payload: {
+        field: HistoryAwareField;
+        value: string;
+
+      };
     };
 
 type FileFiltersAction =

@@ -460,18 +460,18 @@ export const detectNavigationDirection = (
   const selectionEnd = field.wrappedElement.selectionEnd;
   const length = field.value.length;
 
-  if (key === "ArrowUp" && selectionStart === 0) {
+  if (key === "ArrowUp" /* && selectionStart === 0 */) { // TODO: detect multi-line
     return -1;
   }
 
-  if (key === "ArrowDown" && selectionEnd === length) {
+  if (key === "ArrowDown" /* && selectionEnd === length */) { // TODO: detect multi-line
     return 1;
   }
 
   return 0;
 };
 
-export const setHistoricField = ({
+export const setHistoricField = ({ // <!> DELETE?
   dispatch,
   field,
   value,
@@ -482,49 +482,62 @@ export const setHistoricField = ({
   value: string;
   index?: number;
 }) => {
-  if (value !== "") {
-    vscode.postMessage({
-      command: "ADD_FIELD_HISTORY",
-      payload: {
-        field,
-        value,
-      },
-    });
-  }
+  console.log("□ setHistoricField", { field, value, index });
 
-  if (field === "includeFiles") {
-    dispatch({ type: "SET_FILES_TO_INCLUDE", payload: value });
-    return;
-  }
+  dispatch({
+    type: "SET_FIELD_HISTORY",
+    payload: {
+      field,
+      value,
+    },
+  });
 
-  if (field === "excludeFiles") {
-    dispatch({ type: "SET_FILES_TO_EXCLUDE", payload: value });
-    return;
-  }
-
-  if (field === "findContent") {
-    dispatch({
-      type: "SET_STEP_FIND",
-      payload: {
-        index,
-        find: {
-          content: value,
+  switch (field) {
+    case "includeFiles": {
+      dispatch({ type: "SET_FILES_TO_INCLUDE", payload: value });
+      return;
+    }
+    case "excludeFiles": {
+      dispatch({ type: "SET_FILES_TO_EXCLUDE", payload: value });
+      return;
+    }
+    case "findContent": {
+      dispatch({
+        type: "SET_STEP_FIND",
+        payload: {
+          index,
+          find: {
+            content: value,
+          },
         },
-      },
-    });
-    return;
+      });
+      return;
+    }
+    case "replaceContent": {
+      dispatch({
+        type: "SET_STEP_REPLACE",
+        payload: {
+          index,
+          replace: {
+            content: value,
+          },
+        },
+      });
+      return;
+    }
+  }
+};
+
+export const retrieveIndexHistory = (direction: number, currentIndex: number, history: string[], ) => {
+  const calculatedIndex = currentIndex - direction;
+
+  if(calculatedIndex < 0) {
+    return 0;
   }
 
-  if (field === "replaceContent") {
-    dispatch({
-      type: "SET_STEP_REPLACE",
-      payload: {
-        index,
-        replace: {
-          content: value,
-        },
-      },
-    });
-    return;
+  if(calculatedIndex >= history.length) {
+    return history.length - 1;
   }
+
+  return calculatedIndex;
 };

@@ -64,5 +64,13 @@ export const emptyHistory: () => PersistentHistory = () => ({
 
 export const emptyWebviewState: () => WebviewState = () => ({
   loaded: initialReplacement(),
+  transient: {
+    historyFieldIndex: {
+      includeFiles: 0,
+      excludeFiles: 0,
+      findContent: 0,
+      replaceContent: 0,
+    },
+  },
   fieldHistory: emptyHistory(),
 });

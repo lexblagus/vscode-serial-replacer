@@ -1,18 +1,18 @@
 import { useState, type FC } from "react";
 import { VscodeIcon, VscodeTree } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
-import { vscode } from "../utils/vscode";
-import { useAppContext } from "../context";
+import { vscode } from "../../utils/vscode";
+import { useAppContext } from "../../context";
 
 import type {
   VscodeIconMouseEventHandler,
   VscTreeActionMouseEventHandler,
   VscTreeSelectMouseEventHandler,
   VscTreeMouseEventHandler,
-} from "../types/events";
+} from "../../types/events";
 
-const FileTree: FC = () => {
-  console.log("▶ FileTree");
+const Preview: FC = () => {
+  console.log("▶ Preview");
 
   const { state: { loaded } , dispatch } = useAppContext();
   const [selectedFile, setSelectedFile] = useState<string>();
@@ -171,4 +171,4 @@ const FileTree: FC = () => {
   );
 };
 
-export default FileTree;
+export default Preview;

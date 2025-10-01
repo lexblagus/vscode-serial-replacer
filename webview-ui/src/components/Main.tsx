@@ -1,12 +1,12 @@
 import { VscodeButton, VscodeFormContainer } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
-import FileFilters from "./FileFilters";
+import Files from "./Files";
 import Step from "./Step";
 import { useAppContext } from "../context";
-import { VscodeButtonMouseEventHandler } from "../types/events";
 import { vscode } from "../utils/vscode";
 
 import type { FC } from "react";
+import type { VscodeButtonMouseEventHandler } from "../types/events";
 
 if (import.meta.env.DEV) {
   await import("@vscode-elements/webview-playground");
@@ -16,28 +16,28 @@ export const Main: FC = () => {
   console.log("▶ Main");
 
   const {
-    state: { loaded },
-    dispatch,
+    state: {
+      loaded: { steps },
+    },
   } = useAppContext();
 
   const handleSerialReplaceClick: VscodeButtonMouseEventHandler = (event) => {
     vscode.postMessage({
       command: "REPLACE_ALL",
-      payload: loaded.steps,
+      payload: steps,
     });
   };
 
   return (
     <main>
       <VscodeFormContainer className="no-max-width">
-        <FileFilters />
+        <Files />
 
-        {loaded.steps.map((step, index) => (
+        {steps.map((step, index) => (
           <Step key={step.id} index={index} />
         ))}
 
-        <br />
-        <div className="button-group">
+        <div className="button-group top-margin">
           <VscodeButton
             onClick={handleSerialReplaceClick}
             icon="replace-all"

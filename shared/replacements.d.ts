@@ -51,7 +51,7 @@ export type ReplacementResults = Record<
   }
 >;
 
-export type HistoryAwareField = 'includeFiles' | 'excludeFiles' | 'findContent' | 'replaceContent';
+export type HistoryAwareField = "includeFiles" | "excludeFiles" | "findContent" | "replaceContent";
 
 export type PersistentHistory = Record<HistoryAwareField, string[]>;
 
@@ -60,7 +60,14 @@ export type PersistentData = {
   history: PersistentHistory;
 };
 
+export type HistoryFieldIndexes = Record<HistoryAwareField, number>;
+
+export type TransientData = {
+  historyFieldIndex: HistoryFieldIndexes;
+};
+
 export type WebviewState = {
   loaded: SerialReplacement;
+  transient: TransientData;
   fieldHistory: PersistentHistory;
 };

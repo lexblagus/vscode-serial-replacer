@@ -77,8 +77,9 @@ export class SerialReplacer {
     if (!force && (preferenceLevel < level || preferenceLevel === LogLevel.silent || level === 0)) {
       return;
     }
+    const prefix = '■▶ ';
     this._outputChannel.appendLine(
-      `[${new Date().toISOString()}] ${LogLevel[level].toUpperCase()} ${((msg, maxSize) =>
+      `${prefix}[${new Date().toISOString()}] ${LogLevel[level].toUpperCase()} ${((msg, maxSize) =>
         msg.length > maxSize ? `${msg.slice(0, maxSize)}… (truncated)` : msg)(
         message,
         config.maxLogMessageSize
@@ -514,20 +515,12 @@ export class SerialReplacer {
     this._context.globalState.update("data", persistData);
   }
 
-  private _addToPersistentHistory(field: HistoryAwareField, value: string) {
-    this._log(LogLevel.trace, `Add to persistent history `);
+  private _persistFieldHistory(persistentHistory: PersistentHistory) {
+    this._log(LogLevel.trace, `Persist field history `);
 
     const data = this._getPersistedData();
-    this._log(LogLevel.debug, `parameters=${JSON.stringify({ field, value, data })}`);
-
-    const fieldHistory = data.history[field];
-    const maxFieldHistoryEntries = config.maxFieldHistoryEntries;
-    if (value !== "" && fieldHistory[fieldHistory.length - 1] !== value) {
-      fieldHistory.push(value);
-      if (fieldHistory.length > maxFieldHistoryEntries) {
-        fieldHistory.splice(0, fieldHistory.length - maxFieldHistoryEntries);
-      }
-    }
+    data.history = persistentHistory;
+    this._log(LogLevel.debug, `data=${JSON.stringify({ data })}`);
     this._savePersistentData(data);
   }
 
@@ -636,8 +629,8 @@ export class SerialReplacer {
         return;
       }
 
-      case "ADD_FIELD_HISTORY": {
-        this._addToPersistentHistory(webviewMessage.payload.field, webviewMessage.payload.value);
+      case "PERSIST_FIELD_HISTORY": {
+        this._persistFieldHistory(webviewMessage.payload);
         return;
       }
 
