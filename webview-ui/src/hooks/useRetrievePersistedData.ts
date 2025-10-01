@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { vscode } from "../utils/vscode"; // adjust the import path
+import { vscode } from "../utils/vscode";
 
 /**
  * Requests persisted data from the VSCode extension once on mount.

@@ -223,7 +223,7 @@ const Find: FC<{ index: number }> = ({ index }) => {
         <div className="label">
           <VscodeLabel htmlFor={`step${index}FindContent`} className="text-discreet">
             {t("find")}
-            {indexHistory > 0 && (
+            {indexHistory > 0 && fieldValue === history[indexHistory] && (
               <span className="text-super-dimmed">
                 {" "}
                 ({t('{0}/{1} from history', history.length - indexHistory, history.length)})

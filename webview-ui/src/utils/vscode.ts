@@ -1,5 +1,4 @@
 import type { WebviewApi } from "vscode-webview";
-
 import type { WebviewMessage } from "../../../shared/messages";
 
 /**

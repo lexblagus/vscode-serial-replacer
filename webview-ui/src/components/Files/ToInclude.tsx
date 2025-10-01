@@ -166,7 +166,7 @@ const ToInclude: FC = () => {
     <VscodeFormGroup variant="vertical" className="no-y-margin">
       <VscodeLabel htmlFor="includeFiles" className="text-discreet">
         {t("files to include")}
-        {indexHistory > 0 && (
+        {indexHistory > 0 && fieldValue === history[indexHistory] && (
           <span className="text-super-dimmed">
             {" "}
             ({t("{0}/{1} from history", history.length - indexHistory, history.length)})

@@ -13,9 +13,9 @@ import {
   commands,
 } from "vscode";
 import { basename, join } from "path";
-import { deepMerge, filterFileByLists, splitOutsideCurlyBraces } from "./aux";
+import { filterFileByLists, splitOutsideCurlyBraces } from "./aux";
 import { getStats } from "shared/common";
-import { emptyHistory, emptyPersistentData, emptyReplacementParameters } from "shared/data";
+import { emptyPersistentData, emptyReplacementParameters } from "shared/data";
 import config from "./config.json";
 
 import type { WebviewMessage, ExtensionMessage } from "shared/messages";
@@ -26,7 +26,6 @@ import type {
   ReplacementParameters,
   PersistentData,
   PersistentHistory,
-  HistoryAwareField,
 } from "shared/replacements";
 
 const { t, bundle } = l10n;
@@ -77,7 +76,7 @@ export class SerialReplacer {
     if (!force && (preferenceLevel < level || preferenceLevel === LogLevel.silent || level === 0)) {
       return;
     }
-    const prefix = '■▶ ';
+    const prefix = "■▶ ";
     this._outputChannel.appendLine(
       `${prefix}[${new Date().toISOString()}] ${LogLevel[level].toUpperCase()} ${((msg, maxSize) =>
         msg.length > maxSize ? `${msg.slice(0, maxSize)}… (truncated)` : msg)(

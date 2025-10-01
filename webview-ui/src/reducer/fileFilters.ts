@@ -1,4 +1,4 @@
-import { setTreeItemOpen, setTreePreview } from "../utils/etc";
+import { setTreeItemOpen, setTreePreview } from "../utils/tree";
 import config from "../config.json";
 
 import type { WebviewState } from "../../../shared/replacements";

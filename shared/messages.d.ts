@@ -1,6 +1,5 @@
 import type {
   FilePath,
-  HistoryAwareField,
   PersistentData,
   PersistentHistory,
   ReplacementParameters,

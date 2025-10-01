@@ -1,10 +1,11 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
-import type { FC } from "react";
 import { VscodeIcon } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../../context";
 import { vscode } from "../../utils/vscode";
-import {
+
+import type { FC } from "react";
+import type {
   Refs,
   VscodeIconRefObject,
   CreateHandler,

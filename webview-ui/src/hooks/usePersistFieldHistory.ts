@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { vscode } from "../utils/vscode";
+
 import type { PersistentHistory } from "../../../shared/replacements";
 
 /**

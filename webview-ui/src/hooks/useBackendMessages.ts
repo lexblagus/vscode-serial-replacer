@@ -1,6 +1,6 @@
 import { Dispatch, MutableRefObject, useEffect } from "react";
 import { useStateRefSync } from "./useStateRefSync";
-import { setFileTree } from "../utils/etc";
+import { setFileTree } from "../utils/tree";
 
 import type { AppAction } from "../types/actions";
 import type { ExtensionMessage } from "../../../shared/messages";

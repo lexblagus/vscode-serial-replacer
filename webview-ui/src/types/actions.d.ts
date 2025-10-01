@@ -1,5 +1,10 @@
 import type { TreeItem } from "../../../shared/tree";
-import type { HistoryAwareField, PersistentData, ReplacementResults, TransientData, HistoryFieldIndexes } from "../../../shared/replacements";
+import type {
+  HistoryAwareField,
+  PersistentData,
+  ReplacementResults,
+  HistoryFieldIndexes,
+} from "../../../shared/replacements";
 
 type MainAction =
   | {
@@ -8,7 +13,7 @@ type MainAction =
   | {
       type: "SET_TRANSIENT_DATA";
       payload: {
-        historyFieldIndex: Partial<HistoryFieldIndexes>
+        historyFieldIndex: Partial<HistoryFieldIndexes>;
       };
     }
   | {
@@ -20,7 +25,6 @@ type MainAction =
       payload: {
         field: HistoryAwareField;
         value: string;
-
       };
     };
 
