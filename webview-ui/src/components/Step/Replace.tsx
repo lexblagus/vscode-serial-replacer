@@ -1,31 +1,40 @@
 import { useEffect, useCallback, useRef, useState } from "react";
-import { VscodeFormGroup, VscodeLabel, VscodeTextfield } from "@vscode-elements/react-elements";
+import {
+  VscodeFormGroup,
+  VscodeLabel,
+  VscodeFormHelper,
+  VscodeTextarea,
+} from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
-import CurrentEditors from "./CurrentEditors";
+import ReplaceActions from "./ReplaceActions";
 import { useAppContext } from "../../context";
 import { debounce, detectNavigationDirection, retrieveIndexHistory, text } from "../../utils/etc";
 import config from "../../config.json";
 
 import type { FC } from "react";
-import type { VscodeTextfieldConstructor } from "../../types/dependencies";
+import type { VscodeTextareaConstructor } from "../../types/dependencies";
 
-const ToInclude: FC = () => {
-  console.log("▶ ToInclude");
+const Replace: FC<{ index: number }> = ({ index }) => {
+  console.log("▶ Replace");
 
   const {
     state: {
-      loaded: { includeFiles: fieldValue },
-      fieldHistory: { includeFiles: history },
+      loaded: { steps },
+      fieldHistory: { replaceContent: history },
       transient: {
-        historyFieldIndex: { includeFiles: indexHistory },
+        historyFieldIndex: { replaceContent: indexHistory },
       },
     },
     dispatch,
   } = useAppContext();
 
+  const {
+    replace: { content: fieldValue, wordWrap },
+  } = steps[index];
+
   const [direction, setDirection] = useState(0);
 
-  const fieldRef = useRef<VscodeTextfieldConstructor>(null);
+  const fieldRef = useRef<VscodeTextareaConstructor>(null);
 
   const updateFieldFromHistory = useCallback(() => {
     const textfield = fieldRef.current;
@@ -57,13 +66,21 @@ const ToInclude: FC = () => {
       })}`
     );
 
-    dispatch({ type: "SET_FILES_TO_INCLUDE", payload: historicalValue });
+    dispatch({
+      type: "SET_STEP_REPLACE",
+      payload: {
+        index,
+        replace: {
+          content: historicalValue,
+        },
+      },
+    });
 
     dispatch({
       type: "SET_TRANSIENT_DATA",
       payload: {
         historyFieldIndex: {
-          includeFiles: retrievedIndex,
+          replaceContent: retrievedIndex,
         },
       },
     });
@@ -89,7 +106,15 @@ const ToInclude: FC = () => {
       return;
     }
 
-    dispatch({ type: "SET_FILES_TO_INCLUDE", payload: textfield.value });
+    dispatch({
+      type: "SET_STEP_REPLACE",
+      payload: {
+        index,
+        replace: {
+          content: textfield.value,
+        },
+      },
+    });
 
     if (history[indexHistory] === textfield.value && indexHistory !== 0) {
       return;
@@ -98,7 +123,7 @@ const ToInclude: FC = () => {
     dispatch({
       type: "SET_FIELD_HISTORY",
       payload: {
-        field: "includeFiles",
+        field: "replaceContent",
         value: textfield.value,
       },
     });
@@ -107,7 +132,7 @@ const ToInclude: FC = () => {
       type: "SET_TRANSIENT_DATA",
       payload: {
         historyFieldIndex: {
-          includeFiles: 0,
+          replaceContent: 0,
         },
       },
     });
@@ -162,34 +187,45 @@ const ToInclude: FC = () => {
     updateFieldFromHistory,
   ]);
 
+  useEffect(() => {
+    // Word wrap
+    const el = fieldRef.current;
+    if (!el) {
+      return;
+    }
+
+    el.wrappedElement.setAttribute("wrap", wordWrap ? "soft" : "off");
+  }, [fieldRef, wordWrap]);
+
   return (
     <VscodeFormGroup variant="vertical" className="no-y-margin">
-      <VscodeLabel htmlFor="includeFiles" className="text-discreet">
-        {t("files to include")}
-        {indexHistory > 0 && (
-          <span className="text-super-dimmed">
-            {" "}
-            ({t("{0}/{1} from history", history.length - indexHistory, history.length)})
-          </span>
-        )}
-      </VscodeLabel>
-      <VscodeTextfield
-        id="includeFiles"
+      <div className="labelAndActions">
+        <div className="label">
+          <VscodeLabel htmlFor={`step${index}ReplaceContent`} className="text-discreet">
+            {t("replace")}
+            {indexHistory > 0 && (
+              <span className="text-super-dimmed">
+                {" "}
+                ({t("{0}/{1} from history", history.length - indexHistory, history.length)})
+              </span>
+            )}
+          </VscodeLabel>
+        </div>
+        <div className="actions">
+          <ReplaceActions index={index} />
+        </div>
+      </div>
+      <VscodeTextarea
+        id={`step${index}ReplaceContent`}
         ref={fieldRef}
-        className="textfield-full"
-        placeholder={`${t("e.g. {0}", text["sample-file-pattern"])} (${t(
-          "{0} for history",
-          text["arrow-up-and-down"]
-        )})`}
-        title={`${t("e.g. {0}", text["sample-file-pattern"])} (${t(
-          "{0} for history",
-          text["arrow-up-and-down"]
-        )})`}
-        value={fieldValue}>
-        <CurrentEditors />
-      </VscodeTextfield>
+        className="textarea-full"
+        label={t("replace")}
+        title={t("Replace")}
+        placeholder={t("{0} for history", text["arrow-up-and-down"])}
+        resize="vertical"
+        value={fieldValue}></VscodeTextarea>
     </VscodeFormGroup>
   );
 };
 
-export default ToInclude;
+export default Replace;

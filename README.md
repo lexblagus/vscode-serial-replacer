@@ -56,7 +56,7 @@
   - ☑ Shared libs
   - ☑ Shared types
   - ☑ Data persistance on reload
-  - ☐ Up/down keys for field history
+  - ☑ Up/down keys for field history
   - ☐ …
 
 - ☐ Tests
@@ -79,8 +79,9 @@
 
 ## Bugs
 
-- ☑ Preview: opens tabs without asking while changing find & replace. Must refactor good part of serialReplacer.ts
 - ☐ Performance when working with a large set of files
+- ☐ Performance when using field history
+- ☑ Preview: opens tabs without asking while changing find & replace. Must refactor good part of serialReplacer.ts
 - ☑ files to include/exclude hangs (because of the controlled component)
 - ☑ when moving panels loses context (like file filters)
 - ☑ Multiline does not work; does it make sense? remove it?

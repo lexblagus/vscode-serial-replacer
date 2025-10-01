@@ -1,31 +1,42 @@
 import { useEffect, useCallback, useRef, useState } from "react";
-import { VscodeFormGroup, VscodeLabel, VscodeTextfield } from "@vscode-elements/react-elements";
+import {
+  VscodeFormGroup,
+  VscodeLabel,
+  VscodeFormHelper,
+  VscodeTextarea,
+} from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
-import CurrentEditors from "./CurrentEditors";
+import FindActions from "./FindActions";
 import { useAppContext } from "../../context";
 import { debounce, detectNavigationDirection, retrieveIndexHistory, text } from "../../utils/etc";
 import config from "../../config.json";
 
 import type { FC } from "react";
-import type { VscodeTextfieldConstructor } from "../../types/dependencies";
+import type { VscodeTextareaConstructor } from "../../types/dependencies";
 
-const ToInclude: FC = () => {
-  console.log("▶ ToInclude");
+const Find: FC<{ index: number }> = ({ index }) => {
+  console.log("▶ Find");
 
   const {
     state: {
-      loaded: { includeFiles: fieldValue },
-      fieldHistory: { includeFiles: history },
+      loaded: { steps },
+      fieldHistory: { findContent: history },
       transient: {
-        historyFieldIndex: { includeFiles: indexHistory },
+        historyFieldIndex: { findContent: indexHistory },
       },
     },
     dispatch,
   } = useAppContext();
 
+  const {
+    find: { content: fieldValue, wordWrap, regExp, caseSensitive },
+  } = steps[index];
+
+  const [findErrorMessage, setFindErrorMessage] = useState<string | null>(null);
+
   const [direction, setDirection] = useState(0);
 
-  const fieldRef = useRef<VscodeTextfieldConstructor>(null);
+  const fieldRef = useRef<VscodeTextareaConstructor>(null);
 
   const updateFieldFromHistory = useCallback(() => {
     const textfield = fieldRef.current;
@@ -57,13 +68,21 @@ const ToInclude: FC = () => {
       })}`
     );
 
-    dispatch({ type: "SET_FILES_TO_INCLUDE", payload: historicalValue });
+    dispatch({
+      type: "SET_STEP_FIND",
+      payload: {
+        index,
+        find: {
+          content: historicalValue,
+        },
+      },
+    });
 
     dispatch({
       type: "SET_TRANSIENT_DATA",
       payload: {
         historyFieldIndex: {
-          includeFiles: retrievedIndex,
+          findContent: retrievedIndex,
         },
       },
     });
@@ -89,7 +108,15 @@ const ToInclude: FC = () => {
       return;
     }
 
-    dispatch({ type: "SET_FILES_TO_INCLUDE", payload: textfield.value });
+    dispatch({
+      type: "SET_STEP_FIND",
+      payload: {
+        index,
+        find: {
+          content: textfield.value,
+        },
+      },
+    });
 
     if (history[indexHistory] === textfield.value && indexHistory !== 0) {
       return;
@@ -98,7 +125,7 @@ const ToInclude: FC = () => {
     dispatch({
       type: "SET_FIELD_HISTORY",
       payload: {
-        field: "includeFiles",
+        field: "findContent",
         value: textfield.value,
       },
     });
@@ -107,7 +134,7 @@ const ToInclude: FC = () => {
       type: "SET_TRANSIENT_DATA",
       payload: {
         historyFieldIndex: {
-          includeFiles: 0,
+          findContent: 0,
         },
       },
     });
@@ -162,34 +189,67 @@ const ToInclude: FC = () => {
     updateFieldFromHistory,
   ]);
 
+  useEffect(() => {
+    // Word wrap
+    const el = fieldRef.current;
+    if (!el) {
+      return;
+    }
+
+    el.wrappedElement.setAttribute("wrap", wordWrap ? "soft" : "off");
+  }, [fieldRef, wordWrap]);
+
+  useEffect(() => {
+    // Evaluate regular expression
+    try {
+      if (regExp) {
+        new RegExp(fieldValue, ["g", !caseSensitive && "i", "m"].filter(Boolean).join(""));
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        setFindErrorMessage(err.message);
+        return;
+      }
+      setFindErrorMessage(`${err}`);
+      return;
+    }
+
+    setFindErrorMessage(null);
+  }, [regExp, fieldValue, caseSensitive, setFindErrorMessage]);
+
   return (
     <VscodeFormGroup variant="vertical" className="no-y-margin">
-      <VscodeLabel htmlFor="includeFiles" className="text-discreet">
-        {t("files to include")}
-        {indexHistory > 0 && (
-          <span className="text-super-dimmed">
-            {" "}
-            ({t("{0}/{1} from history", history.length - indexHistory, history.length)})
-          </span>
-        )}
-      </VscodeLabel>
-      <VscodeTextfield
-        id="includeFiles"
+      <div className="labelAndActions">
+        <div className="label">
+          <VscodeLabel htmlFor={`step${index}FindContent`} className="text-discreet">
+            {t("find")}
+            {indexHistory > 0 && (
+              <span className="text-super-dimmed">
+                {" "}
+                ({t('{0}/{1} from history', history.length - indexHistory, history.length)})
+              </span>
+            )}
+          </VscodeLabel>
+        </div>
+        <div className="actions">
+          <FindActions index={index} />
+        </div>
+      </div>
+      <VscodeTextarea
+        id={`step${index}FindContent`}
         ref={fieldRef}
-        className="textfield-full"
-        placeholder={`${t("e.g. {0}", text["sample-file-pattern"])} (${t(
-          "{0} for history",
-          text["arrow-up-and-down"]
-        )})`}
-        title={`${t("e.g. {0}", text["sample-file-pattern"])} (${t(
-          "{0} for history",
-          text["arrow-up-and-down"]
-        )})`}
-        value={fieldValue}>
-        <CurrentEditors />
-      </VscodeTextfield>
+        className="textarea-full"
+        label={t("find")}
+        title={t("Find")}
+        placeholder={t("{0} for history", text["arrow-up-and-down"])}
+        resize="vertical"
+        value={fieldValue}
+        invalid={findErrorMessage !== null}></VscodeTextarea>
+      {findErrorMessage && (
+        <VscodeFormHelper className="error-message">{findErrorMessage}</VscodeFormHelper>
+      )}
     </VscodeFormGroup>
   );
 };
 
-export default ToInclude;
+export default Find;

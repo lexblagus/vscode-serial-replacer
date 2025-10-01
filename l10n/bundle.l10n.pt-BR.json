@@ -46,6 +46,7 @@
   "Find": "Pesquisar",
   "find": "pesquisar",
   "{0} for history": "{0} para histórico",
+  "{0}/{1} from history": "{0}/{1} do histórico",
   "Use regular expression": "Usar expressão regular",
   "Case sensitive": "Diferenciar maiúsculas de minúsculas",
   "Word wrap": "Quebra automática de linha",

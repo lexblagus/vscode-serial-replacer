@@ -41,6 +41,18 @@
   font-weight: normal;
 }
 
+.text-disabled {
+  color: var(--vscode-disabledForeground);
+}
+
+.text-super-dimmed {
+  color: var(--vscode-editorWhitespace-foreground);
+}
+
+.dimmed {
+  opacity: 0.5;
+}
+
 .textfield-full {
   width: 100%;
 }

@@ -460,18 +460,46 @@ export const detectNavigationDirection = (
   const selectionEnd = field.wrappedElement.selectionEnd;
   const length = field.value.length;
 
-  if (key === "ArrowUp" /* && selectionStart === 0 */) { // TODO: detect multi-line
-    return -1;
+  // Split into lines
+  const lines = field.value.split("\n");
+
+  // Find cursor's current line index
+  let currentLine = 0;
+  let charCount = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    const lineLength = lines[i].length + 1; // +1 for '\n'
+    if (selectionStart < charCount + lineLength) {
+      currentLine = i;
+      break;
+    }
+    charCount += lineLength;
   }
 
-  if (key === "ArrowDown" /* && selectionEnd === length */) { // TODO: detect multi-line
+  // Single-line behavior (fallback to your original logic)
+  if (lines.length === 1) {
+    if (key === "ArrowUp") {
+      return -1;
+    }
+    if (key === "ArrowDown") {
+      return 1;
+    }
+    return 0;
+  }
+
+  // Multi-line behavior
+  if (key === "ArrowUp" && currentLine === 0) {
+    return -1;
+  }
+  if (key === "ArrowDown" && currentLine === lines.length - 1) {
     return 1;
   }
 
   return 0;
 };
 
-export const setHistoricField = ({ // <!> DELETE?
+export const setHistoricField = ({
+  // <!> DELETE?
   dispatch,
   field,
   value,
@@ -528,14 +556,18 @@ export const setHistoricField = ({ // <!> DELETE?
   }
 };
 
-export const retrieveIndexHistory = (direction: number, currentIndex: number, history: string[], ) => {
+export const retrieveIndexHistory = (
+  direction: number,
+  currentIndex: number,
+  history: string[]
+) => {
   const calculatedIndex = currentIndex - direction;
 
-  if(calculatedIndex < 0) {
+  if (calculatedIndex < 0) {
     return 0;
   }
 
-  if(calculatedIndex >= history.length) {
+  if (calculatedIndex >= history.length) {
     return history.length - 1;
   }
 
