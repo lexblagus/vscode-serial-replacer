@@ -208,6 +208,8 @@ const Replace: FC<{ index: number }> = ({ index }) => {
     el.wrappedElement.setAttribute("wrap", wordWrap ? "soft" : "off");
   }, [fieldRef, wordWrap]);
 
+  const placeholder = history.length > 0 ? t("{0} for history", text["arrow-up-and-down"]) : "";
+
   return (
     <VscodeFormGroup variant="vertical" className="no-y-margin">
       <div className="labelAndActions">
@@ -232,7 +234,7 @@ const Replace: FC<{ index: number }> = ({ index }) => {
         className="textarea-full"
         label={t("replace")}
         title={t("Replace")}
-        placeholder={t("{0} for history", text["arrow-up-and-down"])}
+        placeholder={placeholder}
         resize="vertical"
         value={fieldValue}></VscodeTextarea>
     </VscodeFormGroup>

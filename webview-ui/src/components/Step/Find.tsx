@@ -234,6 +234,8 @@ const Find: FC<{ index: number }> = ({ index }) => {
     setFindErrorMessage(null);
   }, [regExp, fieldValue, caseSensitive, setFindErrorMessage]);
 
+  const placeholder = history.length > 0 ? t("{0} for history", text["arrow-up-and-down"]) : "";
+
   return (
     <VscodeFormGroup variant="vertical" className="no-y-margin">
       <div className="labelAndActions">
@@ -258,7 +260,7 @@ const Find: FC<{ index: number }> = ({ index }) => {
         className="textarea-full"
         label={t("find")}
         title={t("Find")}
-        placeholder={t("{0} for history", text["arrow-up-and-down"])}
+        placeholder={placeholder}
         resize="vertical"
         value={fieldValue}
         invalid={findErrorMessage !== null}></VscodeTextarea>

@@ -2,7 +2,7 @@ import type { CombineSequentialReducers } from "../types/reducers";
 import type { VscodeTextareaConstructor, VscodeTextfieldConstructor } from "../types/dependencies";
 
 export const text: Record<string, string> = {
-  "sample-file-pattern": "*.ts, src/**/include",
+  "sample-file-pattern": "*.ts, src/**/file",
   "arrow-up-and-down": "\u21C5",
 };
 

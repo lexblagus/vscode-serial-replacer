@@ -176,6 +176,13 @@ const ToInclude: FC = () => {
     config,
   ]);
 
+  const placeholder =
+    t("e.g. {0}", text["sample-file-pattern"]) +
+    (history.length > 0 ? ` (${t("{0} for history", text["arrow-up-and-down"])})` : "");
+  const title =
+    t("e.g. {0}", text["sample-file-pattern"]) +
+    (history.length > 0 ? ` (${t("{0} for history", text["arrow-up-and-down"])})` : "");
+
   return (
     <VscodeFormGroup variant="vertical" className="no-y-margin">
       <VscodeLabel htmlFor="includeFiles" className="text-discreet">
@@ -191,14 +198,8 @@ const ToInclude: FC = () => {
         id="includeFiles"
         ref={fieldRef}
         className="textfield-full"
-        placeholder={`${t("e.g. {0}", text["sample-file-pattern"])} (${t(
-          "{0} for history",
-          text["arrow-up-and-down"]
-        )})`}
-        title={`${t("e.g. {0}", text["sample-file-pattern"])} (${t(
-          "{0} for history",
-          text["arrow-up-and-down"]
-        )})`}
+        placeholder={placeholder}
+        title={title}
         value={fieldValue}>
         <CurrentEditors />
       </VscodeTextfield>

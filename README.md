@@ -48,7 +48,6 @@
 - Integrated (frontend + backend)
   - ☑ Get files and folders
   - ☑ Rename step
-  - ☐ Sets: data persistance (save/load/rename)
   - ☑ Preview
     - ☑ Tree
     - ☑ Count badges
@@ -57,7 +56,6 @@
   - ☑ Shared types
   - ☑ Data persistance on reload
   - ☑ Up/down keys for field history
-  - ☐ …
 
 - ☐ Tests
   - ☐ Unitary
@@ -74,11 +72,14 @@
   - ☐ …
 
 - **Future:**
+  - ☐ Sets: data persistance (save/load/rename)
   - ☑ Replacements preview (using treeview, panels and diff)
   - ☑ Multiple instances (panels)
 
-## Bugs
+## Bugs/improvements
 
+- ☐ Merge all 4 historic fields (include, exclude, find &amp; replace) into one?
+- ☐ Too many renderings! Use a state management? Split providers?
 - ☐ Performance when working with a large set of files
 - ☐ Performance when using field history
 - ☑ Preview: opens tabs without asking while changing find & replace. Must refactor good part of serialReplacer.ts
@@ -90,9 +91,8 @@
 
 ## More info
 
-Project started at April 21st 2025
-
 [Visual Studio Marketplace]()
 
 [Github](https://github.com/lexblagus/vscode-serial-replacer)
 					
+By [Lexa Blagus](https://blag.us/) initiated in April 21st 2025

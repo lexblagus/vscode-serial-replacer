@@ -11,9 +11,9 @@ export type Tag =
   ;
 
 export type Level =
-  | 'debug' // usually for variables like 'var', var
-  | 'log' // usually for method names, like func.name
-  | 'info' // usually for verbose text like 'Validation successful'
+  | 'debug'
+  | 'log'
+  | 'info'
   | 'warn'
   | 'error';
 
