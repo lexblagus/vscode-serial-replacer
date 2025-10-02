@@ -5,6 +5,7 @@ import Actions from "./Actions";
 import Find from "./Find";
 import Replace from "./Replace";
 import { useAppContext } from "../../context";
+import { log } from "../../utils/log";
 
 import type { FC } from "react";
 import type { VscodeCollapsibleToggleEventHandler } from "../../types/events";
@@ -13,6 +14,8 @@ import type { VscodeCollapsibleConstructor } from "../../types/dependencies";
 import "./Step.css";
 
 const Step: FC<{ index: number }> = ({ index }) => {
+  log('component', "Step", 'log', 'rendered');
+
   const {
     state: { loaded },
     dispatch,
@@ -23,7 +26,7 @@ const Step: FC<{ index: number }> = ({ index }) => {
   const title = step.title || t("Step {0}", (index + 1).toString());
 
   const CollapsibleToggleEventHandler: VscodeCollapsibleToggleEventHandler = (event) => {
-    console.log("▷ CollapsibleToggleEventHandler");
+    log("handler", "CollapsibleToggleEventHandler", "log");
 
     dispatch({
       type: "SET_STEP_EXPANDED",
@@ -35,7 +38,8 @@ const Step: FC<{ index: number }> = ({ index }) => {
   };
 
   useEffect(() => {
-    // Expand/collapse toggle
+    log("effect", "Step", "log", "Expand/collapse toggle");
+
     const currentElement = collapsibleRef.current;
     if (!currentElement) {
       return;

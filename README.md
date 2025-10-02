@@ -32,7 +32,7 @@
   - ☑ Icons
   - ☑ File tree with actions
   - ☑ Semi-persistent data (e.g.: when change panels)
-  - ☐ Better log (replace console, use config for levels)
+  - ☑ Better log (replace console, use config for levels)
 
 - Extension (backend)
   - ☑ Bi-direction communication
@@ -89,6 +89,8 @@
 - ☑ Eval inputs that still need debouce (like find and replace fields)
 
 ## More info
+
+Project started at April 21st 2025
 
 [Visual Studio Marketplace]()
 

@@ -2,11 +2,12 @@ import type { FC } from "react";
 import { VscodeIcon } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../../context";
+import { log } from "../../utils/log";
 
 import type { VscodeIconMouseEventHandler } from "../../types/events";
 
 const ReplaceActions: FC<{ index: number }> = ({ index }) => {
-  console.log("▶ ReplaceActions");
+  log('component', "ReplaceActions", 'log', 'rendered');
 
   const {
     state: { loaded },
@@ -15,7 +16,7 @@ const ReplaceActions: FC<{ index: number }> = ({ index }) => {
   const step = loaded.steps[index];
 
   const handleStepReplaceWordWrapClick: VscodeIconMouseEventHandler = (event) => {
-    console.log("▷ handleStepReplaceWordWrapClick");
+    log("handler", "handleStepReplaceWordWrapClick", "log");
     dispatch({
       type: "SET_STEP_REPLACE_WORD_WRAP",
       payload: {

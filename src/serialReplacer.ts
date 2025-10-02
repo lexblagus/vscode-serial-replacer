@@ -678,15 +678,6 @@ export class SerialReplacer {
         this._replaceAll();
         return;
       }
-
-      case "DISPLAY_INFORMATION_MESSAGE": {
-        window.showInformationMessage(webviewMessage.payload);
-        this.postMessage({
-          type: "SEND_LOG",
-          payload: webviewMessage.payload,
-        });
-        return;
-      }
     }
   }
 

@@ -4,6 +4,7 @@ import Files from "./Files";
 import Step from "./Step";
 import { useAppContext } from "../context";
 import { vscode } from "../utils/vscode";
+import { log } from "../utils/log";
 
 import type { FC } from "react";
 import type { VscodeButtonMouseEventHandler } from "../types/events";
@@ -13,7 +14,7 @@ if (import.meta.env.DEV) {
 }
 
 export const Main: FC = () => {
-  console.log("▶ Main");
+  log('component', "Main", 'log', 'rendered');
 
   const {
     state: {
@@ -21,7 +22,8 @@ export const Main: FC = () => {
     },
   } = useAppContext();
 
-  const handleSerialReplaceClick: VscodeButtonMouseEventHandler = (event) => {
+  const handleSerialReplaceClick: VscodeButtonMouseEventHandler = () => {
+    log('handler', "handleSerialReplaceClick", 'log');
     vscode.postMessage({
       command: "REPLACE_ALL",
       payload: steps,

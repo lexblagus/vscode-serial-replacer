@@ -1,12 +1,15 @@
 import { useEffect } from "react";
 import { vscode } from "../utils/vscode";
+import { log } from "../utils/log";
 
 /**
  * Subscribes to file/editor changes in the VSCode extension.
  */
 export function useSubscribeChanges(useCurrentEditors: boolean) {
+  log('hook', "useSubscribeChanges", 'log', `useCurrentEditors=${JSON.stringify(useCurrentEditors)}`);
+
   useEffect(() => {
-    console.log("● useSubscribeChanges: subscribing to file/editor changes");
+    log('effect', "useSubscribeChanges", 'log', `useCurrentEditors=${JSON.stringify(useCurrentEditors)}`);
 
     vscode.postMessage({
       command: "SUBSCRIBE_CHANGES",

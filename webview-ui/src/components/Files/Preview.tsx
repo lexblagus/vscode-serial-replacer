@@ -3,6 +3,7 @@ import { VscodeIcon, VscodeTree } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { vscode } from "../../utils/vscode";
 import { useAppContext } from "../../context";
+import { log } from "../../utils/log";
 
 import type {
   VscodeIconMouseEventHandler,
@@ -12,13 +13,13 @@ import type {
 } from "../../types/events";
 
 const Preview: FC = () => {
-  console.log("▶ Preview");
+  log('component', "Preview", 'log', 'rendered');
 
   const { state: { loaded } , dispatch } = useAppContext();
   const [selectedFile, setSelectedFile] = useState<string>();
 
   const handleRefreshClick: VscodeIconMouseEventHandler = () => {
-    console.log("▷ handleRefreshClick");
+    log("handler", "handleRefreshClick", "log");
 
     const {
       id,
@@ -43,7 +44,7 @@ const Preview: FC = () => {
   };
 
   const handleTreeAction: VscTreeActionMouseEventHandler = (event) => {
-    console.log("▷ handleTreeAction", "event.detail", event.detail);
+    log("handler", "handleTreeAction", "log", `event.detail=${JSON.stringify(event.detail)}`);
 
     const {
       id,
@@ -56,7 +57,6 @@ const Preview: FC = () => {
 
     switch (event.detail.actionId) {
       case "refresh": {
-        console.log("○ Refresh");
         vscode.postMessage({
           command: "SET_REPLACEMENT_PARAMETERS",
           payload: {
@@ -72,7 +72,6 @@ const Preview: FC = () => {
       }
 
       case "toggle": {
-        console.log("○ toggle expand all", "event.detail.item", event.detail.item);
         dispatch({
           type: "SET_TREE_ITEM_VISIBILITY_RECURSIVELY",
           payload: {
@@ -84,7 +83,6 @@ const Preview: FC = () => {
       }
 
       case "remove": {
-        console.log("○ Remove item", "event.detail.item", event.detail.value);
         const addToExclude = (event.detail.item?.subItems || []).length > 0 ? `${event.detail.value}/**` : event.detail.value;
         const currentExclude = excludeFiles.length > 0 ? [excludeFiles] : [];
         dispatch({
@@ -100,12 +98,10 @@ const Preview: FC = () => {
   };
 
   const handleTreeSelect: VscTreeSelectMouseEventHandler = (event) => {
-    console.log("▷ handleTreeSelect", "event.detail", event.detail);
+    log("handler", "handleTreeSelect", "log", `event.detail=${JSON.stringify(event.detail)}`);
 
     switch (event.detail.itemType) {
       case "branch": {
-        console.log("○ folder toggle");
-
         dispatch({
           type: "SET_TREE_ITEM_VISIBILITY",
           payload: {
@@ -118,11 +114,6 @@ const Preview: FC = () => {
       }
 
       case "leaf": {
-        console.log(
-          "○ File selected",
-          "event.detail.value",
-          event.detail.value
-        );
         setSelectedFile(event.detail.value);
         break;
       }
@@ -130,7 +121,8 @@ const Preview: FC = () => {
   };
 
   const handleTreeDoubleClick: VscTreeMouseEventHandler = (event) => {
-    console.log("▷ handleTreeDoubleClick", event);
+    log("handler", "handleTreeDoubleClick", "log", `selectedFile=${JSON.stringify(selectedFile)}`);
+
     if(selectedFile && selectedFile !== ''){
       vscode.postMessage({
         command: "OPEN_PREVIEW",

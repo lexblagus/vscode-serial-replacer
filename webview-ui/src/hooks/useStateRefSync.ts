@@ -1,4 +1,5 @@
 import { MutableRefObject, useEffect, useRef } from "react";
+import { log } from "../utils/log";
 
 import type { WebviewState } from "../../../shared/replacements";
 
@@ -7,11 +8,12 @@ import type { WebviewState } from "../../../shared/replacements";
  * Useful for accessing current state in callbacks/listeners.
  */
 export function useStateRefSync(webviewState: WebviewState): MutableRefObject<WebviewState> {
-  console.log("● useStateRefSync: update state reference");
+  log('hook', "useStateRefSync", 'log', `webviewState=${JSON.stringify(webviewState)}`);
 
   const ref = useRef(webviewState);
 
   useEffect(() => {
+    log('effect', "useStateRefSync", 'log', `webviewState=${JSON.stringify(webviewState)}`);
     ref.current = webviewState;
   }, [webviewState]);
 

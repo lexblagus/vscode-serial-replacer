@@ -5,6 +5,7 @@ import { useBackendMessages } from "./hooks/useBackendMessages";
 import { useSubscribeChanges } from "./hooks/useSubscribeChanges";
 import { useSetReplacementParameters } from "./hooks/useSetReplacementParameters";
 import { usePersistFieldHistory } from "./hooks/usePersistFieldHistory";
+import { log } from "./utils/log";
 import { emptyStep, emptyWebviewState } from "../../shared/data";
 
 import type { WebviewState } from "../../shared/replacements";
@@ -18,7 +19,7 @@ type AppContextType = {
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  console.log('■ AppProvider');
+  log('context', "AppProvider", 'log');
 
   const [state, dispatch] = useReducer(appStateReducer, emptyWebviewState(), (data) => ({
     ...data,
@@ -37,16 +38,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Debug state
   useEffect(() => {
-    console.log("state", JSON.stringify(state));
+    log('effect', "AppProvider", 'debug', `state=${JSON.stringify(state)}`);
   }, [state]);
 
   return <AppContext.Provider value={{ state, dispatch }}>{children}</AppContext.Provider>;
 }
 
 export function useAppContext() {
+  log('hook', "useAppContext", 'log');
   const context = useContext(AppContext);
   if (!context) {
     throw new Error("useAppContext must be used within an AppProvider");
   }
+  log('hook', "useAppContext", 'debug', `context=${JSON.stringify(context)}`);
   return context;
 }

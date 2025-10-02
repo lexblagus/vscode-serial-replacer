@@ -10,12 +10,13 @@ import FindActions from "./FindActions";
 import { useAppContext } from "../../context";
 import { debounce, detectNavigationDirection, retrieveIndexHistory, text } from "../../utils/etc";
 import config from "../../config.json";
+import { log } from "../../utils/log";
 
 import type { FC } from "react";
 import type { VscodeTextareaConstructor } from "../../types/dependencies";
 
 const Find: FC<{ index: number }> = ({ index }) => {
-  console.log("▶ Find");
+  log("component", "Find", "log", "rendered");
 
   const {
     state: {
@@ -39,14 +40,19 @@ const Find: FC<{ index: number }> = ({ index }) => {
   const fieldRef = useRef<VscodeTextareaConstructor>(null);
 
   const updateFieldFromHistory = useCallback(() => {
+    log("function", "updateFieldFromHistory", "log", "called");
+
     const textfield = fieldRef.current;
     if (!textfield) {
       return;
     }
     const retrievedIndex = retrieveIndexHistory(direction, indexHistory, history);
 
-    console.log(
-      `○ updateFieldFromHistory parameters=${JSON.stringify({
+    log(
+      "function",
+      "updateFieldFromHistory",
+      "debug",
+      `parameters=${JSON.stringify({
         "textfield.value": textfield.value,
         history,
         "history.length": history.length,
@@ -62,7 +68,10 @@ const Find: FC<{ index: number }> = ({ index }) => {
 
     const historicalValue = history[retrievedIndex];
 
-    console.log(
+    log(
+      "function",
+      "updateFieldFromHistory",
+      "debug",
       `parameters=${JSON.stringify({
         historicalValue,
       })}`
@@ -89,19 +98,23 @@ const Find: FC<{ index: number }> = ({ index }) => {
   }, [fieldRef, history, indexHistory, direction, dispatch]);
 
   const insertNewFieldValue = useCallback(() => {
+    log("function", "insertNewFieldValue", "log", "called");
+
     const textfield = fieldRef.current;
     if (!textfield) {
       return;
     }
 
-    console.log(
-      "○ insertNewFieldValue",
-      JSON.stringify({
+    log(
+      "function",
+      "insertNewFieldValue",
+      "debug",
+      `parameters=${JSON.stringify({
         fieldValue,
         "textfield.value": textfield.value,
         history,
         indexHistory,
-      })
+      })}`
     );
 
     if (fieldValue === textfield.value) {
@@ -141,20 +154,22 @@ const Find: FC<{ index: number }> = ({ index }) => {
   }, [fieldRef, fieldValue, history, indexHistory, dispatch]);
 
   useEffect(() => {
+    log("effect", "Find", "log", "Setup handlers");
+
     const textfield = fieldRef.current;
     if (!textfield) {
       return;
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      console.log("○ handleKeyDown");
+      log("handler", "handleKeyDown", "log", `event.key=${JSON.stringify(event.key)}`);
 
       const detectedDirection = detectNavigationDirection(event.key, textfield);
       setDirection(detectedDirection);
     };
 
     const handleKeyUp = debounce((_event: KeyboardEvent) => {
-      console.log(`○ handleKeyUp parameters=${JSON.stringify({ direction })}`);
+      log("handler", "handleKeyUp", "log", `parameters=${JSON.stringify({ direction })}`);
 
       if (direction) {
         updateFieldFromHistory();
@@ -166,7 +181,7 @@ const Find: FC<{ index: number }> = ({ index }) => {
     }, config.debounceDelay);
 
     const handleChange = (_event: KeyboardEvent) => {
-      console.log("○ handleChange");
+      log("handler", "handleChange", "log");
       insertNewFieldValue();
     };
 
@@ -190,7 +205,8 @@ const Find: FC<{ index: number }> = ({ index }) => {
   ]);
 
   useEffect(() => {
-    // Word wrap
+    log("effect", "Find", "log", "Set word wrap");
+
     const el = fieldRef.current;
     if (!el) {
       return;
@@ -200,7 +216,8 @@ const Find: FC<{ index: number }> = ({ index }) => {
   }, [fieldRef, wordWrap]);
 
   useEffect(() => {
-    // Evaluate regular expression
+    log("effect", "Find", "log", "Evaluate regular expression");
+
     try {
       if (regExp) {
         new RegExp(fieldValue, ["g", !caseSensitive && "i", "m"].filter(Boolean).join(""));
@@ -226,7 +243,7 @@ const Find: FC<{ index: number }> = ({ index }) => {
             {indexHistory > 0 && fieldValue === history[indexHistory] && (
               <span className="text-super-dimmed">
                 {" "}
-                ({t('{0}/{1} from history', history.length - indexHistory, history.length)})
+                ({t("{0}/{1} from history", history.length - indexHistory, history.length)})
               </span>
             )}
           </VscodeLabel>

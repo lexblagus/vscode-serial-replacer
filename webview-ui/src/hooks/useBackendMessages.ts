@@ -1,6 +1,7 @@
 import { Dispatch, MutableRefObject, useEffect } from "react";
 import { useStateRefSync } from "./useStateRefSync";
 import { setFileTree } from "../utils/tree";
+import { log } from "../utils/log";
 
 import type { AppAction } from "../types/actions";
 import type { ExtensionMessage } from "../../../shared/messages";
@@ -14,13 +15,14 @@ export function useBackendMessages(
   dispatch: Dispatch<AppAction>,
   state: WebviewState,
 ) {
+  log('hook', "useBackendMessages", 'log', `state=${JSON.stringify(state)}`);
   const stateRef = useStateRefSync(state);
 
   useEffect(() => {
-    console.log("● useBackendMessages: listening for backend messages");
+    log('effect', "useBackendMessages", 'log', 'Listening for backend messages');
 
     const handleMessage = (event: MessageEvent<ExtensionMessage>) => {
-      console.log(`▷ handleMessage event.data=${JSON.stringify(event.data)}`);
+      log('handler', "handleMessage", 'log', `event.data=${JSON.stringify(event.data)}`);
 
       const message = event.data;
 
@@ -55,10 +57,6 @@ export function useBackendMessages(
 
         case "COMMIT_RESET":
           dispatch({ type: "RESET" });
-          break;
-
-        case "SEND_LOG":
-          console.log("Received message from extension:", message.payload);
           break;
       }
     };

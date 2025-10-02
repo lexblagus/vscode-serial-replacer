@@ -1,9 +1,10 @@
-import { combineSequentialReducers } from "../utils/etc";
 import mainReducer from "./main";
 import fileFilterReducer from "./fileFilters";
 import stepReducer from "./step";
 import stepFindReducer from "./stepFind";
 import stepReplaceReducer from "./stepReplace";
+import { combineSequentialReducers } from "../utils/etc";
+import { log } from "../utils/log";
 
 import type { WebviewState } from "../../../shared/replacements";
 import type { AppAction } from "../types/actions";
@@ -18,6 +19,6 @@ const combinedReducer = combineSequentialReducers(
 
 export function appStateReducer(state: WebviewState, action: AppAction): WebviewState {
   const combined = combinedReducer(state, action);
-  console.log(`■ appStateReducer parameters=${JSON.stringify({ action, state, combined })}`);
+  log('reducer', "appStateReducer", 'log', `parameters=${JSON.stringify({ action, state, combined })}`);
   return combined;
 }

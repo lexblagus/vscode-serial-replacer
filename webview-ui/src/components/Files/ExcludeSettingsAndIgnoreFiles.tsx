@@ -1,12 +1,13 @@
 import { VscodeIcon } from "@vscode-elements/react-elements";
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../../context";
+import { log } from "../../utils/log";
 
 import type { FC } from "react";
 import type { VscodeIconMouseEventHandler } from "../../types/events";
 
 const ExcludeSettingsAndIgnoreFiles: FC = () => {
-  console.log("▶ ExcludeSettingsAndIgnoreFiles");
+  log('component', "ExcludeSettingsAndIgnoreFiles", 'log', 'rendered');
 
   const {
     state: {
@@ -16,7 +17,7 @@ const ExcludeSettingsAndIgnoreFiles: FC = () => {
   } = useAppContext();
 
   const handleExcludeSettingsAndIgnoreFilesClick: VscodeIconMouseEventHandler = (event) => {
-    console.log("▷ handleExcludeSettingsAndIgnoreFilesClick");
+    log("handler", "handleExcludeSettingsAndIgnoreFilesClick", "log");
 
     dispatch({
       type: "SET_EXCLUDE_SETTINGS_AND_IGNORE_FILES",

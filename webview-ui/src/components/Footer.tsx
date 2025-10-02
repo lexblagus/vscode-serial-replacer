@@ -1,17 +1,18 @@
 import { t } from "@vscode/l10n";
 import { useAppContext } from "../context";
 import { vscode } from "../utils/vscode";
+import { log } from "../utils/log";
 
 import type { FC } from "react";
 import type { LinkMouseEventHandler } from "../types/events";
 
 export const Footer: FC = () => {
-  console.log("▶ Footer");
+  log('component', "Footer", 'log', 'rendered');
 
   const { state: { loaded }, dispatch } = useAppContext();
 
   const handleResetClick: LinkMouseEventHandler = (event) => {
-    console.log("▷ handleResetClick");
+    log('handler', "handleResetClick", 'log');
 
     event.preventDefault();
     vscode.postMessage({
@@ -20,7 +21,7 @@ export const Footer: FC = () => {
   };
 
   const handleAboutClick: LinkMouseEventHandler = (event) => {
-    console.log("▷ handleAboutClick");
+    log('handler', "handleAboutClick", 'log');
 
     event.preventDefault();
     // TODO: about

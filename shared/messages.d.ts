@@ -37,10 +37,6 @@ export type WebviewMessage =
       payload: Step[];
     }
   | {
-      command: "DISPLAY_INFORMATION_MESSAGE";
-      payload: string;
-    }
-  | {
       command: "PERSIST_FIELD_HISTORY";
       payload: PersistentHistory;
     }
@@ -49,7 +45,6 @@ export type WebviewMessage =
     };
 
 export type ExtensionMessage =
-  | { type: "SEND_LOG"; payload: any }
   | { type: "SET_WORKSPACES_FILES"; payload: WorkspacesAndFiles }
   | { type: "SET_PREVIEW"; payload: ReplacementResults }
   | { type: "SET_PERSISTED_DATA"; payload: PersistentData }

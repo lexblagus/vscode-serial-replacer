@@ -1,4 +1,5 @@
 import { t } from "@vscode/l10n";
+import { log } from "../utils/log";
 import { getStats } from "../../../shared/common";
 
 import type { TreeItem, TreeItemAction } from "../../../shared/tree";
@@ -232,7 +233,12 @@ export const setTreePreview = (
   rootFileTree: TreeItem[],
   previewResults: ReplacementResults
 ): TreeItem[] => {
-  console.log("□ setTreePreview");
+  log(
+    "utils",
+    "setTreePreview",
+    "log",
+    `arguments=${JSON.stringify({ rootFileTree, previewResults })}`
+  );
 
   const tree: TreeItem[] = structuredClone(rootFileTree);
 

@@ -5,12 +5,13 @@ import CurrentEditors from "./CurrentEditors";
 import { useAppContext } from "../../context";
 import { debounce, detectNavigationDirection, retrieveIndexHistory, text } from "../../utils/etc";
 import config from "../../config.json";
+import { log } from "../../utils/log";
 
 import type { FC } from "react";
 import type { VscodeTextfieldConstructor } from "../../types/dependencies";
 
 const ToInclude: FC = () => {
-  console.log("▶ ToInclude");
+  log("component", "ToInclude", "log", "rendered");
 
   const {
     state: {
@@ -28,14 +29,19 @@ const ToInclude: FC = () => {
   const fieldRef = useRef<VscodeTextfieldConstructor>(null);
 
   const updateFieldFromHistory = useCallback(() => {
+    log("function", "updateFieldFromHistory", "log", "called");
+
     const textfield = fieldRef.current;
     if (!textfield) {
       return;
     }
     const retrievedIndex = retrieveIndexHistory(direction, indexHistory, history);
 
-    console.log(
-      `○ updateFieldFromHistory parameters=${JSON.stringify({
+    log(
+      "function",
+      "updateFieldFromHistory",
+      "debug",
+      `parameters=${JSON.stringify({
         "textfield.value": textfield.value,
         history,
         "history.length": history.length,
@@ -51,7 +57,10 @@ const ToInclude: FC = () => {
 
     const historicalValue = history[retrievedIndex];
 
-    console.log(
+    log(
+      "function",
+      "updateFieldFromHistory",
+      "debug",
       `parameters=${JSON.stringify({
         historicalValue,
       })}`
@@ -67,22 +76,26 @@ const ToInclude: FC = () => {
         },
       },
     });
-  }, [fieldRef, history, indexHistory, direction, dispatch]);
+  }, [fieldRef, retrieveIndexHistory, history, indexHistory, direction, dispatch]);
 
   const insertNewFieldValue = useCallback(() => {
+    log("function", "insertNewFieldValue", "log", "called");
+
     const textfield = fieldRef.current;
     if (!textfield) {
       return;
     }
 
-    console.log(
-      "○ insertNewFieldValue",
-      JSON.stringify({
+    log(
+      "function",
+      "insertNewFieldValue",
+      "debug",
+      `parameters=${JSON.stringify({
         fieldValue,
         "textfield.value": textfield.value,
         history,
         indexHistory,
-      })
+      })}`
     );
 
     if (fieldValue === textfield.value) {
@@ -114,20 +127,22 @@ const ToInclude: FC = () => {
   }, [fieldRef, fieldValue, history, indexHistory, dispatch]);
 
   useEffect(() => {
+    log("effect", "ToInclude", "log", "Setup handlers");
+
     const textfield = fieldRef.current;
     if (!textfield) {
       return;
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      console.log("○ handleKeyDown");
+      log("handler", "handleKeyDown", "log", `event.key=${JSON.stringify(event.key)}`);
 
       const detectedDirection = detectNavigationDirection(event.key, textfield);
       setDirection(detectedDirection);
     };
 
     const handleKeyUp = debounce((_event: KeyboardEvent) => {
-      console.log(`○ handleKeyUp parameters=${JSON.stringify({ direction })}`);
+      log("handler", "handleKeyUp", "log", `parameters=${JSON.stringify({ direction })}`);
 
       if (direction) {
         updateFieldFromHistory();
@@ -139,7 +154,7 @@ const ToInclude: FC = () => {
     }, config.debounceDelay);
 
     const handleChange = (_event: KeyboardEvent) => {
-      console.log("○ handleChange");
+      log("handler", "handleChange", "log");
       insertNewFieldValue();
     };
 
@@ -154,12 +169,11 @@ const ToInclude: FC = () => {
     };
   }, [
     fieldRef,
-    fieldValue,
-    history,
-    indexHistory,
-    direction,
-    insertNewFieldValue,
+    detectNavigationDirection,
+    setDirection,
     updateFieldFromHistory,
+    insertNewFieldValue,
+    config,
   ]);
 
   return (
