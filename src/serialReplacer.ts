@@ -670,6 +670,14 @@ export class SerialReplacer {
         return;
       }
 
+      case "OPEN_SETTINGS": {
+        commands.executeCommand(
+          "workbench.action.openSettings",
+          "@ext:lexa-blagus.serial-replacer"
+        );
+        return;
+      }
+
       case "OPEN_PREVIEW": {
         this._openPreview(webviewMessage.payload);
         return;

@@ -42,6 +42,8 @@ export type WebviewMessage =
       payload: PersistentHistory;
     }
   | {
+      command: "OPEN_SETTINGS";
+    }  | {
       command: "CONFIRM_RESET";
     };
 

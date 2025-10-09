@@ -46,7 +46,7 @@
           "markdownDescription": "%configuration.logOutputPanel.LogLevel.mdDescription%",
           "order": 10,
           "type": "string",
-          "default": "info",
+          "default": "warn",
           "enum": [
             "silent",
             "fatal",
@@ -120,7 +120,10 @@
           "order": 80,
           "type": "object",
           "default": {
-            "allow": [],
+            "allow": [
+              {"level": "warn"},
+              {"level": "error"}
+            ],
             "deny": [
               {
                 "title": "useAppContext"

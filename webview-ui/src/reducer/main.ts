@@ -1,5 +1,6 @@
 import { emptyWebviewState } from "../../../shared/data";
 import { getPreloadConfig } from "../utils/etc";
+import { log } from "../utils/log";
 
 import type { WebviewState } from "../../../shared/replacements";
 import type { AppAction } from "../types/actions";
@@ -9,6 +10,7 @@ export function stepReplaceReducer(state: WebviewState, action: AppAction): Webv
 
   switch (action.type) {
     case "RESET": {
+      log('reducer', "appStateReducer", 'warn', `Reset serial replacer data`);
       return emptyWebviewState();
     }
 

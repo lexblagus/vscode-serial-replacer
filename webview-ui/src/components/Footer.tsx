@@ -11,6 +11,15 @@ export const Footer: FC = () => {
 
   const { state: { loaded }, dispatch } = useAppContext();
 
+  const handleSettingsClick: LinkMouseEventHandler = (event) => {
+    log('handler', "handleAboutClick", 'log');
+
+    event.preventDefault();
+    vscode.postMessage({
+      command: "OPEN_SETTINGS",
+    });
+  };
+
   const handleResetClick: LinkMouseEventHandler = (event) => {
     log('handler', "handleResetClick", 'log');
 
@@ -30,6 +39,9 @@ export const Footer: FC = () => {
   return (
     <footer>
       <div className="text-discreet top-margin medium-bottom-margin x-end gap-em">
+        <a href="#" onClick={handleSettingsClick}>
+          {t("settings")}
+        </a>
         <a href="#" onClick={handleResetClick}>
           {t("reset")}
         </a>
