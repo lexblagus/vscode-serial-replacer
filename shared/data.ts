@@ -51,7 +51,12 @@ export const initialReplacement: () => SerialReplacement = () => ({
 });
 
 export const emptyPersistentData: () => PersistentData = () => ({
-  replacementParameters: emptyReplacementParameters(),
+  replacementParameters: {
+    ...emptyReplacementParameters(),
+    steps: [
+      emptyStep()
+    ]
+  },
   history: emptyHistory(),
 });
 

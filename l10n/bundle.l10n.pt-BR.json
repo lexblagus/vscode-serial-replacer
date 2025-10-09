@@ -6,6 +6,7 @@
   "sidebar": "barra lateral",
   "tab": "aba",
   "panel": "painel",
+  "initialized": "inicializado",
 
   "files to include": "arquivos a serem incluídos",
   "files to exclude": "arquivos a serem excluídos",

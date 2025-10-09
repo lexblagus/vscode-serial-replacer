@@ -1,91 +1,38 @@
 # Serial Replacer
 
-> Visual Studio Code extension that provides a powerful find-and-replace solution. It allows you to perform consecutive replacements by defining steps with search patterns — either regular expressions or plain text — and substitution text. It works across open editors, multiple folders, or entire workspaces.
+> Visual Studio Code extension that provides apowerful  **find-and-replace** solution. It allows you to perform **consecutive replacements** by defining **steps with search patterns** — either regular expressions or plain text — and substitution text. You can filter the target files by inclusion and exclusion **filters** and a file tree to **preview** the changes. It works across open editors, multiple folders, or entire workspaces.
 
-![screenshot](./docs/screenshot.svg)
+![screenshot](./images/screenshot.png)
 
 ## Features
 
-- File filters
-  - Files to include (using patterns)
-  - Files to exclude (using patterns)
-
-- Multiple steps
-  - Add step above and below
-  - Move steps up and down
+- Replacement steps
+  - Add above and below
+  - Change order up and down
   - Disable and delete
-  - Rename step title
-  - Find/replace textarea wordwrap
-
+  - Rename description
+  - Word wrap
 - Find
-  - Use regular expression
+  - Use regular expression or plain text
   - Case sensitive
+- Files
+  - Files to include (using glob patterns)
+  - Files to exclude (using glob patterns)
+  - Use current open editors or current workspace
   - Preview file tree
-
 - Internationalization
-  - Brazilian Portuguese
+  - Also available in Brazilian Portuguese
 
-## Roadmap
-
-- ***Main development***
-	- **Webview** (frontend)
-	  - ☑ UI (React)
-	  - ☑ Icons
-	  - ☑ File tree with actions
-	  - ☑ Semi-persistent data (e.g.: when change panels)
-	  - ☑ Better log (replace console, use config for levels)
-	- **Extension** (backend)
-	  - ☑ Bi-direction communication
-	    - ☑ From webview to extension
-	      - ☑ file filters
-	    - ☑ From extension to webview
-	      - ☑ file tree
-	  - ☑ Make replacement
-	  - ☑ Settings
-	  - ☐ Commands
-	  - ☐ About
-	- **Integrated** (frontend + backend)
-	  - ☑ Get files and folders
-	  - ☑ Rename step
-	  - ☑ Preview
-	    - ☑ Tree
-	    - ☑ Count badges
-	    - ☑ Open
-	  - ☑ Shared libs
-	  - ☑ Shared types
-	  - ☑ Data persistance on reload
-	  - ☑ Up/down keys for field history
-	- ☐ **Tests**
-	  - ☐ Unitary
-	  - ☐ E2E
-	- ☐ **Docs**
-	  - ☐ Final screenshot (animated)
-	  - ☐ Tutorial and features
-	- ☐ **Publish**
-	  - ☐ Code review
-	  - ☐ Encapsulate
-	  - ☐ Metrics?
-	  - ☐ …
-- ***Bugs/improvements***
-	- ☐ Merge all 4 historic fields (include, exclude, find &amp; replace) into one?
-	- ☐ Too many renderings! Use a state management? Split providers?
-	- ☐ Performance when working with a large set of files
-	- ☐ Performance when using field history
-	- ☑ Preview: opens tabs without asking while changing find & replace. Must refactor good part of serialReplacer.ts
-	- ☑ files to include/exclude hangs (because of the controlled component)
-	- ☑ when moving panels loses context (like file filters)
-	- ☑ Multiline does not work; does it make sense? remove it?
-	- ☑ Preview is not always updated (requires refresh sometimes)
-	- ☑ Eval inputs that still need debouce (like find and replace fields)
-- ***Future***
-  - ☐ Sets: data persistance (save/load/rename)
-  - ☑ Replacements preview (using treeview, panels and diff)
-  - ☑ Multiple instances (panels)
 
 ## More info
 
-[Visual Studio Marketplace]()
+- [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=blagus.serial-replacer) extension homepage (for instalation)
+- [Github](https://github.com/lexblagus/vscode-serial-replacer) source code
 
-[Github](https://github.com/lexblagus/vscode-serial-replacer)
-					
-By [Lexa Blagus](https://blag.us/) initiated in April 21st 2025
+Made with ♥ by [Lexa Blagus](https://blag.us/)
+
+## Legal
+
+This project is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](./LICENSE.txt). You are free to share and adapt this project **non-commercially**, as long as you **give appropriate credit to *Lexa Blagus \<https://blag.us\>*** and **distribute your contributions under the same license**.
+
+This extension uses visual elements derived from [Microsoft Codicons](https://github.com/microsoft/vscode-codicons), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

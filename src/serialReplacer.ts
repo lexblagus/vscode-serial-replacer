@@ -45,7 +45,7 @@ export class SerialReplacer {
 
     this._outputChannel = window.createOutputChannel(`${t("Serial Replacer")}: ${tag}`, "log");
     this._getConfig();
-    this._log(LogLevel.info, `Serial Replacer ${tag} initialized`, true);
+    this._log(LogLevel.info, `${t("Serial Replacer")}: ${tag} ${t("initialized")}`, true);
     this._logConfig();
     this._logStates();
   }
@@ -673,7 +673,7 @@ export class SerialReplacer {
       case "OPEN_SETTINGS": {
         commands.executeCommand(
           "workbench.action.openSettings",
-          "@ext:lexa-blagus.serial-replacer"
+          "@ext:blagus.serial-replacer"
         );
         return;
       }

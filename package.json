@@ -1,15 +1,17 @@
 {
   "name": "serial-replacer",
-  "publisher": "lexa-blagus",
+  "publisher": "blagus",
   "displayName": "Serial Replacer",
   "description": "Visual Studio extension for consecutive find-and-replace in a single or multiple files",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.100.0"
   },
   "categories": [
     "Other"
   ],
+  "repository": "ttps://github.com/lexblagus/vscode-serial-replacer",
+  "license": "CC-BY-NC-SA-4.0",
   "main": "./out/extension.js",
   "contributes": {
     "views": {
