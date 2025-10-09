@@ -7,12 +7,15 @@ import type { FC } from "react";
 import type { LinkMouseEventHandler } from "../types/events";
 
 export const Footer: FC = () => {
-  log('component', "Footer", 'log', 'rendered');
+  log("component", "Footer", "log", "rendered");
 
-  const { state: { loaded }, dispatch } = useAppContext();
+  const {
+    state: { loaded },
+    dispatch,
+  } = useAppContext();
 
   const handleSettingsClick: LinkMouseEventHandler = (event) => {
-    log('handler', "handleAboutClick", 'log');
+    log("handler", "handleAboutClick", "log");
 
     event.preventDefault();
     vscode.postMessage({
@@ -21,19 +24,12 @@ export const Footer: FC = () => {
   };
 
   const handleResetClick: LinkMouseEventHandler = (event) => {
-    log('handler', "handleResetClick", 'log');
+    log("handler", "handleResetClick", "log");
 
     event.preventDefault();
     vscode.postMessage({
       command: "CONFIRM_RESET",
     });
-  };
-
-  const handleAboutClick: LinkMouseEventHandler = (event) => {
-    log('handler', "handleAboutClick", 'log');
-
-    event.preventDefault();
-    // TODO: about
   };
 
   return (
@@ -44,9 +40,6 @@ export const Footer: FC = () => {
         </a>
         <a href="#" onClick={handleResetClick}>
           {t("reset")}
-        </a>
-        <a href="#" onClick={handleAboutClick}>
-          {t("about…")}
         </a>
       </div>
     </footer>

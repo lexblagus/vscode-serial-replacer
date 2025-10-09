@@ -3,7 +3,7 @@
   "publisher": "blagus",
   "displayName": "Serial Replacer",
   "description": "Visual Studio extension for consecutive find-and-replace in a single or multiple files",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.100.0"

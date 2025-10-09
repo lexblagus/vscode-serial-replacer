@@ -1,4 +1,5 @@
 import { Config } from "./config";
+import type { Uri } from "vscode";
 import type {
   FilePath,
   PersistentData,
@@ -43,7 +44,8 @@ export type WebviewMessage =
     }
   | {
       command: "OPEN_SETTINGS";
-    }  | {
+    }
+  | {
       command: "CONFIRM_RESET";
     };
 

@@ -1,4 +1,14 @@
-import { l10n, TabInputText, Uri, window, workspace, WorkspaceEdit, Range, commands } from "vscode";
+import {
+  l10n,
+  TabInputText,
+  Uri,
+  window,
+  workspace,
+  WorkspaceEdit,
+  Range,
+  commands,
+  env,
+} from "vscode";
 import { basename, join } from "path";
 import { filterFileByLists, splitOutsideCurlyBraces } from "./aux";
 import { getStats } from "shared/common";
@@ -671,10 +681,7 @@ export class SerialReplacer {
       }
 
       case "OPEN_SETTINGS": {
-        commands.executeCommand(
-          "workbench.action.openSettings",
-          "@ext:blagus.serial-replacer"
-        );
+        commands.executeCommand("workbench.action.openSettings", "@ext:blagus.serial-replacer");
         return;
       }
 
