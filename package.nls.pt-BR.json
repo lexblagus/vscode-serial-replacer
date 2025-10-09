@@ -1,5 +1,32 @@
 {
-	"views.editor.name": "Editor",
-	"containers.activitybar.title": "Substituidor Serial",
-	"commands.newPanel": "Substituidor Serial: Novo Painel"
+  "SerialReplacer": "Substituidor Serial",
+
+	"views.serialReplacerEditorView.name": "Editor",
+
+  "commands.newPanel.title": "Substituidor Serial: Novo Painel",
+
+  "configuration.logOutputPanel.LogLevel.title": "Log do painel Saída: Nível",
+  "configuration.logOutputPanel.maximumMessageLength.title": "Log do painel Saída: tamanho máximo da mensagem",
+  "configuration.fileFilters.micromatchOptions.title": "Filtros de arquivos: opções do micromatch",
+  "configuration.fields.historyLimit.title": "Campos: limite do histórico",
+  "configuration.fields.keystrokeDebounceDelay.title": "Campos: atraso de frequência de digitação",
+  "configuration.fileTree.expandRecursivellyMaximumSize.title": "Árvore de arquivos: tamanho máximo da expansão recursiva",
+  "configuration.devTools.logEnabled.title": "Ferramentas do desenvolvedor: log habilitado",
+  "configuration.devTools.logFilter.title": "Ferramentas do desenvolvedor: filtro de log",
+
+  "configuration.logOutputPanel.LogLevel.mdDescription": "Nível de log para o painel Saída",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.silent": "silencioso",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.fatal": "fatal",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.error": "erro",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.warn": "aviso",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.info": "informação",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.debug": "depuração",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.trace": "rastreamento",
+  "configuration.logOutputPanel.maximumMessageLength.mdDescription": "Tamanho máximo da mensagem por linha",
+  "configuration.fileFilters.micromatchOptions.mdDescription": "Micromatch é a biblioteca usada no padrão de arquivos à incluir/excluir nos respectivos campos e na busca interna da árvore de pré-visualização. Isso lhe dá controle fino sobre o motor de configuração. Link para a [documentatação](https://github.com/micromatch/micromatch?tab=readme-ov-file#options)",
+  "configuration.fields.historyLimit.mdDescription": "Limite de histórico das teclas acima e abaixo \u21C5 nos campos",
+  "configuration.fields.keystrokeDebounceDelay.mdDescription": "Limita a execução das ações do pressionamento de teclas em coisas como lista de arquivos. Valor em milisegundos.",
+  "configuration.fileTree.expandRecursivellyMaximumSize.mdDescription": "Tamanho máximo de itens da árvore de visualização que pode ser expandido recursivamente",
+  "configuration.devTools.logEnabled.mdDescription": "Log do console das ferramentas de desenvolvedor da visão web",
+  "configuration.devTools.logFilter.mdDescription": "Filtro de log do console das ferramentas de desenvolvedor da visão web. Voc6e pode filtrar permitindo ou negando certos elementos. Exemplo:\n\n```\n{\n  \"allow\": [\n    { \"level\": \"info\" },\n    { \"tag\": \"component\", \"title\": \"AppProvider\" },\n    { \"level\": \"info\", \"tag\": \"component\", \"title\": \"AppProvider\" }\n  ],\n  \"deny\": [\n    { \"tag\": \"utils\" }\n  ]\n}\n```"
 }

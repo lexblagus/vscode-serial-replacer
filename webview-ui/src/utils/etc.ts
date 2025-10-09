@@ -1,5 +1,6 @@
 import type { CombineSequentialReducers } from "../types/reducers";
 import type { VscodeTextareaConstructor, VscodeTextfieldConstructor } from "../types/dependencies";
+import type { Config } from "../../../shared/config";
 
 export const text: Record<string, string> = {
   "sample-file-pattern": "*.ts, src/**/file",
@@ -113,4 +114,26 @@ export const retrieveIndexHistory = (
   }
 
   return calculatedIndex;
+};
+
+const preloadConfigDataId  = 'preload-config-data';
+
+export const getPreloadConfig = () => {
+  try {
+    const dataEl = document.getElementById(preloadConfigDataId);
+    const jsonText = dataEl.innerText;
+    const parsedData: Config = JSON.parse(jsonText);
+    return parsedData;
+  } catch (err) {
+    console.error(`Failed to parse JSON from <script id="${preloadConfigDataId}">:`, err);
+  }
+};
+
+export const setPreloadConfig = (config: Config) => {
+  try {
+    const dataEl = document.getElementById(preloadConfigDataId);
+    dataEl.innerText = JSON.stringify(config);
+  } catch (err) {
+    console.error(`Failed to write data into <script id="${preloadConfigDataId}">:`, err);
+  }
 };

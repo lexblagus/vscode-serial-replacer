@@ -1,8 +1,9 @@
-import { Uri, Webview } from "vscode";
+import { Uri, Webview, workspace } from "vscode";
 import { existsSync } from "fs";
 import { basename, dirname, extname, join } from "path";
 import { isMatch } from "micromatch";
-import config from "./config.json";
+
+import type { Options as MicromatchOptions } from "micromatch";
 
 /**
  * A helper function that returns a unique alphanumeric identifier called a nonce.
@@ -56,20 +57,24 @@ export function safeStringify(obj: any) {
 export function filterFileByLists(
   filePath: string,
   includeFilesList: string[],
-  excludeFilesList: string[]
+  excludeFilesList: string[],
+  micromatchOptions: MicromatchOptions = {
+    dot: true,
+    nocase: true,
+  }
 ): string | undefined {
   if (!existsSync(filePath)) {
     return;
   }
 
   if (includeFilesList.length > 0) {
-    if (!isMatch(filePath, includeFilesList, config.micromatchOptions)) {
+    if (!isMatch(filePath, includeFilesList, micromatchOptions)) {
       return;
     }
   }
 
   if (excludeFilesList.length > 0) {
-    if (isMatch(filePath, excludeFilesList, config.micromatchOptions)) {
+    if (isMatch(filePath, excludeFilesList, micromatchOptions)) {
       return;
     }
   }
@@ -127,11 +132,7 @@ export const deepMerge = <T extends AnyObject, U extends AnyObject>(
     const srcVal = source[key];
     const tgtVal = target[key];
 
-    if (
-      srcVal &&
-      typeof srcVal === "object" &&
-      !Array.isArray(srcVal)
-    ) {
+    if (srcVal && typeof srcVal === "object" && !Array.isArray(srcVal)) {
       if (!tgtVal || typeof tgtVal !== "object") {
         (target as any)[key] = {};
       }

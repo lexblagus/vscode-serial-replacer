@@ -1,5 +1,6 @@
-import { l10n, Uri, Webview } from "vscode";
+import { l10n, Uri, Webview, workspace } from "vscode";
 import { getUri, getNonce } from "./aux";
+import { Config } from "shared/config";
 
 const { bundle, uri } = l10n;
 
@@ -26,7 +27,9 @@ export function getWebviewContent(webview: Webview, extensionUri: Uri, title: St
     .map((pair) => pair.join(" "))
     .join("; ");
 
-  // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
+  const preloadConfigData = workspace.getConfiguration("serialReplacerConfig") as unknown as Config;
+
+  // Hint: Install the es6-string-html VS Code extension to enable code highlighting below
   return /*html*/ `
       <!DOCTYPE html>
       <html lang="en">
@@ -50,6 +53,7 @@ export function getWebviewContent(webview: Webview, extensionUri: Uri, title: St
         <script nonce="${nonce}">
           window.i10nBundle = ${JSON.stringify(bundle)};
         </script>
+        <script id="preload-config-data" type="application/json">${JSON.stringify(preloadConfigData)}</script>
         </body>
       </html>
     `;

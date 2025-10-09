@@ -1,5 +1,32 @@
 {
-	"views.editor.name": "Editor",
-	"containers.activitybar.title": "Serial Replacer",
-	"commands.newPanel": "Serial Replacer: New Panel"
+	"SerialReplacer": "Serial Replacer",
+
+  "views.serialReplacerEditorView.name": "Editor",
+
+  "commands.newPanel.title": "Serial Replacer: New Panel",
+
+  "configuration.logOutputPanel.LogLevel.title": "Log output panel: log level",
+  "configuration.logOutputPanel.maximumMessageLength.title": "Log output panel: maximum message length",
+  "configuration.fileFilters.micromatchOptions.title": "File filters: micromatch options",
+  "configuration.fields.historyLimit.title": "Fields: history limit",
+  "configuration.fields.keystrokeDebounceDelay.title": "Fields: keystroke debounce delay",
+  "configuration.fileTree.expandRecursivellyMaximumSize.title": "File tree: expand recursivelly maximum size",
+  "configuration.devTools.logEnabled.title": "Dev tools: log enabled",
+  "configuration.devTools.logFilter.title": "Dev tools: log filter",
+
+  "configuration.logOutputPanel.LogLevel.mdDescription": "Log level of the output panel",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.silent": "silent",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.fatal": "fatal",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.error": "error",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.warn": "warn",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.info": "info",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.debug": "debug",
+  "configuration.logOutputPanel.LogLevel.enumDescriptions.trace": "trace",
+  "configuration.logOutputPanel.maximumMessageLength.mdDescription": "Maximum size of the message per line",
+  "configuration.fileFilters.micromatchOptions.mdDescription": "Micromatch is the library used for include/exclude file patterns in fields and in the internal preview tree search. It gives you fine-grained control over the engine configuration. Link to the [documentation](https://github.com/micromatch/micromatch?tab=readme-ov-file#options)",
+  "configuration.fields.historyLimit.mdDescription": "Arrow keys up and down \u21C5 history limit on fields",
+  "configuration.fields.keystrokeDebounceDelay.mdDescription": "Limit how often a key press can be executed in textfields that executes something like file search. Value in milliseconds.",
+  "configuration.fileTree.expandRecursivellyMaximumSize.mdDescription": "Maximum size of preview file tree that can be expanded recursivelly",
+  "configuration.devTools.logEnabled.mdDescription": "Developer Tools at extension webview console log",
+  "configuration.devTools.logFilter.mdDescription": "Developer Tools at extension webview log filter. You can filter by allowing or denying certain elements. Example:\n\n```\n{\n  \"allow\": [\n    { \"level\": \"info\" },\n    { \"tag\": \"component\", \"title\": \"AppProvider\" },\n    { \"level\": \"info\", \"tag\": \"component\", \"title\": \"AppProvider\" }\n  ],\n  \"deny\": [\n    { \"tag\": \"utils\" }\n  ]\n}\n```"
 }

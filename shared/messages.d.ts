@@ -1,3 +1,4 @@
+import { Config } from "./config";
 import type {
   FilePath,
   PersistentData,
@@ -48,6 +49,10 @@ export type ExtensionMessage =
   | { type: "SET_WORKSPACES_FILES"; payload: WorkspacesAndFiles }
   | { type: "SET_PREVIEW"; payload: ReplacementResults }
   | { type: "SET_PERSISTED_DATA"; payload: PersistentData }
+  | {
+      type: "SET_PRELOAD_CONFIG";
+      payload: Config;
+    }
   | {
       type: "COMMIT_RENAME";
       payload: {

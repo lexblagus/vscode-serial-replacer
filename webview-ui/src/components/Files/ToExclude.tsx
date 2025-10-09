@@ -4,14 +4,17 @@ import { t } from "@vscode/l10n";
 import ExcludeSettingsAndIgnoreFiles from "./ExcludeSettingsAndIgnoreFiles";
 import { useAppContext } from "../../context";
 import { debounce, detectNavigationDirection, retrieveIndexHistory, text } from "../../utils/etc";
-import config from "../../config.json";
 import { log } from "../../utils/log";
+import { getPreloadConfig } from "../../utils/etc";
+
 
 import type { FC } from "react";
 import type { VscodeTextfieldConstructor } from "../../types/dependencies";
 
 const ToExclude: FC = () => {
   log("component", "ToExclude", "log", "rendered");
+
+  const config = getPreloadConfig();
 
   const {
     state: {
@@ -151,7 +154,7 @@ const ToExclude: FC = () => {
       }
 
       insertNewFieldValue();
-    }, config.debounceDelay);
+    }, config.fields.keystrokeDebounceDelay);
 
     const handleChange = (_event: KeyboardEvent) => {
       log("handler", "handleChange", "log");

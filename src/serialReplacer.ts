@@ -1,23 +1,11 @@
-import {
-  Disposable,
-  ExtensionContext,
-  l10n,
-  OutputChannel,
-  TabInputText,
-  Uri,
-  Webview,
-  window,
-  workspace,
-  WorkspaceEdit,
-  Range,
-  commands,
-} from "vscode";
+import { l10n, TabInputText, Uri, window, workspace, WorkspaceEdit, Range, commands } from "vscode";
 import { basename, join } from "path";
 import { filterFileByLists, splitOutsideCurlyBraces } from "./aux";
 import { getStats } from "shared/common";
 import { emptyPersistentData, emptyReplacementParameters } from "shared/data";
-import config from "./config.json";
+import { LogLevel } from "shared/config";
 
+import type { Disposable, ExtensionContext, OutputChannel, Webview } from "vscode";
 import type { WebviewMessage, ExtensionMessage } from "shared/messages";
 import type {
   WorkspacesAndFiles,
@@ -27,20 +15,9 @@ import type {
   PersistentData,
   PersistentHistory,
 } from "shared/replacements";
+import type { Config } from "shared/config";
 
 const { t, bundle } = l10n;
-
-enum LogLevel {
-  silent = 0,
-  fatal = 1,
-  error = 2,
-  warn = 3,
-  info = 4,
-  debug = 5,
-  trace = 6,
-}
-
-type LogLevels = keyof typeof LogLevel;
 
 const s = "  "; // log space indent
 
@@ -56,6 +33,7 @@ export class SerialReplacer {
   private _replacementResults: ReplacementResults = {};
   private _subscriptions: Disposable[] = [];
   private _openDiffs: Map<string, { left: Uri; right: Uri }> = new Map();
+  private _configuration: Config = null; // original type WorkspaceConfiguration
 
   constructor(
     private readonly extensionContext: ExtensionContext,
@@ -64,15 +42,18 @@ export class SerialReplacer {
   ) {
     this._context = extensionContext;
     this._webview = webview;
+
     this._outputChannel = window.createOutputChannel(`${t("Serial Replacer")}: ${tag}`, "log");
-
-    this._log(LogLevel.info, `Serial Replacer ${tag} initialized`);
-
+    this._getConfig();
+    this._log(LogLevel.info, `Serial Replacer ${tag} initialized`, true);
+    this._logConfig();
     this._logStates();
   }
 
   private _log(level: LogLevel, message: string, force = false) {
-    const preferenceLevel = LogLevel[config.extensionLogLevel as LogLevels];
+    const logOutputPanel = this._configuration.logOutputPanel;
+
+    const preferenceLevel = LogLevel[logOutputPanel.LogLevel];
     if (!force && (preferenceLevel < level || preferenceLevel === LogLevel.silent || level === 0)) {
       return;
     }
@@ -81,7 +62,7 @@ export class SerialReplacer {
       `${prefix}[${new Date().toISOString()}] ${LogLevel[level].toUpperCase()} ${((msg, maxSize) =>
         msg.length > maxSize ? `${msg.slice(0, maxSize)}… (truncated)` : msg)(
         message,
-        config.maxLogMessageSize
+        logOutputPanel.maximumMessageLength
       )}`
     );
   }
@@ -106,6 +87,14 @@ export class SerialReplacer {
         ),
       })}`
     );
+  }
+
+  private _getConfig() {
+    this._configuration = workspace.getConfiguration("serialReplacerConfig") as unknown as Config;
+  }
+
+  private _logConfig(force = false) {
+    this._log(LogLevel.debug, `this._configuration=${JSON.stringify(this._configuration)}`, force);
   }
 
   private _getReplacements() {
@@ -334,7 +323,8 @@ export class SerialReplacer {
             const currentFilePath = filterFileByLists(
               tab.input.uri.fsPath,
               includeFilesList,
-              excludeFilesList
+              excludeFilesList,
+              this._configuration.fileFilters.micromatchOptions
             );
             if (!currentFilePath) {
               continue;
@@ -351,7 +341,8 @@ export class SerialReplacer {
         const currentFilePath = filterFileByLists(
           workspaceFile.fsPath,
           includeFilesList,
-          excludeFilesList
+          excludeFilesList,
+          this._configuration.fileFilters.micromatchOptions
         );
         if (!currentFilePath) {
           continue;
@@ -560,12 +551,23 @@ export class SerialReplacer {
 
     this.dispose();
 
+    const configListener = (scope: string) => () => {
+      this._log(LogLevel.debug, `Configuration listener: scope=${JSON.stringify(scope)}`);
+      this._getConfig();
+      this._logConfig();
+      this.postMessage({
+        type: "SET_PRELOAD_CONFIG",
+        payload: this._configuration,
+      });
+    };
+
     const subscriptionListener = (scope: string) => () => {
       this._log(LogLevel.debug, `Subscription listener: scope=${JSON.stringify(scope)}`);
       this._setFiles();
     };
 
     this._subscriptions.push(
+      workspace.onDidChangeConfiguration(configListener("workspace.onDidChangeConfiguration")),
       workspace.onDidChangeConfiguration(
         subscriptionListener("workspace.onDidChangeConfiguration")
       ),

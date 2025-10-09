@@ -4,14 +4,16 @@ import { t } from "@vscode/l10n";
 import ReplaceActions from "./ReplaceActions";
 import { useAppContext } from "../../context";
 import { debounce, detectNavigationDirection, retrieveIndexHistory, text } from "../../utils/etc";
-import config from "../../config.json";
 import { log } from "../../utils/log";
+import { getPreloadConfig } from "../../utils/etc";
 
 import type { FC } from "react";
 import type { VscodeTextareaConstructor } from "../../types/dependencies";
 
 const Replace: FC<{ index: number }> = ({ index }) => {
   log("component", "Replace", "log", "rendered");
+
+  const config = getPreloadConfig();
 
   const {
     state: {
@@ -171,7 +173,7 @@ const Replace: FC<{ index: number }> = ({ index }) => {
       }
 
       insertNewFieldValue();
-    }, config.debounceDelay);
+    }, config.fields.keystrokeDebounceDelay);
 
     const handleChange = (_event: KeyboardEvent) => {
       log("handler", "handleChange", "log");
@@ -195,6 +197,7 @@ const Replace: FC<{ index: number }> = ({ index }) => {
     direction,
     insertNewFieldValue,
     updateFieldFromHistory,
+    config,
   ]);
 
   useEffect(() => {

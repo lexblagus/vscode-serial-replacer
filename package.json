@@ -16,7 +16,7 @@
       "serialReplacerEditorView": [
         {
           "id": "serialReplacer.editorView",
-          "name": "%views.editor.name%",
+          "name": "%views.serialReplacerEditorView.name%",
           "type": "webview",
           "icon": "$(replace-all)"
         }
@@ -26,7 +26,7 @@
       "activitybar": [
         {
           "id": "serialReplacerEditorView",
-          "title": "%containers.activitybar.title%",
+          "title": "%SerialReplacer%",
           "icon": "$(replace-all)"
         }
       ]
@@ -34,9 +34,112 @@
     "commands": [
       {
         "command": "serial-replacer.newPanel",
-        "title": "%commands.newPanel%"
+        "title": "%commands.newPanel.title%"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "%SerialReplacer%",
+      "type": "object",
+      "properties": {
+        "serialReplacerConfig.logOutputPanel.LogLevel": {
+          "title": "%configuration.logOutputPanel.LogLevel.title%",
+          "markdownDescription": "%configuration.logOutputPanel.LogLevel.mdDescription%",
+          "order": 10,
+          "type": "string",
+          "default": "info",
+          "enum": [
+            "silent",
+            "fatal",
+            "error",
+            "warn",
+            "info",
+            "debug",
+            "trace"
+          ],
+          "enumDescriptions": [
+            "%configuration.logOutputPanel.LogLevel.enumDescriptions.silent%",
+            "%configuration.logOutputPanel.LogLevel.enumDescriptions.fatal%",
+            "%configuration.logOutputPanel.LogLevel.enumDescriptions.error%",
+            "%configuration.logOutputPanel.LogLevel.enumDescriptions.warn%",
+            "%configuration.logOutputPanel.LogLevel.enumDescriptions.info%",
+            "%configuration.logOutputPanel.LogLevel.enumDescriptions.debug%",
+            "%configuration.logOutputPanel.LogLevel.enumDescriptions.trace%"
+          ]
+        },
+        "serialReplacerConfig.logOutputPanel.maximumMessageLength": {
+          "title": "%configuration.logOutputPanel.maximumMessageLength.title%",
+          "markdownDescription": "%configuration.logOutputPanel.maximumMessageLength.mdDescription%",
+          "order": 20,
+          "type": "integer",
+          "default": 1073741822,
+          "minimum": 0
+        },
+        "serialReplacerConfig.fileFilters.micromatchOptions": {
+          "title": "%configuration.fileFilters.micromatchOptions.title%",
+          "markdownDescription": "%configuration.fileFilters.micromatchOptions.mdDescription%",
+          "order": 30,
+          "type": "object",
+          "default": {
+            "dot": true,
+            "nocase": true
+          }
+        },
+        "serialReplacerConfig.fields.historyLimit": {
+          "title": "%configuration.fields.historyLimit.title%",
+          "markdownDescription": "%configuration.fields.historyLimit.mdDescription%",
+          "order": 40,
+          "type": "integer",
+          "minimum": 1,
+          "default": 25
+        },
+        "serialReplacerConfig.fields.keystrokeDebounceDelay": {
+          "title": "%configuration.fields.keystrokeDebounceDelay.title%",
+          "markdownDescription": "%configuration.fields.keystrokeDebounceDelay.mdDescription%",
+          "order": 50,
+          "type": "integer",
+          "default": 325
+        },
+        "serialReplacerConfig.fileTree.expandRecursivellyMaximumSize": {
+          "title": "%configuration.fileTree.expandRecursivellyMaximumSize.title%",
+          "markdownDescription": "%configuration.fileTree.expandRecursivellyMaximumSize.mdDescription%",
+          "order": 60,
+          "type": "integer",
+          "minimum": 2,
+          "default": 10000
+        },
+        "serialReplacerConfig.devTools.logEnabled": {
+          "title": "%configuration.devTools.logEnabled.title%",
+          "markdownDescription": "%configuration.devTools.logEnabled.mdDescription%",
+          "order": 70,
+          "type": "boolean",
+          "default": true
+        },
+        "serialReplacerConfig.devTools.logFilter": {
+          "title": "%configuration.devTools.logFilter.title%",
+          "markdownDescription": "%configuration.devTools.logFilter.mdDescription%",
+          "order": 80,
+          "type": "object",
+          "default": {
+            "allow": [],
+            "deny": [
+              {
+                "title": "useAppContext"
+              },
+              {
+                "level": "log",
+                "tag": "hook",
+                "title": "useBackendMessages"
+              },
+              {
+                "level": "log",
+                "tag": "hook",
+                "title": "useStateRefSync"
+              }
+            ]
+          }
+        }
+      }
+    }
   },
   "l10n": "./l10n",
   "scripts": {

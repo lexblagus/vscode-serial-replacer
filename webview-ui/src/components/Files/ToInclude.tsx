@@ -4,14 +4,16 @@ import { t } from "@vscode/l10n";
 import CurrentEditors from "./CurrentEditors";
 import { useAppContext } from "../../context";
 import { debounce, detectNavigationDirection, retrieveIndexHistory, text } from "../../utils/etc";
-import config from "../../config.json";
 import { log } from "../../utils/log";
+import { getPreloadConfig } from "../../utils/etc";
 
 import type { FC } from "react";
 import type { VscodeTextfieldConstructor } from "../../types/dependencies";
 
 const ToInclude: FC = () => {
   log("component", "ToInclude", "log", "rendered");
+
+  const config = getPreloadConfig();
 
   const {
     state: {
@@ -151,7 +153,7 @@ const ToInclude: FC = () => {
       }
 
       insertNewFieldValue();
-    }, config.debounceDelay);
+    }, config.fields.keystrokeDebounceDelay);
 
     const handleChange = (_event: KeyboardEvent) => {
       log("handler", "handleChange", "log");

@@ -9,14 +9,16 @@ import { t } from "@vscode/l10n";
 import FindActions from "./FindActions";
 import { useAppContext } from "../../context";
 import { debounce, detectNavigationDirection, retrieveIndexHistory, text } from "../../utils/etc";
-import config from "../../config.json";
 import { log } from "../../utils/log";
+import { getPreloadConfig } from "../../utils/etc";
 
 import type { FC } from "react";
 import type { VscodeTextareaConstructor } from "../../types/dependencies";
 
 const Find: FC<{ index: number }> = ({ index }) => {
   log("component", "Find", "log", "rendered");
+
+  const config = getPreloadConfig();
 
   const {
     state: {
@@ -178,7 +180,7 @@ const Find: FC<{ index: number }> = ({ index }) => {
       }
 
       insertNewFieldValue();
-    }, config.debounceDelay);
+    }, config.fields.keystrokeDebounceDelay);
 
     const handleChange = (_event: KeyboardEvent) => {
       log("handler", "handleChange", "log");
@@ -194,15 +196,7 @@ const Find: FC<{ index: number }> = ({ index }) => {
       textfield.removeEventListener("keyup", handleKeyUp);
       textfield.removeEventListener("change", handleChange);
     };
-  }, [
-    fieldRef,
-    fieldValue,
-    history,
-    indexHistory,
-    direction,
-    insertNewFieldValue,
-    updateFieldFromHistory,
-  ]);
+  }, [fieldRef, fieldValue, history, indexHistory, direction, insertNewFieldValue, config]);
 
   useEffect(() => {
     log("effect", "Find", "log", "Set word wrap");

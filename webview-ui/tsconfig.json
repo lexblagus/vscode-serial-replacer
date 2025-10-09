@@ -12,6 +12,7 @@
     "jsx": "react-jsx",
     "useDefineForClassFields": true,
     "allowJs": false,
+    "declaration": true,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,

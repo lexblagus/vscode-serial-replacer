@@ -1,10 +1,12 @@
 import { setTreeItemOpen, setTreePreview } from "../utils/tree";
-import config from "../config.json";
+import { getPreloadConfig } from "../utils/etc";
 
 import type { WebviewState } from "../../../shared/replacements";
 import type { AppAction } from "../types/actions";
 
 export function fileFilterReducer(state: WebviewState, action: AppAction): WebviewState {
+  const expandRecursivellyMaximumSize = getPreloadConfig().fileTree.expandRecursivellyMaximumSize;
+
   switch (action.type) {
     case "SET_FILES_TO_INCLUDE": {
       return {
@@ -86,7 +88,7 @@ export function fileFilterReducer(state: WebviewState, action: AppAction): Webvi
             state.loaded.results,
             action.payload.path,
             !action.payload.open,
-            state.loaded.resultsTotalFiles <= config.maxRecursivellyExpandTree
+            state.loaded.resultsTotalFiles <= expandRecursivellyMaximumSize
           ),
         },
       };

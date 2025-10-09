@@ -1,9 +1,12 @@
 import { emptyWebviewState } from "../../../shared/data";
+import { getPreloadConfig } from "../utils/etc";
 
 import type { WebviewState } from "../../../shared/replacements";
 import type { AppAction } from "../types/actions";
 
 export function stepReplaceReducer(state: WebviewState, action: AppAction): WebviewState {
+  const historyLimit = getPreloadConfig().fields.historyLimit;
+
   switch (action.type) {
     case "RESET": {
       return emptyWebviewState();
@@ -25,10 +28,12 @@ export function stepReplaceReducer(state: WebviewState, action: AppAction): Webv
         ...state,
         fieldHistory: {
           ...state.fieldHistory,
-          [field]:
-            history[0] === ""
-              ? [value, ...history.slice(1)] // replace empty first
-              : [value, ...history], // append normally
+          [field]: (history[0] === ""
+            ? // replace empty first
+              [value, ...history.slice(1)]
+            : // append normally
+              [value, ...history]
+          ).slice(0, historyLimit),
         },
       };
     }

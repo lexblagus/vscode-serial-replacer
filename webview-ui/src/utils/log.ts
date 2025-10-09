@@ -39,33 +39,9 @@ import {
   reset,
   bgGray,
 } from "ansis";
-import config from "../config.json";
+import { getPreloadConfig } from "./etc";
 
-import type { ConsoleArguments, FilterConfig, Level, Tag } from "../types/log";
-
-const enabled = config.log.enabled;
-
-/*
-  filter config examples:
-  {
-    allow: [
-      // {level: 'info'},
-      // {tag: 'e2e/app'},
-      // {title: 'flatCommands'},
-    ],
-    deny: [
-      // {level: 'info', tag: 'hook', title: 'useApp'},
-      // {title: 'useAppContext'},
-      // {level: 'log', tag: 'hook', title: 'useBackendMessages'},
-      // {level: 'log', tag: 'hook', title: 'useStateRefSync'},
-    ],
-  }
-*/
-export const filterConfig: FilterConfig = config.log.filters as FilterConfig;
-
-let tagMaxLen = 0,
-  titleMaxLen = 0,
-  levelMaxLen = 0;
+import type { ConsoleArguments, FilterConfig, Level, Tag } from "../../../shared/log";
 
 export const formatLevel: Record<Level, (x: string) => string> = {
   debug: (s) => bgGray.black(s),
@@ -100,6 +76,31 @@ Free text indication a condition is met or, a proccess continuity etc., usually 
 log('tag', 'MethodName', 'debug', `parameters={JSON.stringify({requestParameters, responseData})}`);
 */
 export const log = (tag: Tag, title: string, level: Level, ...args: ConsoleArguments) => {
+  const config = getPreloadConfig();
+
+  const enabled = config.devTools.logEnabled;
+
+  /*
+    filter config examples:
+    {
+      allow: [
+        {level: 'info'},
+        {tag: 'component', title: 'AppProvider'},
+        {level: 'info', tag: 'component', title: 'AppProvider'},
+      ],
+      deny: [
+        {level: 'info'},
+        {tag: 'component', title: 'AppProvider'},
+        {level: 'info', tag: 'component', title: 'AppProvider'},
+      ],
+    }
+  */
+  const filterConfig = config.devTools.logFilter;
+
+  let tagMaxLen = 0,
+    titleMaxLen = 0,
+    levelMaxLen = 0;
+
   if (!enabled) {
     return;
   }
