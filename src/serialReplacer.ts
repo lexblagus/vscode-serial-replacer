@@ -10,7 +10,7 @@ import {
   env,
 } from "vscode";
 import { basename, join } from "path";
-import { filterFileByLists, splitOutsideCurlyBraces } from "./aux";
+import { filterFileByLists, splitOutsideCurlyBraces } from "./auxiliar";
 import { getStats } from "shared/common";
 import { emptyPersistentData, emptyReplacementParameters } from "shared/data";
 import { LogLevel } from "shared/config";

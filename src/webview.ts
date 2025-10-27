@@ -1,5 +1,5 @@
 import { l10n, Uri, Webview, workspace } from "vscode";
-import { getUri, getNonce } from "./aux";
+import { getUri, getNonce } from "./auxiliar";
 import { Config } from "shared/config";
 
 const { bundle, uri } = l10n;
