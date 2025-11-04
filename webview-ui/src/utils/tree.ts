@@ -9,6 +9,8 @@ import type {
   WorkspacesAndFiles,
 } from "../../../shared/replacements";
 
+const sep = navigator.platform.startsWith('Win') ? '\\' : '/';
+
 export const treeItemConfig: Pick<TreeItem, "icons" | "actions"> = {
   icons: {
     branch: "folder",
@@ -42,9 +44,9 @@ export const treeItemActionRefresh: TreeItemAction = {
 };
 
 const basename = (fullPath: string) =>
-  fullPath.split("/").filter(Boolean).pop() || "(error: file basename not parsed)";
+  fullPath.split(sep).filter(Boolean).pop() || "(error: file basename not parsed)";
 
-const parentPath = (fullPath: string) => `${fullPath.split("/").slice(0, -1).join("/")}/`;
+const parentPath = (fullPath: string) => `${fullPath.split(sep).slice(0, -1).join(sep)}${sep}`;
 
 const sortTreeItems = (treeItem: TreeItem[]) => {
   treeItem.sort((a, b) => {
@@ -97,8 +99,9 @@ const fileListToTreeItem = (
   const root: TreeItem[] = [];
 
   for (const filePath of fileList) {
-    const relativePath = filePath.replace(startingPath, "").replace(/^\/+/, "");
-    const parts = relativePath.split("/").filter(Boolean);
+    const reSep = new RegExp(`^\${sep}{1,2}`); // /^(\/|\\){1,2}/
+    const relativePath = filePath.replace(startingPath, "").replace(reSep, "");
+    const parts = relativePath.split(sep).filter(Boolean);
     let currentLevel = root;
 
     for (let i = 0; i < parts.length; i++) {
@@ -107,7 +110,7 @@ const fileListToTreeItem = (
       let existing = currentLevel.find((item) => item.label === part);
 
       if (!existing) {
-        const absolutePath = `${startingPath}/${parts.slice(0, i + 1).join("/")}`;
+        const absolutePath = `${startingPath}${sep}${parts.slice(0, i + 1).join(sep)}`;
         existing = {
           ...defaultItemProps,
           ...{
@@ -160,12 +163,12 @@ export const mergeTreeKeys = (
       ...transferredKeys,
       ...(currentItem.subItems
         ? {
-            subItems: mergeTreeKeys(
-              currentItem.subItems,
-              fromTreeItem?.subItems ?? [],
-              keysToTransfer
-            ),
-          }
+          subItems: mergeTreeKeys(
+            currentItem.subItems,
+            fromTreeItem?.subItems ?? [],
+            keysToTransfer
+          ),
+        }
         : {}),
     };
 
@@ -207,10 +210,10 @@ export const setTreeItemOpen = (
     return rest.length === 0 && recurseAll
       ? applyRecurse({ ...item, subItems: updatedSubItems })
       : {
-          ...item,
-          open: rest.length === 0 ? open : item.open,
-          subItems: updatedSubItems,
-        };
+        ...item,
+        open: rest.length === 0 ? open : item.open,
+        subItems: updatedSubItems,
+      };
   });
 };
 
@@ -254,8 +257,8 @@ export const setTreePreview = (
               stats.replacementsMade === 0
                 ? t("no replacements")
                 : stats.replacementsMade === 1
-                ? t("One replacement")
-                : t("{0} replacements", stats.replacementsMade),
+                  ? t("One replacement")
+                  : t("{0} replacements", stats.replacementsMade),
             appearance: "text",
           },
         ],
@@ -277,10 +280,10 @@ export const setTreePreview = (
           decorations: [
             previewResults[treeItem.value].errors.length
               ? {
-                  content: "",
-                  appearance: "filled-circle",
-                  color: "var(--vscode-editorError-foreground)",
-                }
+                content: "",
+                appearance: "filled-circle",
+                color: "var(--vscode-editorError-foreground)",
+              }
               : {},
             {
               content: replacements.toString(),
@@ -331,12 +334,20 @@ export const setFileTree = (
 ): TreeItem[] => {
   const workspaces = workspacesAndFiles.workspaces;
   const fileList = workspacesAndFiles.files;
-  const resultFilesTree: TreeItem[] = [];
+  const transientFileTree: TreeItem[] = [];
 
-  // No workspace files
+  log(
+    "utils",
+    "setFileTree",
+    "log",
+    `parameters=${JSON.stringify({ workspaces, fileList })}`
+  );
+
   if (workspaces.length === 0) {
+    log("utils", "setFileTree", "debug", 'No workspace files');
+
     for (const file of fileList) {
-      resultFilesTree.push({
+      transientFileTree.push({
         ...treeItemConfig,
         label: basename(file),
         value: file,
@@ -345,15 +356,22 @@ export const setFileTree = (
         open: false,
       });
     }
+
+    log(
+      "utils",
+      "setFileTree",
+      "debug",
+      `transientFileTree=${JSON.stringify(transientFileTree)}`
+    );
   }
 
   if (workspaces.length > 0) {
-    // Workspace folder and files (single or multi)
+    log("utils", "setFileTree", "debug", 'Workspace folder and files (single or multi)');
     for (const workspaceFolder of workspaces.filter((workspace) =>
       fileList.some((file) => file.startsWith(workspace))
     )) {
-      const rePrefix = new RegExp(`^${workspaceFolder}`);
-      resultFilesTree.push({
+      const rePrefix = new RegExp(`^${workspaceFolder.replace(/(\\|\/)/g, `\\${sep}`)}`);
+      transientFileTree.push({
         ...treeItemConfig,
         ...{
           actions: [treeItemActionToggle, ...(treeItemConfig.actions ?? [])],
@@ -374,12 +392,10 @@ export const setFileTree = (
       });
     }
 
-    // Files outside workspaces
     const outsideWorkspaceFiles: TreeItem[] = [];
     fileList
       .filter((file) => !workspaces.some((workspaceFolder) => file.startsWith(workspaceFolder)))
       .map((fileOutsideWorkspaces) => {
-        // resultFilesTree.push({
         outsideWorkspaceFiles.push({
           ...treeItemConfig,
           label: basename(fileOutsideWorkspaces),
@@ -389,7 +405,8 @@ export const setFileTree = (
         });
       });
     if (outsideWorkspaceFiles.length > 0) {
-      resultFilesTree.push({
+      log("utils", "setFileTree", "debug", `Files outside workspaces outsideWorkspaceFiles=${JSON.stringify(outsideWorkspaceFiles)}`);
+      transientFileTree.push({
         icons: {
           ...treeItemConfig.icons,
           branch: "root-folder",
@@ -416,13 +433,20 @@ export const setFileTree = (
       value: values.root,
       open: false,
       actions: [treeItemActionToggle, treeItemActionRefresh],
-      subItems: resultFilesTree,
+      subItems: transientFileTree,
     },
   ];
 
   const resultTree = mergeTreeKeys(rootTree, pastResultTree, ["open"]);
 
   sortTreeItems(resultTree);
+
+  log(
+    "utils",
+    "setFileTree",
+    "debug",
+    `resultTree=${JSON.stringify(resultTree)}`
+  );
 
   return resultTree;
 };

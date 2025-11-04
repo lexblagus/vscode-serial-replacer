@@ -11,6 +11,7 @@ export default defineConfig({
   },
   build: {
     outDir: "build",
+    sourcemap: 'inline',
     rollupOptions: {
       output: {
         entryFileNames: `[name].js`,
