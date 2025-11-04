@@ -3,7 +3,7 @@
   "publisher": "blagus",
   "displayName": "Serial Replacer",
   "description": "Visual Studio extension for consecutive (batch) find-and-replace in a single or multiple files",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.100.0"
@@ -124,8 +124,12 @@
           "type": "object",
           "default": {
             "allow": [
-              {"level": "warn"},
-              {"level": "error"}
+              {
+                "level": "warn"
+              },
+              {
+                "level": "error"
+              }
             ],
             "deny": [
               {
